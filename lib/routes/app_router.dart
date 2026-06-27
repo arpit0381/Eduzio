@@ -122,7 +122,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
     redirect: (context, state) {
       // Get current auth state (loading/error is represented, value is UserProfile?)
-      final user = authState.valueOrNull;
+      final user = authState.value;
       final currentLoc = state.matchedLocation;
       
       final isAuthPage = currentLoc == '/login' ||
