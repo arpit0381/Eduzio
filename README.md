@@ -1,48 +1,89 @@
-```md
 <div align="center">
 
 # 🎓 Eduzio
 
 ### **One Platform. Every Classroom.**
 
-*A modern Coaching Institute & Education Management Platform built with Flutter, Supabase, and Material 3.*
+<p align="center">
+A Modern Education Management Platform for Coaching Institutes, Schools & Colleges.
+</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter" />
-  <img src="https://img.shields.io/badge/Supabase-Backend-3FCF8E?style=for-the-badge&logo=supabase" />
-  <img src="https://img.shields.io/badge/Riverpod-State%20Management-5C6BC0?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Material%203-UI-1976D2?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/License-MIT-success?style=for-the-badge" />
+
+![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Material 3](https://img.shields.io/badge/Material%203-1976D2?style=for-the-badge)
+![Riverpod](https://img.shields.io/badge/Riverpod-State_Management-5C6BC0?style=for-the-badge)
+![License](https://img.shields.io/github/license/YOUR_USERNAME/eduzio?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/YOUR_USERNAME/eduzio?style=for-the-badge)
+![Forks](https://img.shields.io/github/forks/YOUR_USERNAME/eduzio?style=for-the-badge)
+
 </p>
+
+<p align="center">
+
+🚀 Flutter • Supabase • Material 3 • Offline First • Real-Time • Cross Platform
+
+</p>
+
+</div>
 
 ---
 
-## 🚀 Vision
+# 📖 About Eduzio
 
-Eduzio is an all-in-one education management platform designed to simplify how coaching institutes, schools, and colleges operate.
+Eduzio is an all-in-one Education Management Platform designed to simplify the daily operations of Coaching Institutes, Schools, and Colleges.
 
-Instead of using multiple apps for attendance, fees, homework, tests, reports, and communication, Eduzio brings everything together into one seamless platform.
+Instead of juggling multiple apps for attendance, fee collection, homework, tests, communication, reports, and student management, Eduzio brings everything together into one seamless platform.
+
+Built using Flutter and Supabase, Eduzio is fast, scalable, secure, and designed with an offline-first architecture so institutes can continue working even without internet connectivity.
+
+---
+
+# 🎯 Vision
+
+Our vision is to build the operating system for education.
+
+Starting with coaching institutes and gradually expanding into schools, colleges, universities, and multi-campus organizations, Eduzio aims to become the complete digital infrastructure for modern education.
 
 > **One Platform. Every Classroom.**
 
 ---
 
-# ✨ Features
+# ✨ Why Eduzio?
+
+- 📱 Beautiful Material 3 UI
+- ⚡ Lightning Fast Performance
+- 🌍 Android, iOS & Web
+- ☁️ Cloud Powered
+- 🔄 Real-Time Sync
+- 📶 Offline Support
+- 🔒 Secure Authentication
+- 📈 Smart Analytics
+- 💳 Fee Management
+- 📷 QR Attendance
+- 📄 PDF Reports
+- 🔔 Push Notifications
+
+---
+
+# 🚀 Core Features
 
 ## 👨‍💼 Admin Dashboard
 
 - Student Management
 - Teacher Management
+- Parent Management
 - Batch Management
 - Subject Management
-- Attendance Reports
+- Attendance Dashboard
 - Fee Collection
+- Reports
 - Revenue Analytics
-- Performance Reports
-- Push Notifications
-- Announcements
-- Digital Student ID Cards
+- Student ID Card
 - QR Code Generation
+- Notifications
+- Announcements
 
 ---
 
@@ -50,11 +91,12 @@ Instead of using multiple apps for attendance, fees, homework, tests, reports, a
 
 - Secure Login
 - Today's Classes
-- Take Attendance
+- Attendance
 - QR Attendance
-- Upload Homework
-- Upload Notes
-- Enter Test Marks
+- Homework Upload
+- Assignment Management
+- Test Creation
+- Marks Entry
 - Student List
 - Notices
 - Leave Requests
@@ -64,23 +106,23 @@ Instead of using multiple apps for attendance, fees, homework, tests, reports, a
 ## 👨‍🎓 Student App
 
 - Dashboard
-- Today's Classes
 - Homework
 - Notes
+- Timetable
 - Attendance
 - Test Results
-- Timetable
 - Fee Status
+- Payment History
 - Announcements
 - Profile
 
 ---
 
-## 👨‍👩‍👧 Parent App *(Optional)*
+## 👨‍👩‍👧 Parent App
 
 - Attendance
 - Homework
-- Test Results
+- Marks
 - Fee Status
 - Notifications
 - Contact Teacher
@@ -89,15 +131,17 @@ Instead of using multiple apps for attendance, fees, homework, tests, reports, a
 
 # 📚 Modules
 
-## 👨‍🎓 Student Management
+## 🎓 Student Management
 
-- Add/Edit/Delete Students
-- Bulk Import (Excel/CSV)
+- Add Students
+- Edit Students
+- Delete Students
+- Student Profiles
 - Guardian Details
-- Documents
-- Student Profile
-- Digital ID Card
+- Student Documents
+- Digital Student ID
 - QR Code
+- Bulk Import (Excel/CSV)
 
 ---
 
@@ -106,7 +150,7 @@ Instead of using multiple apps for attendance, fees, homework, tests, reports, a
 - Unlimited Batches
 - Subjects
 - Timings
-- Teachers
+- Teacher Assignment
 - Classroom Assignment
 
 ---
@@ -116,28 +160,28 @@ Instead of using multiple apps for attendance, fees, homework, tests, reports, a
 - Daily Attendance
 - QR Attendance
 - Manual Attendance
-- Monthly Reports
 - Attendance Percentage
+- Monthly Reports
 
 ---
 
-## 💳 Fees
+## 💰 Fee Management
 
 - Monthly Fees
 - Installments
 - Due Amount
 - Payment History
-- PDF Receipts
-- Automatic Fee Reminders
+- PDF Receipt
+- Automatic Fee Reminder
 
 ---
 
-## 📖 Homework & Assignments
+## 📖 Homework
 
 - Create Homework
-- Upload PDFs
-- Upload Images
-- Due Dates
+- PDF Upload
+- Image Upload
+- Due Date
 - Student Submission
 - Teacher Review
 
@@ -145,7 +189,7 @@ Instead of using multiple apps for attendance, fees, homework, tests, reports, a
 
 ## 📝 Tests & Exams
 
-- Test Creation
+- Create Tests
 - Marks Entry
 - Rank List
 - Student Analytics
@@ -166,246 +210,19 @@ Instead of using multiple apps for attendance, fees, homework, tests, reports, a
 
 - Attendance Reports
 - Revenue Reports
-- Fee Reports
 - Student Performance
-- Batch-wise Analytics
+- Fee Collection
+- Batch Reports
 
 ---
 
-# 📦 Roadmap
+# 🛣 Product Roadmap
 
-## 🚀 Version 1 (MVP)
-
-Designed for Coaching Institutes
-
-- Student Management
-- Attendance
-- Fees
-- Homework
-- Tests
-- Reports
-- Notifications
+| Version | Status | Description |
+|----------|--------|-------------|
+| ✅ Version 1 | MVP | Coaching Institute Management |
+| 🚧 Version 2 | Planned | Online Classes, Library, Doubt Chat |
+| 🚧 Version 3 | Planned | School ERP |
+| 🚧 Version 4 | Planned | College ERP |
 
 ---
-
-## 🚀 Version 2
-
-- Live Classes
-- Doubt Chat
-- Assignment Submission
-- Certificates
-- Digital Library
-- Live Attendance Dashboard
-- Advanced Analytics
-
----
-
-## 🚀 Version 3
-
-School ERP Support
-
-- Timetable
-- Library
-- Hostel
-- Transport
-- Payroll
-- Inventory
-- Staff Management
-- Multi-Campus Support
-
----
-
-## 🚀 Version 4
-
-College ERP Support
-
-- Semester Management
-- Credits
-- Placements
-- Clubs
-- Alumni
-- Academic Records
-
----
-
-# 🗄 Database Structure
-
-```
-
-Organizations
-│
-├── Users
-├── Students
-├── Parents
-├── Teachers
-├── Batches
-├── Subjects
-├── Attendance
-├── Homework
-├── Assignments
-├── Fees
-├── Payments
-├── Tests
-├── Marks
-├── Announcements
-├── Notifications
-└── Documents
-
-```
-
----
-
-# 🏗 Project Structure
-
-```
-
-lib/
-│
-├── core/
-├── shared/
-├── features/
-│   ├── auth/
-│   ├── dashboard/
-│   ├── attendance/
-│   ├── fees/
-│   ├── homework/
-│   ├── tests/
-│   ├── reports/
-│   ├── notifications/
-│   └── settings/
-│
-├── routes/
-└── main.dart
-
-```
-
----
-
-# ⚙ Tech Stack
-
-## 📱 Mobile
-
-- Flutter
-- Material 3
-
-### ⚡ State Management
-
-- Riverpod
-
-### 🌍 Navigation
-
-- GoRouter
-
-### 🗄 Backend
-
-- Supabase Authentication
-- PostgreSQL
-- Supabase Storage
-- Realtime Database
-
-### 🔔 Notifications
-
-- Firebase Cloud Messaging
-
-### 💾 Offline Support
-
-- Isar Database
-- Supabase Sync
-
-### 📈 Charts
-
-- fl_chart
-
-### 📄 PDF Generation
-
-- pdf package
-
-### 📷 QR
-
-- mobile_scanner
-
-### 💳 Payments
-
-- Razorpay
-
----
-
-# 💰 Pricing Model
-
-| Plan | Price | Features |
-|-------|------|----------|
-| 🆓 Free | ₹0 | Up to 50 Students |
-| ⭐ Starter | ₹499/month | Small Coaching Institutes |
-| 🚀 Growth | ₹999/month | Growing Institutes |
-| 🏢 Enterprise | Custom | Large Organizations |
-
----
-
-# 🎯 Why Eduzio?
-
-✅ Modern UI
-
-✅ Offline First
-
-✅ Lightning Fast
-
-✅ Cross Platform
-
-✅ Secure Authentication
-
-✅ Real-time Sync
-
-✅ Digital Receipts
-
-✅ QR Attendance
-
-✅ Smart Reports
-
-✅ Push Notifications
-
-✅ Scalable Architecture
-
----
-
-# 🚀 Future Vision
-
-Eduzio aims to become the operating system for educational institutions by providing a single, unified platform that supports coaching institutes, schools, colleges, educators, students, and parents.
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome!
-
-If you'd like to improve Eduzio:
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Open a Pull Request
-
----
-
-# ⭐ Support
-
-If you like this project,
-
-⭐ Star this repository
-
-🍴 Fork it
-
-💡 Share your ideas
-
----
-
-<div align="center">
-
-## 🎓 Eduzio
-
-### **One Platform. Every Classroom.**
-
-*Built with ❤️ using Flutter & Supabase.*
-
-</div>
-```
