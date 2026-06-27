@@ -125,6 +125,88 @@ class StudentListScreen extends ConsumerWidget {
     );
   }
 
+  void _showCsvImportDialog(BuildContext context, WidgetRef ref) {
+    final csvController = TextEditingController();
+    final passwordController = TextEditingController(text: 'Welcome@123');
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        final colors = Theme.of(context).colorScheme;
+        return AlertDialog(
+          title: const Text('Bulk Import Students (CSV)'),
+          content: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'CSV Header format:\nName, Email, Phone, Guardian Name, Relation',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: AppSizes.sm),
+                  TextFormField(
+                    controller: csvController,
+                    maxLines: 6,
+                    decoration: const InputDecoration(
+                      labelText: 'CSV Rows',
+                      hintText: 'John Doe,john@eduzio.com,+919876543210,Bob Doe,Father',
+                      alignLabelWithHint: true,
+                    ),
+                    validator: (v) => v == null || v.isEmpty ? 'Paste CSV content' : null,
+                  ),
+                  const SizedBox(height: AppSizes.md),
+                  TextFormField(
+                    controller: passwordController,
+                    decoration: const InputDecoration(labelText: 'Default Accounts Password'),
+                    validator: (v) => v == null || v.isEmpty ? 'Enter default password' : null,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  try {
+                    final count = await ref.read(studentsListProvider.notifier).importStudents(
+                          csvController.text,
+                          passwordController.text,
+                        );
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Successfully imported $count students!'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Import failed: $e'), backgroundColor: colors.error),
+                      );
+                    }
+                  }
+                }
+              },
+              child: const Text('Import'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _confirmDelete(BuildContext context, WidgetRef ref, StudentDetail student) {
     final colors = Theme.of(context).colorScheme;
     showDialog(
@@ -168,6 +250,11 @@ class StudentListScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Students'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.file_upload_outlined),
+            tooltip: 'Import CSV',
+            onPressed: () => _showCsvImportDialog(context, ref),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.invalidate(studentsListProvider),

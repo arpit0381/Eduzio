@@ -46,6 +46,16 @@ class StudentsListController extends AsyncNotifier<List<StudentDetail>> {
       return currentList.where((s) => s.profile.id != studentId).toList();
     });
   }
+
+  Future<int> importStudents(String csvContent, String defaultPassword) async {
+    state = const AsyncValue.loading();
+    int count = 0;
+    state = await AsyncValue.guard(() async {
+      count = await ref.read(studentRepositoryProvider).importStudentsFromCsv(csvContent, defaultPassword);
+      return ref.read(studentRepositoryProvider).getStudents();
+    });
+    return count;
+  }
 }
 
 // Provider for Students List

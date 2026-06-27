@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:csv/csv.dart';
 import '../../domain/entities/student_detail.dart';
 import '../../domain/entities/student_guardian.dart';
 import '../../domain/repositories/student_repository.dart';
@@ -95,5 +96,51 @@ class StudentRepositoryImpl implements StudentRepository {
     await _client.from('profiles').update({
       'deleted_at': DateTime.now().toIso8601String(),
     }).eq('id', studentId);
+  }
+
+  @override
+  Future<int> importStudentsFromCsv(String csvContent, String defaultPassword) async {
+    final List<List<dynamic>> rows = const CsvDecoder().convert(csvContent);
+    if (rows.isEmpty) return 0;
+
+    int successCount = 0;
+    // Row 0 is assumed to be header: Name, Email, Phone, Guardian Name, Relation
+    for (int i = 1; i < rows.length; i++) {
+      final row = rows[i];
+      if (row.length < 2) continue; // Skip rows without student name or email
+
+      final name = row[0].toString().trim();
+      final email = row[1].toString().trim();
+      if (name.isEmpty || email.isEmpty) continue;
+
+      final phone = row.length > 2 && row[2].toString().trim().isNotEmpty ? row[2].toString().trim() : null;
+      final guardianName = row.length > 3 && row[3].toString().trim().isNotEmpty ? row[3].toString().trim() : null;
+      final relation = row.length > 4 && row[4].toString().trim().isNotEmpty ? row[4].toString().trim() : 'Father';
+
+      final studentDetail = StudentDetail(
+        profile: UserProfile(
+          id: '',
+          name: name,
+          email: email,
+          phone: phone,
+          role: UserProfileRole.student,
+        ),
+        guardian: guardianName != null
+            ? StudentGuardian(
+                studentId: '',
+                guardianName: guardianName,
+                relation: relation,
+              )
+            : null,
+      );
+
+      try {
+        await createStudent(student: studentDetail, password: defaultPassword);
+        successCount++;
+      } catch (e) {
+        // Skip failure row and continue importing others
+      }
+    }
+    return successCount;
   }
 }
