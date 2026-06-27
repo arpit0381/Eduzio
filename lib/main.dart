@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 import 'routes/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/storage/isar_database.dart';
+import 'features/attendance/data/models/isar_attendance_record.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize services here (e.g., Supabase, Isar, etc. in future milestones)
+  // Initialize Isar Local Database
+  final dir = await getApplicationDocumentsDirectory();
+  final isar = await Isar.open(
+    [IsarAttendanceRecordSchema],
+    directory: dir.path,
+  );
 
   runApp(
-    const ProviderScope(
-      child: EduzioApp(),
+    ProviderScope(
+      overrides: [
+        isarProvider.overrideWithValue(isar),
+      ],
+      child: const EduzioApp(),
     ),
   );
 }

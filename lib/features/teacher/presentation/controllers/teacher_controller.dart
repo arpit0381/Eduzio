@@ -52,3 +52,13 @@ class TeachersListController extends AsyncNotifier<List<UserProfile>> {
 final teachersListProvider = AsyncNotifierProvider<TeachersListController, List<UserProfile>>(() {
   return TeachersListController();
 });
+
+// FutureProvider to fetch batch and subject allocations for a specific teacher
+final teacherAllocationsProvider = FutureProvider.family<List<Map<String, dynamic>>, String>((ref, teacherId) async {
+  final client = ref.watch(supabaseClientProvider);
+  final response = await client
+      .from('batch_subjects')
+      .select('*, batch:batches(*), subject:subjects(*)')
+      .eq('teacher_id', teacherId);
+  return List<Map<String, dynamic>>.from(response);
+});

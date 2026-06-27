@@ -17,6 +17,9 @@ import '../features/batch/presentation/screens/batch_list_screen.dart';
 import '../features/student/presentation/screens/student_list_screen.dart';
 import '../features/teacher/presentation/screens/teacher_list_screen.dart';
 import '../features/attendance/presentation/screens/attendance_screen.dart';
+import '../features/attendance/presentation/screens/take_attendance_screen.dart';
+import '../features/attendance/presentation/screens/attendance_report_screen.dart';
+import '../features/attendance/presentation/screens/qr_scanner_screen.dart';
 import '../features/homework/presentation/screens/homework_screen.dart';
 import '../features/exam/presentation/screens/exam_screen.dart';
 import '../features/fees/presentation/screens/fees_screen.dart';
@@ -96,6 +99,23 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/attendance',
             name: 'attendance',
             builder: (context, state) => const AttendanceScreen(),
+            routes: [
+              GoRoute(
+                path: 'take',
+                name: 'attendance-take',
+                builder: (context, state) => const TakeAttendanceScreen(),
+              ),
+              GoRoute(
+                path: 'reports',
+                name: 'attendance-reports',
+                builder: (context, state) => const AttendanceReportScreen(),
+              ),
+              GoRoute(
+                path: 'scan',
+                name: 'attendance-scan',
+                builder: (context, state) => const QrScannerScreen(),
+              ),
+            ],
           ),
           GoRoute(
             path: '/homework',

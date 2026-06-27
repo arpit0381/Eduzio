@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../auth/domain/entities/user_profile.dart';
+import '../../../batch/presentation/controllers/batch_controller.dart';
 import '../controllers/teacher_controller.dart';
 
 class TeacherListScreen extends ConsumerWidget {
@@ -93,6 +94,169 @@ class TeacherListScreen extends ConsumerWidget {
               child: const Text('Add'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showAllocationsBottomSheet(BuildContext context, WidgetRef ref, UserProfile teacher) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.75,
+          padding: const EdgeInsets.all(AppSizes.lg),
+          child: Consumer(
+            builder: (context, ref, child) {
+              final theme = Theme.of(context);
+              final colors = theme.colorScheme;
+              final allocationsAsync = ref.watch(teacherAllocationsProvider(teacher.id));
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${teacher.name} - Allocations',
+                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSizes.md),
+                  Expanded(
+                    child: allocationsAsync.when(
+                      data: (allocations) {
+                        if (allocations.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No batches or subjects allocated to this teacher yet.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: colors.onSurfaceVariant),
+                            ),
+                          );
+                        }
+                        return ListView.builder(
+                          itemCount: allocations.length,
+                          itemBuilder: (context, index) {
+                            final alloc = allocations[index];
+                            final batchName = alloc['batch']?['name'] ?? 'Unknown Batch';
+                            final subjectName = alloc['subject']?['name'] ?? 'Unknown Subject';
+                            final batchCode = alloc['batch']?['code'] ?? '';
+
+                            return ListTile(
+                              leading: const CircleAvatar(child: Icon(Icons.class_outlined)),
+                              title: Text(batchName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Text('Subject: $subjectName'),
+                              trailing: Chip(label: Text(batchCode)),
+                            );
+                          },
+                        );
+                      },
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (err, _) => Center(child: Text('Error loading allocations: $err')),
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.md),
+                  ElevatedButton.icon(
+                    onPressed: () => _showAllocateDialog(context, ref, teacher),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Allocate New Batch & Subject'),
+                    style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  void _showAllocateDialog(BuildContext context, WidgetRef ref, UserProfile teacher) {
+    final batches = ref.read(batchesListProvider).value ?? [];
+    final subjects = ref.read(subjectsListProvider).value ?? [];
+
+    if (batches.isEmpty || subjects.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Setup Required'),
+          content: const Text('Ensure you have created at least one batch and one subject before allocating a teacher.'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+          ],
+        ),
+      );
+      return;
+    }
+
+    String? selectedBatchId = batches.first.id;
+    String? selectedSubjectId = subjects.first.id;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Allocate Batch & Subject'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    value: selectedBatchId,
+                    decoration: const InputDecoration(labelText: 'Select Batch'),
+                    items: batches.map((b) {
+                      return DropdownMenuItem<String>(value: b.id, child: Text(b.name));
+                    }).toList(),
+                    onChanged: (val) => setState(() => selectedBatchId = val),
+                  ),
+                  const SizedBox(height: AppSizes.md),
+                  DropdownButtonFormField<String>(
+                    value: selectedSubjectId,
+                    decoration: const InputDecoration(labelText: 'Select Subject'),
+                    items: subjects.map((s) {
+                      return DropdownMenuItem<String>(value: s.id, child: Text(s.name));
+                    }).toList(),
+                    onChanged: (val) => setState(() => selectedSubjectId = val),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (selectedBatchId != null && selectedSubjectId != null) {
+                      try {
+                        final batchRepo = ref.read(batchRepositoryProvider);
+                        await batchRepo.assignSubjectToBatch(
+                          batchId: selectedBatchId!,
+                          subjectId: selectedSubjectId!,
+                          teacherId: teacher.id,
+                        );
+                        ref.invalidate(teacherAllocationsProvider(teacher.id));
+                        if (context.mounted) Navigator.pop(context);
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Allocation failed: $e')),
+                          );
+                        }
+                      }
+                    }
+                  },
+                  child: const Text('Allocate'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -234,7 +398,7 @@ class TeacherListScreen extends ConsumerWidget {
                           ),
                           const SizedBox(width: AppSizes.sm),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () => _showAllocationsBottomSheet(context, ref, teacher),
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(100, 36),
                               padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm),

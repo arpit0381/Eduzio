@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:printing/printing.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../auth/domain/entities/user_profile.dart';
 import '../../domain/entities/student_detail.dart';
 import '../../domain/entities/student_guardian.dart';
 import '../controllers/student_controller.dart';
+import '../utils/id_card_generator.dart';
 
 class StudentListScreen extends ConsumerWidget {
   const StudentListScreen({super.key});
@@ -207,6 +209,33 @@ class StudentListScreen extends ConsumerWidget {
     );
   }
 
+  void _showIdCardPreview(BuildContext context, StudentDetail student) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('${student.profile.name} - ID Card'),
+            leading: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          body: PdfPreview(
+            build: (format) => IdCardGenerator.generate(
+              student: student,
+              institutionName: 'Eduzio Academy',
+            ),
+            allowPrinting: true,
+            allowSharing: true,
+            canChangeOrientation: false,
+            canChangePageFormat: false,
+          ),
+        );
+      },
+    );
+  }
+
   void _confirmDelete(BuildContext context, WidgetRef ref, StudentDetail student) {
     final colors = Theme.of(context).colorScheme;
     showDialog(
@@ -315,6 +344,8 @@ class StudentListScreen extends ConsumerWidget {
                     onSelected: (value) {
                       if (value == 'delete') {
                         _confirmDelete(context, ref, student);
+                      } else if (value == 'id_card') {
+                        _showIdCardPreview(context, student);
                       }
                     },
                     itemBuilder: (context) => [
@@ -325,6 +356,16 @@ class StudentListScreen extends ConsumerWidget {
                             Icon(Icons.visibility_outlined, size: 20),
                             SizedBox(width: AppSizes.sm),
                             Text('View Profile'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'id_card',
+                        child: Row(
+                          children: [
+                            Icon(Icons.badge_outlined, size: 20),
+                            SizedBox(width: AppSizes.sm),
+                            Text('Generate ID Card'),
                           ],
                         ),
                       ),
