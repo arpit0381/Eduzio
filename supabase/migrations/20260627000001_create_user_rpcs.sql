@@ -34,9 +34,13 @@ BEGIN
     raw_app_meta_data, 
     raw_user_meta_data, 
     is_super_admin, 
-    role, 
-    created_at, 
-    updated_at
+    updated_at,
+    confirmation_token,
+    recovery_token,
+    email_change_token_new,
+    email_change_token_current,
+    email_change_token_current,
+    email_change
   )
   VALUES (
     gen_random_uuid(),
@@ -48,12 +52,40 @@ BEGIN
     jsonb_build_object('name', student_name, 'role', 'student', 'organization_id', org_id),
     false,
     'authenticated',
+    'authenticated',
     now(),
-    now()
+    now(),
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    ''
   )
   RETURNING id INTO new_user_id;
 
-  -- Wait for handle_new_user trigger to execute (creates public.profiles row)
+  -- 3.5 Create Identity in auth.identities (Required by GoTrue)
+  INSERT INTO auth.identities (
+    id,
+    user_id,
+    provider_id,
+    identity_data,
+    provider,
+    last_sign_in_at,
+    created_at,
+    updated_at
+  )
+  VALUES (
+    gen_random_uuid(),
+    new_user_id,
+    new_user_id::text,
+    jsonb_build_object('sub', new_user_id::text, 'email', student_email),
+    'email',
+    now(),
+    now(),
+    now()
+  );
 
   -- 4. Create guardian row if details are provided
   IF guardian_name IS NOT NULL AND guardian_name != '' THEN
@@ -105,9 +137,18 @@ BEGIN
     raw_app_meta_data, 
     raw_user_meta_data, 
     is_super_admin, 
+    aud,
     role, 
     created_at, 
-    updated_at
+    updated_at,
+    confirmation_token,
+    recovery_token,
+    email_change_token_new,
+    email_change_token_current,
+    email_change,
+    phone_change,
+    phone_change_token,
+    phone
   )
   VALUES (
     gen_random_uuid(),
@@ -119,12 +160,40 @@ BEGIN
     jsonb_build_object('name', teacher_name, 'role', 'teacher', 'organization_id', org_id),
     false,
     'authenticated',
+    'authenticated',
     now(),
-    now()
+    now(),
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    ''
   )
   RETURNING id INTO new_user_id;
 
-  -- Wait for handle_new_user trigger to execute (creates public.profiles row)
+  -- 3.5 Create Identity in auth.identities (Required by GoTrue)
+  INSERT INTO auth.identities (
+    id,
+    user_id,
+    provider_id,
+    identity_data,
+    provider,
+    last_sign_in_at,
+    created_at,
+    updated_at
+  )
+  VALUES (
+    gen_random_uuid(),
+    new_user_id,
+    new_user_id::text,
+    jsonb_build_object('sub', new_user_id::text, 'email', teacher_email),
+    'email',
+    now(),
+    now(),
+    now()
+  );
 
   -- 4. Update the profile phone number
   UPDATE public.profiles

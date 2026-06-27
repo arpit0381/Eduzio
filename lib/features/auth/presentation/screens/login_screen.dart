@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/sizes.dart';
 import '../controllers/auth_controller.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -159,6 +160,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: AppSizes.md),
 
+                      // Student/Teacher Registration
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            "New student or teacher?",
+                            style: TextStyle(color: colors.onSurfaceVariant),
+                          ),
+                          TextButton(
+                            onPressed: () => context.go('/register'),
+                            child: const Text('Sign Up'),
+                          ),
+                        ],
+                      ),
+
                       // Create Organization Onboarding
                       Wrap(
                         alignment: WrapAlignment.center,
@@ -169,7 +186,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             style: TextStyle(color: colors.onSurfaceVariant),
                           ),
                           TextButton(
-                            onPressed: () => Navigator.of(context).pushNamed('/onboard'),
+                            onPressed: () => context.go('/onboard'),
                             child: const Text('Register Here'),
                           ),
                         ],

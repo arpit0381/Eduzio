@@ -283,10 +283,23 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
   org_id UUID;
+  org_input TEXT;
   user_role public.user_role;
   user_name VARCHAR;
 BEGIN
-  org_id := (NEW.raw_user_meta_data->>'organization_id')::UUID;
+  org_input := NEW.raw_user_meta_data->>'organization_id';
+  
+  IF org_input IS NOT NULL AND org_input != '' THEN
+    BEGIN
+      org_id := org_input::UUID;
+    EXCEPTION WHEN invalid_text_representation THEN
+      SELECT id INTO org_id FROM public.organizations WHERE subdomain = org_input;
+      IF org_id IS NULL THEN
+        RAISE EXCEPTION 'Invalid institute ID / subdomain: %', org_input;
+      END IF;
+    END;
+  END IF;
+
   user_role := COALESCE((NEW.raw_user_meta_data->>'role')::public.user_role, 'student'::public.user_role);
   user_name := COALESCE(NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1));
 

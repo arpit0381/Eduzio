@@ -115,6 +115,18 @@ class AuthRepositoryImpl implements AuthRepository {
     // Wait a brief moment for the DB triggers to complete
     await Future.delayed(const Duration(milliseconds: 500));
 
+    if (response.session == null) {
+      // Email confirmation is likely enabled. We cannot get the profile yet because the user is not logged in.
+      // Return a basic profile to avoid throwing an error, so the UI can redirect them to login.
+      return UserProfile(
+        id: response.user!.id,
+        organizationId: organizationId,
+        name: name,
+        email: email,
+        role: role,
+      );
+    }
+
     final profile = await getCurrentUserProfile();
     if (profile == null) {
       throw Exception('Failed to retrieve registered profile');
@@ -157,37 +169,33 @@ class AuthRepositoryImpl implements AuthRepository {
     required String ownerEmail,
     required String ownerPassword,
   }) async {
-    // 1. Sign up the owner admin account
-    final authRes = await _client.auth.signUp(
+    // 1. Create the Organization using a secure RPC that bypasses RLS
+    final response = await _client.rpc(
+      'create_organization_unauthenticated',
+      params: {
+        'org_name': orgName,
+        'org_subdomain': subdomain,
+        'org_phone': phone,
+      },
+    );
+    final String orgId = response.toString();
+
+    // 2. Officially sign up the user using GoTrue API (fixes all schema errors)
+    final authResponse = await _client.auth.signUp(
       email: ownerEmail,
       password: ownerPassword,
       data: {
         'name': ownerName,
-        'role': UserProfileRole.admin.key,
+        'role': 'admin',
+        'organization_id': orgId,
       },
     );
 
-    if (authRes.user == null) {
-      throw Exception('Failed to register owner admin credentials');
+    // If Supabase email confirmation is enabled, session is null initially.
+    // Try to sign in just in case it's disabled, or to trigger a proper 'please confirm email' error.
+    if (authResponse.session == null) {
+      await signInWithEmailAndPassword(ownerEmail, ownerPassword);
     }
-
-    // 2. Create the Organization record
-    // RLS bypass: insertion into organizations table is permitted for authenticated users
-    final orgRes = await _client.from('organizations').insert({
-      'name': orgName,
-      'subdomain': subdomain,
-      'settings': {'phone': phone},
-    }).select().single();
-
-    final orgId = orgRes['id'] as String;
-
-    // 3. Link profile to the newly created organization
-    await _client.from('profiles').update({
-      'organization_id': orgId,
-    }).eq('id', authRes.user!.id);
-    
-    // Sign out because auth metadata changes need a fresh login token to update the client's JWT claims
-    await signOut();
   }
 
   @override

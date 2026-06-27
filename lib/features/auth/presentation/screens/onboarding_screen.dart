@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/sizes.dart';
 import '../controllers/auth_controller.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -57,7 +58,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.of(context).pushReplacementNamed('/login');
+          context.go('/login');
         }
       } catch (e) {
         if (mounted) {
@@ -284,7 +285,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             style: TextStyle(color: colors.onSurfaceVariant),
                           ),
                           TextButton(
-                            onPressed: () => Navigator.of(context).pushReplacementNamed('/login'),
+                            onPressed: () => context.go('/login'),
                             child: const Text('Sign In'),
                           ),
                         ],

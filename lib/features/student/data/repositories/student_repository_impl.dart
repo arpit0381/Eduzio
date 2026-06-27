@@ -28,10 +28,7 @@ class StudentRepositoryImpl implements StudentRepository {
         role: UserProfileRole.student,
       );
 
-      final guardianList = json['student_guardians'] as List?;
-      final guardianJson = guardianList != null && guardianList.isNotEmpty
-          ? guardianList.first as Map<String, dynamic>
-          : null;
+      final guardianJson = json['student_guardians'] as Map<String, dynamic>?;
 
       final guardian = guardianJson != null
           ? StudentGuardian(

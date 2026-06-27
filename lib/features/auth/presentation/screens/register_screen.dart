@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../domain/entities/user_profile.dart';
 import '../controllers/auth_controller.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -47,7 +48,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Account created successfully! Please login.')),
           );
-          Navigator.of(context).pushReplacementNamed('/login');
+          context.go('/login');
         }
       } catch (e) {
         if (mounted) {
@@ -203,7 +204,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             style: TextStyle(color: colors.onSurfaceVariant),
                           ),
                           TextButton(
-                            onPressed: () => Navigator.of(context).pushReplacementNamed('/login'),
+                            onPressed: () => context.go('/login'),
                             child: const Text('Sign In'),
                           ),
                         ],
