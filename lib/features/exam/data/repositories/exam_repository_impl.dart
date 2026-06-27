@@ -72,7 +72,7 @@ class ExamRepositoryImpl implements ExamRepository {
     };
 
     final response = await _client.from('exams').insert(payload).select().single();
-    return _mapExamJson(response as Map<String, dynamic>);
+    return _mapExamJson(response);
   }
 
   @override
@@ -93,7 +93,7 @@ class ExamRepositoryImpl implements ExamRepository {
         .eq('id', exam.id)
         .select()
         .single();
-    return _mapExamJson(response as Map<String, dynamic>);
+    return _mapExamJson(response);
   }
 
   @override

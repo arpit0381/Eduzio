@@ -5,7 +5,6 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../domain/entities/attendance_record.dart';
 import '../controllers/attendance_controller.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
-import '../../../student/domain/entities/student_detail.dart';
 import '../../../../shared/widgets/responsive_layout.dart';
 
 class AttendanceReportScreen extends ConsumerStatefulWidget {
@@ -80,7 +79,6 @@ class _AttendanceReportScreenState extends ConsumerState<AttendanceReportScreen>
   }
 
   Widget _buildContent(BuildContext context, List<dynamic> batches, {bool isDesktop = false}) {
-    final theme = Theme.of(context);
 
     return Column(
       children: [
@@ -94,7 +92,7 @@ class _AttendanceReportScreenState extends ConsumerState<AttendanceReportScreen>
                 Expanded(
                   flex: 2,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedBatchId,
+                    initialValue: _selectedBatchId,
                     decoration: const InputDecoration(
                       labelText: 'Batch',
                       border: OutlineInputBorder(),
@@ -494,9 +492,9 @@ class _AttendanceReportScreenState extends ConsumerState<AttendanceReportScreen>
     return Expanded(
       child: Card(
         elevation: 0,
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: color.withOpacity(0.2)),
+          side: BorderSide(color: color.withValues(alpha: 0.2)),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Padding(

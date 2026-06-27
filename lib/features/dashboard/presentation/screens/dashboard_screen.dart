@@ -36,7 +36,7 @@ class DashboardScreen extends StatelessWidget {
           children: [
             // Header Card
             Card(
-              color: colors.primaryContainer.withOpacity(0.5),
+              color: colors.primaryContainer.withValues(alpha: 0.5),
               child: Padding(
                 padding: const EdgeInsets.all(AppSizes.lg),
                 child: Row(
@@ -56,13 +56,13 @@ class DashboardScreen extends StatelessWidget {
                           Text(
                             'Here is what is happening at your institute today.',
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.onPrimaryContainer.withOpacity(0.8),
+                              color: colors.onPrimaryContainer.withValues(alpha: 0.8),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Icon(Icons.school, size: 64, color: colors.primary.withOpacity(0.2)),
+                    Icon(Icons.school, size: 64, color: colors.primary.withValues(alpha: 0.2)),
                   ],
                 ),
               ),
@@ -111,14 +111,14 @@ class DashboardScreen extends StatelessWidget {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: 3,
-                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          separatorBuilder: (_, _) => const Divider(height: 1),
                           itemBuilder: (context, index) {
                             final times = ['09:00 AM - 10:30 AM', '11:00 AM - 12:30 PM', '02:00 PM - 03:30 PM'];
                             final subjects = ['Physics - Batch A', 'Chemistry - Batch B', 'Mathematics - Batch C'];
                             final rooms = ['Classroom 1', 'Classroom 3', 'Classroom 2'];
                             return ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: colors.surfaceVariant,
+                                backgroundColor: colors.surfaceContainerHighest,
                                 child: Text('${index + 1}', style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold)),
                               ),
                               title: Text(subjects[index], style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -215,7 +215,7 @@ class DashboardScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.sm),
         decoration: BoxDecoration(
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.15)),
+          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.15)),
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
         child: Row(

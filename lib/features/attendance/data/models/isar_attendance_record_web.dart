@@ -1,4 +1,3 @@
-/// Web stub for IsarAttendanceRecordSchema.
-/// On web, Isar is not initialized so this is never actually used.
-/// It just satisfies the import reference in main.dart.
+// ignore_for_file: non_constant_identifier_names
+
 final IsarAttendanceRecordSchema = Object();

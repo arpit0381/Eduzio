@@ -211,7 +211,7 @@ class TeacherListScreen extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<String>(
-                    value: selectedBatchId,
+                    initialValue: selectedBatchId,
                     decoration: const InputDecoration(labelText: 'Select Batch'),
                     items: batches.map((b) {
                       return DropdownMenuItem<String>(value: b.id, child: Text(b.name));
@@ -220,7 +220,7 @@ class TeacherListScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppSizes.md),
                   DropdownButtonFormField<String>(
-                    value: selectedSubjectId,
+                    initialValue: selectedSubjectId,
                     decoration: const InputDecoration(labelText: 'Select Subject'),
                     items: subjects.map((s) {
                       return DropdownMenuItem<String>(value: s.id, child: Text(s.name));
@@ -320,7 +320,7 @@ class TeacherListScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.school_outlined, size: 64, color: colors.outline.withOpacity(0.5)),
+                    Icon(Icons.school_outlined, size: 64, color: colors.outline.withValues(alpha: 0.5)),
                     const SizedBox(height: AppSizes.md),
                     Text(
                       'No Teachers Registered',

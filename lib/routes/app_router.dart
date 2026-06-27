@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 // Import providers
 import '../features/auth/presentation/controllers/auth_controller.dart';
-import '../features/auth/domain/entities/user_profile.dart';
 
 // Import screens
 import '../features/auth/presentation/screens/login_screen.dart';

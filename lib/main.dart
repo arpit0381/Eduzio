@@ -11,8 +11,8 @@ import 'core/storage/isar_initializer.dart'
 // ⚠️  REPLACE these with your real Supabase project values.
 // You can find them in: Supabase Dashboard → Project Settings → API
 // ─────────────────────────────────────────────
-const _supabaseUrl = 'https://YOUR_PROJECT_ID.supabase.co';
-const _supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+const _supabaseUrl = 'https://ntrpizllaqplbyksjqgr.supabase.co';
+const _supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50cnBpemxsYXFwbGJ5a3NqcWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1MTA2ODAsImV4cCI6MjA5ODA4NjY4MH0.47NmxltJqxz9C4G6p-PRyUr2sQTYAuknehuWzw5yNXE';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +20,7 @@ void main() async {
   // 1. Initialize Supabase FIRST — must happen before any provider reads it
   await Supabase.initialize(
     url: _supabaseUrl,
-    anonKey: _supabaseAnonKey,
+    publishableKey: _supabaseAnonKey,
   );
 
   // 2. Initialize platform-specific storage (Isar on native, no-op on web)

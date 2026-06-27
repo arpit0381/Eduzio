@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/sizes.dart';
+
 
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
@@ -115,7 +115,7 @@ class AttendanceScreen extends StatelessWidget {
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: color.withOpacity(0.2), width: 1),
+        side: BorderSide(color: color.withValues(alpha: 0.2), width: 1),
       ),
       child: InkWell(
         onTap: onTap,
@@ -130,7 +130,7 @@ class AttendanceScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, size: 36, color: color),

@@ -4,8 +4,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/homework.dart';
 import '../controllers/homework_controller.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
-import '../../../batch/domain/entities/batch.dart';
-import '../../../batch/domain/entities/subject.dart';
+
 
 class HomeworkScreen extends ConsumerWidget {
   const HomeworkScreen({super.key});
@@ -295,7 +294,7 @@ class _HomeworkFormDialogState extends ConsumerState<_HomeworkFormDialog> {
                   loading: () => const LinearProgressIndicator(),
                   error: (e, _) => Text('Error: $e'),
                   data: (batches) => DropdownButtonFormField<String>(
-                    value: _selectedBatchId,
+                    initialValue: _selectedBatchId,
                     decoration: const InputDecoration(
                       labelText: 'Batch *',
                       border: OutlineInputBorder(),
@@ -315,7 +314,7 @@ class _HomeworkFormDialogState extends ConsumerState<_HomeworkFormDialog> {
                   loading: () => const LinearProgressIndicator(),
                   error: (e, _) => Text('Error: $e'),
                   data: (subjects) => DropdownButtonFormField<String>(
-                    value: _selectedSubjectId,
+                    initialValue: _selectedSubjectId,
                     decoration: const InputDecoration(
                       labelText: 'Subject',
                       border: OutlineInputBorder(),

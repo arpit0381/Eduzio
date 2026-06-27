@@ -49,15 +49,14 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
                   tooltip: 'Sync Offline Data',
                   onPressed: () async {
                     final count = await ref.read(syncControllerProvider.notifier).triggerSync();
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(count > 0 
-                              ? 'Successfully synced $count records!' 
-                              : 'No offline records to sync, or connection unavailable.'),
-                        ),
-                      );
-                    }
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(count > 0 
+                            ? 'Successfully synced $count records!' 
+                            : 'No offline records to sync, or connection unavailable.'),
+                      ),
+                    );
                   },
                 ),
               );
@@ -116,9 +115,6 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
   }
 
   Widget _buildContent(BuildContext context, List<dynamic> batches, {bool isDesktop = false}) {
-    final theme = Theme.of(context);
-    final batch = batches.firstWhere((b) => b.id == _selectedBatchId, orElse: () => null);
-
     return Column(
       children: [
         // Top Filter Panel
@@ -134,7 +130,7 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
                     Expanded(
                       flex: 2,
                       child: DropdownButtonFormField<String>(
-                        value: _selectedBatchId,
+                        initialValue: _selectedBatchId,
                         decoration: const InputDecoration(
                           labelText: 'Select Batch',
                           border: OutlineInputBorder(),

@@ -299,7 +299,7 @@ class StudentListScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.people_outline, size: 64, color: colors.outline.withOpacity(0.5)),
+                    Icon(Icons.people_outline, size: 64, color: colors.outline.withValues(alpha: 0.5)),
                     const SizedBox(height: AppSizes.md),
                     Text(
                       'No Students Registered',

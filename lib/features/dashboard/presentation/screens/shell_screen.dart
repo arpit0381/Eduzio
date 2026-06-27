@@ -197,7 +197,7 @@ class ShellScreen extends ConsumerWidget {
                               ),
                             ),
                             selected: isSelected,
-                            selectedTileColor: colors.primaryContainer.withOpacity(0.4),
+                            selectedTileColor: colors.primaryContainer.withValues(alpha: 0.4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             ),
@@ -241,7 +241,7 @@ class ShellScreen extends ConsumerWidget {
                               );
                             },
                             loading: () => const Text('Loading...'),
-                            error: (_, __) => const Text('Error'),
+                            error: (_, _) => const Text('Error'),
                           ),
                         ),
                         IconButton(

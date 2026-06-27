@@ -15,7 +15,7 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       brightness: colorScheme.brightness,
-      scaffoldBackgroundColor: colorScheme.background,
+      scaffoldBackgroundColor: colorScheme.surface,
       
       // Typography
       fontFamily: 'Outfit',
@@ -27,7 +27,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           side: BorderSide(
-            color: colorScheme.outline.withOpacity(isDark ? 0.15 : 0.08),
+            color: colorScheme.outline.withValues(alpha: isDark ? 0.15 : 0.08),
             width: 1.0,
           ),
         ),
@@ -37,7 +37,7 @@ class AppTheme {
       // Input Decoration (Text Fields)
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? colorScheme.surface : colorScheme.surfaceVariant.withOpacity(0.3),
+        fillColor: isDark ? colorScheme.surface : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         contentPadding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.md),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
@@ -46,7 +46,7 @@ class AppTheme {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           borderSide: BorderSide(
-            color: colorScheme.outline.withOpacity(0.2),
+            color: colorScheme.outline.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -72,7 +72,7 @@ class AppTheme {
           ),
         ),
         labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-        hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withOpacity(0.6)),
+        hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6)),
       ),
 
       // Elevated Button Theme
@@ -124,13 +124,13 @@ class AppTheme {
 
       // AppBar Theme
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         centerTitle: false,
         scrolledUnderElevation: 0,
-        iconTheme: IconThemeData(color: colorScheme.onBackground),
+        iconTheme: IconThemeData(color: colorScheme.onSurface),
         titleTextStyle: TextStyle(
-          color: colorScheme.onBackground,
+          color: colorScheme.onSurface,
           fontSize: AppSizes.fontXl,
           fontWeight: FontWeight.w600,
           fontFamily: 'Outfit',

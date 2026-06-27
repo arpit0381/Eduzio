@@ -69,7 +69,7 @@ class HomeworkRepositoryImpl implements HomeworkRepository {
     };
 
     final response = await _client.from('homework').insert(payload).select().single();
-    return _mapJson(response as Map<String, dynamic>);
+    return _mapJson(response);
   }
 
   @override
@@ -89,7 +89,7 @@ class HomeworkRepositoryImpl implements HomeworkRepository {
         .eq('id', homework.id)
         .select()
         .single();
-    return _mapJson(response as Map<String, dynamic>);
+    return _mapJson(response);
   }
 
   @override

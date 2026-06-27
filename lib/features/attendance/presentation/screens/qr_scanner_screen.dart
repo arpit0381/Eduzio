@@ -107,7 +107,7 @@ class _QrScannerScreenState extends ConsumerState<QrScannerScreen> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: DropdownButtonFormField<String>(
-                  value: _selectedBatchId,
+                  initialValue: _selectedBatchId,
                   decoration: const InputDecoration(
                     labelText: 'Active Batch',
                     border: OutlineInputBorder(),

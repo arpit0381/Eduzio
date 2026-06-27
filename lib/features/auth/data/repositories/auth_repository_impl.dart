@@ -94,14 +94,18 @@ class AuthRepositoryImpl implements AuthRepository {
     required UserProfileRole role,
     String? organizationId,
   }) async {
+    final data = {
+      'name': name,
+      'role': role.key,
+    };
+    if (organizationId != null) {
+      data['organization_id'] = organizationId;
+    }
+
     final response = await _client.auth.signUp(
       email: email,
       password: password,
-      data: {
-        'name': name,
-        'role': role.key,
-        if (organizationId != null) 'organization_id': organizationId,
-      },
+      data: data,
     );
 
     if (response.user == null) {

@@ -156,7 +156,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       const SizedBox(height: AppSizes.md),
 
                       DropdownButtonFormField<UserProfileRole>(
-                        value: _selectedRole,
+                        initialValue: _selectedRole,
                         decoration: const InputDecoration(
                           labelText: 'Account Role',
                           prefixIcon: Icon(Icons.badge_outlined),

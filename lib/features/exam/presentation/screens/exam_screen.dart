@@ -318,7 +318,7 @@ class _ExamFormDialogState extends ConsumerState<_ExamFormDialog> {
                   loading: () => const LinearProgressIndicator(),
                   error: (e, _) => Text('Error: $e'),
                   data: (batches) => DropdownButtonFormField<String>(
-                    value: _selectedBatchId,
+                    initialValue: _selectedBatchId,
                     decoration: const InputDecoration(
                       labelText: 'Batch *',
                       border: OutlineInputBorder(),
@@ -337,7 +337,7 @@ class _ExamFormDialogState extends ConsumerState<_ExamFormDialog> {
                   loading: () => const LinearProgressIndicator(),
                   error: (e, _) => Text('Error: $e'),
                   data: (subjects) => DropdownButtonFormField<String>(
-                    value: _selectedSubjectId,
+                    initialValue: _selectedSubjectId,
                     decoration: const InputDecoration(
                       labelText: 'Subject',
                       border: OutlineInputBorder(),
@@ -632,19 +632,17 @@ class _MarksEntrySheetState extends ConsumerState<_MarksEntrySheet> {
       // Invalidate cache
       ref.invalidate(examResultsProvider(widget.exam.id));
 
-      if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Marks saved successfully!')),
-        );
-      }
+      if (!context.mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Marks saved successfully!')),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving marks: $e'), backgroundColor: Colors.red),
-        );
-        setState(() => _isSaving = false);
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving marks: $e'), backgroundColor: Colors.red),
+      );
+      setState(() => _isSaving = false);
     }
   }
 }
