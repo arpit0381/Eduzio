@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/supabase_client.dart';
 import '../../../../core/storage/isar_database.dart';
-import '../../data/repositories/attendance_repository_impl.dart';
+// Web uses Supabase-only stub; native uses Isar offline-first implementation
+import '../../data/repositories/attendance_repository_impl_web.dart'
+    if (dart.library.io) '../../data/repositories/attendance_repository_impl.dart';
 import '../../domain/repositories/attendance_repository.dart';
 import '../../domain/entities/attendance_record.dart';
 import '../../../student/domain/entities/student_detail.dart';
@@ -12,9 +15,13 @@ import '../../../auth/domain/entities/user_profile.dart';
 /// Provider for AttendanceRepository
 final attendanceRepositoryProvider = Provider<AttendanceRepository>((ref) {
   final client = ref.watch(supabaseClientProvider);
+  if (kIsWeb) {
+    return AttendanceRepositoryImpl(client, null);
+  }
   final isar = ref.watch(isarProvider);
   return AttendanceRepositoryImpl(client, isar);
 });
+
 
 /// Fetches the students enrolled in a specific batch
 final batchStudentsProvider = FutureProvider.family<List<StudentDetail>, String>((ref, batchId) async {

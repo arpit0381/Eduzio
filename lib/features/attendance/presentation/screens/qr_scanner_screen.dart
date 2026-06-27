@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -33,26 +34,48 @@ class _QrScannerScreenState extends ConsumerState<QrScannerScreen> {
     final batchesAsync = ref.watch(batchesListProvider);
     final theme = Theme.of(context);
 
+    // QR scanning via camera is not supported on web
+    if (kIsWeb) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Scan Student ID Cards')),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.qr_code_scanner, size: 72, color: theme.hintColor),
+              const SizedBox(height: 20),
+              Text('Camera scanning is not available on web.',
+                  style: theme.textTheme.titleMedium),
+              const SizedBox(height: 8),
+              Text(
+                'Use the Eduzio mobile app to scan student ID card QR codes.',
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scan Student ID Cards'),
         actions: [
-          IconButton(
-            icon: ValueListenableBuilder(
-              valueListenable: _scannerController.torchState,
-              builder: (context, state, child) {
-                switch (state) {
-                  case TorchState.off:
-                    return const Icon(Icons.flash_off);
-                  case TorchState.on:
-                    return const Icon(Icons.flash_on);
-                }
-              },
-            ),
-            onPressed: () => _scannerController.toggleTorch(),
+          // Torch toggle
+          ValueListenableBuilder<MobileScannerState>(
+            valueListenable: _scannerController,
+            builder: (context, state, child) {
+              final torchOn = state.torchState == TorchState.on;
+              return IconButton(
+                icon: Icon(torchOn ? Icons.flash_on : Icons.flash_off),
+                tooltip: torchOn ? 'Torch Off' : 'Torch On',
+                onPressed: () => _scannerController.toggleTorch(),
+              );
+            },
           ),
           IconButton(
-            icon: const Icon(Icons.flip_camera),
+            icon: const Icon(Icons.cameraswitch),
             onPressed: () => _scannerController.switchCamera(),
           ),
         ],
