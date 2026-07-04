@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../domain/entities/exam.dart';
 import '../controllers/exam_controller.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
@@ -21,7 +22,12 @@ class ExamScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showFormDialog(context, ref),
-        icon: const Icon(Icons.add),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        icon: const Icon(LucideIcons.plus),
         label: const Text('Create Test'),
       ),
       body: examsAsync.when(
@@ -30,7 +36,7 @@ class ExamScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+              Icon(LucideIcons.alertTriangle, size: 48, color: theme.colorScheme.error),
               const SizedBox(height: 16),
               Text('Failed to load exams', style: theme.textTheme.titleMedium),
               const SizedBox(height: 16),
@@ -47,7 +53,7 @@ class ExamScreen extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.quiz_outlined, size: 64, color: theme.hintColor),
+                  Icon(LucideIcons.award, size: 64, color: theme.hintColor),
                   const SizedBox(height: 16),
                   Text('No tests scheduled', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 8),
@@ -141,17 +147,17 @@ class _ExamCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     'Test',
@@ -164,16 +170,15 @@ class _ExamCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: isPast ? Colors.green.shade50 : Colors.orange.shade50,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: isPast ? Colors.green : Colors.orange),
+                    color: isPast ? Colors.green.withValues(alpha: 0.1) : Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     isPast ? 'Completed' : 'Upcoming',
                     style: TextStyle(
-                      color: isPast ? Colors.green.shade700 : Colors.orange.shade700,
+                      color: isPast ? Colors.green : Colors.orange,
                       fontWeight: FontWeight.bold,
                       fontSize: 11,
                     ),
@@ -186,13 +191,13 @@ class _ExamCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
               exam.title,
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             if (exam.description != null && exam.description!.isNotEmpty) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Text(
                 exam.description!,
                 style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
@@ -200,29 +205,33 @@ class _ExamCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               'Max Marks: ${exam.maxMarks}${exam.passingMarks != null ? "  |  Pass: ${exam.passingMarks}" : ""}',
               style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (isPast)
                   OutlinedButton.icon(
                     onPressed: onEnterMarks,
-                    icon: const Icon(Icons.edit_note, size: 18),
-                    label: const Text('Enter Marks'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(120, 36),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                    ),
+                    icon: const Icon(LucideIcons.edit3, size: 16),
+                    label: const Text('Enter Marks', style: TextStyle(fontSize: 12)),
                   ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined),
+                  icon: const Icon(LucideIcons.edit, size: 18),
                   tooltip: 'Edit',
                   onPressed: onEdit,
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+                  icon: Icon(LucideIcons.trash2, color: theme.colorScheme.error, size: 18),
                   tooltip: 'Delete',
                   onPressed: onDelete,
                 ),

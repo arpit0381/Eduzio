@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../core/constants/sizes.dart';
 
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
@@ -17,9 +19,9 @@ class AttendanceScreen extends StatelessWidget {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
+            constraints: const BoxConstraints(maxWidth: 900),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -28,15 +30,16 @@ class AttendanceScreen extends StatelessWidget {
                   'Manage Student Attendance',
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: colors.primary,
+                    letterSpacing: -1.0,
+                    color: colors.onSurface,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 Text(
                   'Record student attendance daily or analyze batch performance statistics.',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.hintColor,
+                    color: colors.onSurfaceVariant.withValues(alpha: 0.6),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -45,7 +48,7 @@ class AttendanceScreen extends StatelessWidget {
                 // Grid Menu Layout
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    final isWide = constraints.maxWidth > 500;
+                    final isWide = constraints.maxWidth > 600;
                     return Flex(
                       direction: isWide ? Axis.horizontal : Axis.vertical,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -58,7 +61,7 @@ class AttendanceScreen extends StatelessWidget {
                             context: context,
                             title: 'Mark Attendance',
                             description: 'Select a batch and date to record present/absent/late registers.',
-                            icon: Icons.fact_check,
+                            icon: LucideIcons.clipboardCheck,
                             color: colors.primary,
                             onTap: () => context.push('/attendance/take'),
                           ),
@@ -71,8 +74,8 @@ class AttendanceScreen extends StatelessWidget {
                             context: context,
                             title: 'QR ID Card Scan',
                             description: 'Scan student ID card QR codes for instantaneous daily check-ins.',
-                            icon: Icons.qr_code_scanner,
-                            color: Colors.orange.shade800,
+                            icon: LucideIcons.qrCode,
+                            color: Colors.orange,
                             onTap: () => context.push('/attendance/scan'),
                           ),
                         ),
@@ -82,9 +85,9 @@ class AttendanceScreen extends StatelessWidget {
                           flex: isWide ? 1 : 0,
                           child: _buildMenuCard(
                             context: context,
-                            title: 'Reports & Analytics',
+                            title: 'Reports & Stats',
                             description: 'Generate monthly attendance reports, view charts and analyze individual stats.',
-                            icon: Icons.analytics_outlined,
+                            icon: LucideIcons.barChart3,
                             color: Colors.teal,
                             onTap: () => context.push('/attendance/reports'),
                           ),
@@ -92,7 +95,7 @@ class AttendanceScreen extends StatelessWidget {
                       ],
                     );
                   },
-                ),
+                ).animate().fade(delay: 100.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
               ],
             ),
           ),
@@ -110,47 +113,49 @@ class AttendanceScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: color.withValues(alpha: 0.2), width: 1),
-      ),
+      elevation: 0,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         child: Padding(
           padding: const EdgeInsets.all(28.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Icon Container
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: 36, color: color),
-              ),
-              const SizedBox(height: 24),
-              // Title
-              Text(
-                title,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 12),
-              // Description
-              Text(
-                description,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.hintColor,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Icon Container
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(icon, size: 28, color: color),
+                  ),
+                  const SizedBox(height: 24),
+                  // Title
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Description
+                  Text(
+                    description,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               // Action Indicator
@@ -158,14 +163,14 @@ class AttendanceScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'Open Module',
+                    'Open',
                     style: TextStyle(
                       color: color,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Icon(Icons.arrow_forward, size: 16, color: color),
+                  Icon(LucideIcons.arrowRight, size: 14, color: color),
                 ],
               )
             ],

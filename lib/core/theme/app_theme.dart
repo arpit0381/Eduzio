@@ -153,6 +153,15 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
       ),
+
+      // Dialog Theme
+      dialogTheme: DialogTheme(
+        backgroundColor: isDark ? const Color(0xFF151B2E) : Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusXl), // 30px
+        ),
+      ),
     );
   }
 }

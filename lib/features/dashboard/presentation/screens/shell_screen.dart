@@ -75,7 +75,6 @@ class ShellScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final userProfileAsync = ref.watch(authStateProvider);
     final role = userProfileAsync.value?.role ?? UserProfileRole.student;
     
@@ -115,7 +114,7 @@ class ShellScreen extends ConsumerWidget {
         // Desktop Layout: Permanent Stripe-style Sidebar
         desktop: Row(
           children: [
-            _buildDesktopSidebar(context, navItems, selectedIndex, userProfileAsync),
+            _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync),
             const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
             Expanded(child: child),
           ],
@@ -231,9 +230,9 @@ class ShellScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -244,6 +243,7 @@ class ShellScreen extends ConsumerWidget {
   // Stripe Dashboard style Persistent Desktop Sidebar
   Widget _buildDesktopSidebar(
     BuildContext context,
+    WidgetRef ref,
     List<_NavItem> items,
     int selectedIndex,
     AsyncValue<UserProfile?> userProfileAsync,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../domain/entities/homework.dart';
 import '../controllers/homework_controller.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
@@ -21,7 +22,12 @@ class HomeworkScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddDialog(context, ref),
-        icon: const Icon(Icons.add),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        icon: const Icon(LucideIcons.plus),
         label: const Text('Add Homework'),
       ),
       body: homeworkAsync.when(
@@ -30,7 +36,7 @@ class HomeworkScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+              Icon(LucideIcons.alertTriangle, size: 48, color: theme.colorScheme.error),
               const SizedBox(height: 16),
               Text('Failed to load homework', style: theme.textTheme.titleMedium),
               const SizedBox(height: 8),
@@ -49,7 +55,7 @@ class HomeworkScreen extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.assignment_outlined, size: 64, color: theme.hintColor),
+                  Icon(LucideIcons.bookOpen, size: 64, color: theme.hintColor),
                   const SizedBox(height: 16),
                   Text('No assignments yet', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 8),
@@ -140,7 +146,7 @@ class _HomeworkCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -148,10 +154,10 @@ class _HomeworkCard extends StatelessWidget {
               children: [
                 // Subject / Type chip
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     'Assignment',
@@ -173,13 +179,13 @@ class _HomeworkCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
               homework.title,
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             if (homework.description != null && homework.description!.isNotEmpty) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Text(
                 homework.description!,
                 style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
@@ -187,23 +193,40 @@ class _HomeworkCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Row(
               children: [
                 if (homework.fileUrl != null)
-                  Chip(
-                    avatar: const Icon(Icons.attach_file, size: 16),
-                    label: const Text('File attached', style: TextStyle(fontSize: 12)),
-                    visualDensity: VisualDensity.compact,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(LucideIcons.paperclip, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 6),
+                        Text(
+                          'File attached',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined),
+                  icon: const Icon(LucideIcons.edit3, size: 18),
                   tooltip: 'Edit',
                   onPressed: onEdit,
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+                  icon: Icon(LucideIcons.trash2, color: theme.colorScheme.error, size: 18),
                   tooltip: 'Delete',
                   onPressed: onDelete,
                 ),
