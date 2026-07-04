@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import '../../../../core/constants/sizes.dart';
 
 class AttendanceScreen extends StatelessWidget {
@@ -46,52 +47,76 @@ class AttendanceScreen extends StatelessWidget {
                 const SizedBox(height: 48),
 
                 // Grid Menu Layout
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final isWide = constraints.maxWidth > 600;
+                ResponsiveBuilder(
+                  builder: (context, sizingInformation) {
+                    final isMobile = sizingInformation.isMobile;
                     return Flex(
-                      direction: isWide ? Axis.horizontal : Axis.vertical,
+                      direction: isMobile ? Axis.vertical : Axis.horizontal,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: isWide ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
+                      crossAxisAlignment: isMobile ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
                       children: [
                         // Card 1: Mark Attendance
-                        Expanded(
-                          flex: isWide ? 1 : 0,
-                          child: _buildMenuCard(
-                            context: context,
-                            title: 'Mark Attendance',
-                            description: 'Select a batch and date to record present/absent/late registers.',
-                            icon: LucideIcons.clipboardCheck,
-                            color: colors.primary,
-                            onTap: () => context.push('/attendance/take'),
-                          ),
-                        ),
-                        if (isWide) const SizedBox(width: 16) else const SizedBox(height: 16),
+                        isMobile 
+                          ? _buildMenuCard(
+                              context: context,
+                              title: 'Mark Attendance',
+                              description: 'Select a batch and date to record present/absent/late registers.',
+                              icon: LucideIcons.clipboardCheck,
+                              color: colors.primary,
+                              onTap: () => context.push('/attendance/take'),
+                            )
+                          : Expanded(
+                              child: _buildMenuCard(
+                                context: context,
+                                title: 'Mark Attendance',
+                                description: 'Select a batch and date to record present/absent/late registers.',
+                                icon: LucideIcons.clipboardCheck,
+                                color: colors.primary,
+                                onTap: () => context.push('/attendance/take'),
+                              ),
+                            ),
+                        if (!isMobile) const SizedBox(width: 16) else const SizedBox(height: 16),
                         // Card 2: QR Scanner
-                        Expanded(
-                          flex: isWide ? 1 : 0,
-                          child: _buildMenuCard(
-                            context: context,
-                            title: 'QR ID Card Scan',
-                            description: 'Scan student ID card QR codes for instantaneous daily check-ins.',
-                            icon: LucideIcons.qrCode,
-                            color: Colors.orange,
-                            onTap: () => context.push('/attendance/scan'),
-                          ),
-                        ),
-                        if (isWide) const SizedBox(width: 16) else const SizedBox(height: 16),
+                        isMobile
+                          ? _buildMenuCard(
+                              context: context,
+                              title: 'QR ID Card Scan',
+                              description: 'Scan student ID card QR codes for instantaneous daily check-ins.',
+                              icon: LucideIcons.qrCode,
+                              color: Colors.orange,
+                              onTap: () => context.push('/attendance/scan'),
+                            )
+                          : Expanded(
+                              child: _buildMenuCard(
+                                context: context,
+                                title: 'QR ID Card Scan',
+                                description: 'Scan student ID card QR codes for instantaneous daily check-ins.',
+                                icon: LucideIcons.qrCode,
+                                color: Colors.orange,
+                                onTap: () => context.push('/attendance/scan'),
+                              ),
+                            ),
+                        if (!isMobile) const SizedBox(width: 16) else const SizedBox(height: 16),
                         // Card 3: Analytics & Reports
-                        Expanded(
-                          flex: isWide ? 1 : 0,
-                          child: _buildMenuCard(
-                            context: context,
-                            title: 'Reports & Stats',
-                            description: 'Generate monthly attendance reports, view charts and analyze individual stats.',
-                            icon: LucideIcons.barChart3,
-                            color: Colors.teal,
-                            onTap: () => context.push('/attendance/reports'),
-                          ),
-                        ),
+                        isMobile
+                          ? _buildMenuCard(
+                              context: context,
+                              title: 'Reports & Stats',
+                              description: 'Generate monthly attendance reports, view charts and analyze individual stats.',
+                              icon: LucideIcons.barChart3,
+                              color: Colors.teal,
+                              onTap: () => context.push('/attendance/reports'),
+                            )
+                          : Expanded(
+                              child: _buildMenuCard(
+                                context: context,
+                                title: 'Reports & Stats',
+                                description: 'Generate monthly attendance reports, view charts and analyze individual stats.',
+                                icon: LucideIcons.barChart3,
+                                color: Colors.teal,
+                                onTap: () => context.push('/attendance/reports'),
+                              ),
+                            ),
                       ],
                     );
                   },

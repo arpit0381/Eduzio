@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 class FeesScreen extends StatelessWidget {
   const FeesScreen({super.key});
@@ -21,24 +22,24 @@ class FeesScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Responsive Apple Health styled summary analytics row
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth > 500;
+            ResponsiveBuilder(
+              builder: (context, sizingInformation) {
+                final isMobile = sizingInformation.isMobile;
                 return Flex(
-                  direction: isWide ? Axis.horizontal : Axis.vertical,
-                  crossAxisAlignment: isWide ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
+                  direction: isMobile ? Axis.vertical : Axis.horizontal,
+                  crossAxisAlignment: isMobile ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
                   children: [
                     // First Card
-                    isWide 
-                      ? Expanded(child: _buildFeeCard('Total Collected', '₹1,45,000', true, theme, colors))
-                      : _buildFeeCard('Total Collected', '₹1,45,000', true, theme, colors),
+                    isMobile 
+                      ? _buildFeeCard('Total Collected', '₹1,45,000', true, theme, colors)
+                      : Expanded(child: _buildFeeCard('Total Collected', '₹1,45,000', true, theme, colors)),
                     
-                    if (isWide) const SizedBox(width: 16) else const SizedBox(height: 16),
+                    if (!isMobile) const SizedBox(width: 16) else const SizedBox(height: 16),
                     
                     // Second Card
-                    isWide 
-                      ? Expanded(child: _buildFeeCard('Outstanding', '₹38,000', false, theme, colors))
-                      : _buildFeeCard('Outstanding', '₹38,000', false, theme, colors),
+                    isMobile 
+                      ? _buildFeeCard('Outstanding', '₹38,000', false, theme, colors)
+                      : Expanded(child: _buildFeeCard('Outstanding', '₹38,000', false, theme, colors)),
                   ],
                 );
               }
