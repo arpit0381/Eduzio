@@ -30,7 +30,7 @@ class ShellScreen extends ConsumerWidget {
     if (role == UserProfileRole.superAdmin) {
       return [
         const _NavItem(label: 'Dashboard', icon: Icons.dashboard_outlined, selectedIcon: Icons.dashboard, path: '/dashboard'),
-        const _NavItem(label: 'Institutes', icon: Icons.business_outlined, selectedIcon: Icons.business, path: '/settings'),
+        const _NavItem(label: 'Institutes', icon: Icons.business_outlined, selectedIcon: Icons.business, path: '/institutes'),
         const _NavItem(label: 'Settings', icon: Icons.settings_outlined, selectedIcon: Icons.settings, path: '/settings'),
       ];
     } else if (role == UserProfileRole.student) {

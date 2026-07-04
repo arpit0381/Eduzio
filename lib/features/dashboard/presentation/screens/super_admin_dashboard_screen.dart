@@ -120,8 +120,17 @@ class SuperAdminDashboardScreen extends ConsumerWidget {
                                 subtitle: Text(org.subdomain),
                                 trailing: IconButton(
                                   icon: const Icon(Icons.arrow_forward_ios, size: 14),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Viewing details for ${org.name} coming soon!')),
+                                    );
+                                  },
                                 ),
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Viewing details for ${org.name} coming soon!')),
+                                  );
+                                },
                               );
                             },
                           ),
