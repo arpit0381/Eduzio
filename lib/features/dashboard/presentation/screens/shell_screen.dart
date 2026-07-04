@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
-import '../../../../core/constants/colors.dart';
 import '../../../../shared/widgets/responsive_layout.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
@@ -87,14 +86,9 @@ class ShellScreen extends ConsumerWidget {
     final selectedIndex = _getSelectedIndex(context, navItems);
 
     return Scaffold(
-      backgroundColor: Colors.transparent, // Ensure it's transparent here too
       extendBody: true, // Allows content to scroll behind the floating bottom bar
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.pastelBackgroundGradient,
-        ),
-        child: ResponsiveLayout(
-          // Mobile Layout: Floating iOS-style Bottom Bar
+      body: ResponsiveLayout(
+        // Mobile Layout: Floating iOS-style Bottom Bar
         mobile: Stack(
           children: [
             Positioned.fill(
@@ -129,7 +123,6 @@ class ShellScreen extends ConsumerWidget {
             Expanded(child: child),
           ],
         ),
-      ),
       ),
     );
   }

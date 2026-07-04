@@ -10,7 +10,6 @@ import '../features/auth/presentation/controllers/auth_controller.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/onboarding_screen.dart';
-import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/student_dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/super_admin_dashboard_screen.dart';
@@ -29,6 +28,7 @@ import '../features/homework/presentation/screens/homework_screen.dart';
 import '../features/exam/presentation/screens/exam_screen.dart';
 import '../features/fees/presentation/screens/fees_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
+import '../features/splash/presentation/screens/splash_screen.dart';
 
 /// Helper class to convert a Stream into a Listenable for GoRouter refresh notifier
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -54,15 +54,15 @@ final routerProvider = Provider<GoRouter>((ref) {
   final repository = ref.read(authRepositoryProvider);
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     refreshListenable: GoRouterRefreshStream(repository.authStateChanges),
     routes: [
-      // Auth Routes
       GoRoute(
-        path: '/',
+        path: '/splash',
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
       ),
+      // Auth Routes
       GoRoute(
         path: '/login',
         name: 'login',
@@ -174,14 +174,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       final user = authState.value;
       final currentLoc = state.matchedLocation;
       
-      final isAuthPage = currentLoc == '/' ||
-          currentLoc == '/login' ||
+      final isAuthPage = currentLoc == '/login' ||
           currentLoc == '/register' ||
           currentLoc == '/onboard';
 
-      // 1. If user is NOT logged in, redirect them to splash
+      // 0. If we are on splash screen, let it handle its own navigation
+      if (currentLoc == '/splash') return null;
+
+      // 1. If user is NOT logged in, redirect them to login
       if (user == null) {
-        return isAuthPage ? null : '/';
+        return isAuthPage ? null : '/login';
       }
 
       // 2. If user IS logged in and trying to access login/register, push them to dashboard

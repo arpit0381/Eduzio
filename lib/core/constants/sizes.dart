@@ -30,9 +30,10 @@ class AppSizes {
   // Border Radius
   static const double radiusSm = 8.0;
   static const double radiusMd = 18.0; // Buttons, inputs
-  static const double radiusLg = 28.0; // Cards
+  static const double radiusLg = 32.0; // Cards
   static const double radiusXl = 30.0; // Dialogs
   static const double radiusXxl = 32.0; // Floating widgets
+  static const double radiusPill = 100.0; // Pill shapes
 
   // Device Breakpoints
   static const double maxMobileWidth = 600.0;
