@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -48,14 +49,13 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final size = MediaQuery.sizeOf(context);
-
-    int crossAxisCount = 1;
-    if (size.width > 1200) {
-      crossAxisCount = 4;
-    } else if (size.width > 800) {
-      crossAxisCount = 2;
-    }
+    
+    final crossAxisCount = getValueForScreenType<int>(
+      context: context,
+      mobile: 1,
+      tablet: 2,
+      desktop: 4,
+    );
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -160,11 +160,14 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                             child: Row(
                               children: [
-                                Text(
-                                  _instituteCode!,
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.bold,
-                                    color: colors.primary,
+                                Expanded(
+                                  child: Text(
+                                    _instituteCode!,
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.bold,
+                                      color: colors.primary,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 const SizedBox(width: 10),

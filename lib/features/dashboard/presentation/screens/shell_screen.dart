@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/sizes.dart';
-import '../../../../shared/widgets/responsive_layout.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
 
@@ -85,45 +86,51 @@ class ShellScreen extends ConsumerWidget {
     final navItems = _getNavItems(role);
     final selectedIndex = _getSelectedIndex(context, navItems);
 
-    return Scaffold(
-      extendBody: true, // Allows content to scroll behind the floating bottom bar
-      body: ResponsiveLayout(
-        // Mobile Layout: Floating iOS-style Bottom Bar
-        mobile: Stack(
-          children: [
-            Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 90), // Prevent content cutoff
-                child: child,
-              ),
-            ),
-            Positioned(
-              left: 20,
-              right: 20,
-              bottom: 20,
-              child: _buildFloatingBottomBar(context, navItems, selectedIndex),
-            ),
-          ],
-        ),
+    return ResponsiveBuilder(
+      builder: (context, sizingInformation) {
+        final isMobile = sizingInformation.isMobile;
 
-        // Tablet Layout: Sleek Side Rail
-        tablet: Row(
-          children: [
-            _buildTabletNavigationRail(context, navItems, selectedIndex),
-            const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
-            Expanded(child: child),
-          ],
-        ),
-
-        // Desktop Layout: Permanent Stripe-style Sidebar
-        desktop: Row(
-          children: [
-            _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync),
-            const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
-            Expanded(child: child),
-          ],
-        ),
-      ),
+        return Scaffold(
+          extendBody: true,
+          appBar: isMobile
+              ? AppBar(
+                  title: Text(
+                    'Eduzio',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -0.5,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  elevation: 0,
+                  iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+                )
+              : null,
+          drawer: isMobile
+              ? Drawer(
+                  child: _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync),
+                )
+              : null,
+          body: ScreenTypeLayout.builder(
+            mobile: (context) => child,
+            tablet: (context) => Row(
+              children: [
+                _buildTabletNavigationRail(context, navItems, selectedIndex),
+                const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
+                Expanded(child: child),
+              ],
+            ),
+            desktop: (context) => Row(
+              children: [
+                _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync),
+                const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
+                Expanded(child: child),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
