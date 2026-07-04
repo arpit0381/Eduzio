@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../../../core/constants/colors.dart';
 
@@ -101,7 +100,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                                     '${stats.pendingHomework}',
                                     'Due this week',
                                     LucideIcons.clock,
-                                    Colors.amber,
+                                    AppColors.pastelOrange,
                                   ),
                                   const SizedBox(height: 16),
                                   _buildMetricCard(
@@ -110,7 +109,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                                     '4 Badges',
                                     'Keep going!',
                                     LucideIcons.award,
-                                    colors.primary,
+                                    AppColors.pastelGreen,
                                   ),
                                 ],
                               ),
@@ -166,6 +165,9 @@ class StudentDashboardScreen extends ConsumerWidget {
     final colors = theme.colorScheme;
 
     return Card(
+      color: AppColors.pastelPurple,
+      shadowColor: AppColors.pastelPurpleDark.withValues(alpha: 0.2),
+      elevation: 8,
       child: Padding(
         padding: const EdgeInsets.all(28.0),
         child: Column(
@@ -247,12 +249,15 @@ class StudentDashboardScreen extends ConsumerWidget {
     String value,
     String subtitle,
     IconData icon,
-    Color accentColor,
+    Color bgColor,
   ) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     return Card(
+      color: bgColor,
+      shadowColor: bgColor.withValues(alpha: 0.2),
+      elevation: 4,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Row(
@@ -260,10 +265,10 @@ class StudentDashboardScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: accentColor.withValues(alpha: 0.1),
+                color: AppColors.pillBlack,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(icon, color: accentColor, size: 22),
+              child: Icon(icon, color: Colors.white, size: 22),
             ),
             const SizedBox(width: 16),
             Expanded(

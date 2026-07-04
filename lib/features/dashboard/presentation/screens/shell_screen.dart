@@ -130,6 +130,7 @@ class ShellScreen extends ConsumerWidget {
           ],
         ),
       ),
+      ),
     );
   }
 

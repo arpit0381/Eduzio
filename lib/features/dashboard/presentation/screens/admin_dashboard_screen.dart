@@ -199,7 +199,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                         _buildMetricCard(context, 'Total Students', '${stats.totalStudents}', LucideIcons.users, AppColors.pastelPurple, AppColors.pillBlack, '^ 12% This Month'),
                         _buildMetricCard(context, 'Active Batches', '${stats.activeBatches}', LucideIcons.grid, AppColors.pastelBlue, AppColors.pillBlack, '^ 5% This Month'),
                         _buildMetricCard(context, 'Attendance', '${stats.attendancePercentage.toStringAsFixed(1)}%', LucideIcons.checkCircle2, AppColors.pastelGreen, AppColors.pillBlack, '^ 2% This Month'),
-                        _buildMetricCard(context, 'Today\'s Classes', '${stats.todaysClasses}', LucideIcons.calendar, AppColors.pastelOrange, AppColors.pillBlack, 'Stable'),
+                        _buildMetricCard(context, 'Fees Collected', '₹${stats.feesCollected.toStringAsFixed(0)}', LucideIcons.creditCard, AppColors.pastelOrange, AppColors.pillBlack, 'Stable'),
                       ],
                     ).animate().fade(delay: 100.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
                     const SizedBox(height: 32),
@@ -315,7 +315,6 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     String tagText,
   ) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
 
     return Card(
       color: bgColor,
