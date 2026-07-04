@@ -7,13 +7,15 @@ const _themePrefKey = 'eduzio_theme_mode';
 /// Riverpod provider for managing the app's ThemeMode.
 /// Persists to SharedPreferences so it survives app restarts.
 final themeControllerProvider =
-    StateNotifierProvider<ThemeController, ThemeMode>((ref) {
+    NotifierProvider<ThemeController, ThemeMode>(() {
   return ThemeController();
 });
 
-class ThemeController extends StateNotifier<ThemeMode> {
-  ThemeController() : super(ThemeMode.light) {
+class ThemeController extends Notifier<ThemeMode> {
+  @override
+  ThemeMode build() {
     _loadFromPrefs();
+    return ThemeMode.light; // default
   }
 
   Future<void> _loadFromPrefs() async {
