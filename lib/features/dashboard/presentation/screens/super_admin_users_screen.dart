@@ -12,7 +12,6 @@ class SuperAdminUsersScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final size = MediaQuery.sizeOf(context);
 
     final usersAsync = ref.watch(superAdminUsersProvider);
 
