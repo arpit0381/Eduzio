@@ -20,7 +20,7 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       brightness: colorScheme.brightness,
-      scaffoldBackgroundColor: isDark ? const Color(0xFF0B1220) : const Color(0xFFF8FAFC),
+      scaffoldBackgroundColor: Colors.transparent, // Let gradient show through
       
       // Typography
       textTheme: baseTextTheme.copyWith(
@@ -43,11 +43,7 @@ class AppTheme {
         color: isDark ? const Color(0xFF151B2E) : Colors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusLg), // 28px
-          side: BorderSide(
-            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE5E7EB),
-            width: 1.0,
-          ),
+          borderRadius: BorderRadius.circular(32), // Massive radius for playful look
         ),
         clipBehavior: Clip.antiAliasWithSaveLayer,
       ),
@@ -56,37 +52,37 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isDark ? const Color(0xFF151B2E) : Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.md),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd), // 18px
+          borderRadius: BorderRadius.circular(50), // Pill shape
           borderSide: BorderSide(
             color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE5E7EB),
             width: 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderRadius: BorderRadius.circular(50),
           borderSide: BorderSide(
             color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE5E7EB),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderRadius: BorderRadius.circular(50),
           borderSide: BorderSide(
             color: colorScheme.primary,
             width: 2,
           ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderRadius: BorderRadius.circular(50),
           borderSide: BorderSide(
             color: colorScheme.error,
             width: 1,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderRadius: BorderRadius.circular(50),
           borderSide: BorderSide(
             color: colorScheme.error,
             width: 2,
@@ -102,13 +98,13 @@ class AppTheme {
           elevation: 0,
           foregroundColor: colorScheme.onPrimary,
           backgroundColor: colorScheme.primary,
-          minimumSize: const Size.fromHeight(48),
+          minimumSize: const Size.fromHeight(56),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd), // 18px
+            borderRadius: BorderRadius.circular(50), // Pill shape
           ),
           textStyle: GoogleFonts.plusJakartaSans(
             fontSize: AppSizes.fontLg,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -117,14 +113,14 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colorScheme.primary,
-          minimumSize: const Size.fromHeight(48),
-          side: BorderSide(color: colorScheme.primary),
+          minimumSize: const Size.fromHeight(56),
+          side: BorderSide(color: colorScheme.primary, width: 2),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd), // 18px
+            borderRadius: BorderRadius.circular(50), // Pill shape
           ),
           textStyle: GoogleFonts.plusJakartaSans(
             fontSize: AppSizes.fontLg,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -135,14 +131,14 @@ class AppTheme {
           foregroundColor: colorScheme.primary,
           textStyle: GoogleFonts.plusJakartaSans(
             fontSize: AppSizes.fontMd,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
 
       // AppBar Theme
       appBarTheme: AppBarTheme(
-        backgroundColor: isDark ? const Color(0xFF0B1220) : const Color(0xFFF8FAFC),
+        backgroundColor: Colors.transparent, // Transparent to show gradient
         elevation: 0,
         centerTitle: false,
         scrolledUnderElevation: 0,

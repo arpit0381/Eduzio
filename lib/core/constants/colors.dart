@@ -50,4 +50,33 @@ class AppColors {
   static const Color borderDark = Color(0xFF1E293B);
   static const Color textSecondaryLight = Color(0xFF6B7280);
   static const Color textSecondaryDark = Color(0xFF94A3B8);
+
+  // UI Redesign Pastel Colors
+  static const Color pastelPurple = Color(0xFFE0E7FF);
+  static const Color pastelBlue = Color(0xFFE0F2FE);
+  static const Color pastelGreen = Color(0xFFDCFCE7);
+  static const Color pastelOrange = Color(0xFFFFEDD5);
+  static const Color pastelRed = Color(0xFFFFE4E6);
+  static const Color pastelYellow = Color(0xFFFEF3C7);
+  
+  static const Color pastelPurpleDark = Color(0xFF312E81);
+  static const Color pastelBlueDark = Color(0xFF0C4A6E);
+  static const Color pastelGreenDark = Color(0xFF14532D);
+  static const Color pastelOrangeDark = Color(0xFF7C2D12);
+  static const Color pastelRedDark = Color(0xFF881337);
+  static const Color pastelYellowDark = Color(0xFF78350F);
+
+  static const Color pillBlack = Color(0xFF111827);
+  static const Color pillWhite = Colors.white;
+
+  // Background Gradients
+  static const LinearGradient pastelBackgroundGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFFDFBF7), // Warm cream
+      Color(0xFFF4F7FF), // Soft blue tint
+      Color(0xFFFFF0F5), // Soft pink/peach tint
+    ],
+  );
 }
