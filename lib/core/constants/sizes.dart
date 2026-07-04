@@ -6,8 +6,12 @@ class AppSizes {
   static const double sm = 8.0;
   static const double md = 16.0;
   static const double lg = 24.0;
-  static const double xl = 32.0;
+  static const double xl = 20.0; // 20px between sections
   static const double xxl = 48.0;
+
+  static const double outerPadding = 24.0;
+  static const double spacingSections = 20.0;
+  static const double spacingComponents = 16.0;
 
   // Icon Sizes
   static const double iconXs = 12.0;
@@ -24,11 +28,11 @@ class AppSizes {
   static const double fontDisplay = 32.0;
 
   // Border Radius
-  static const double radiusSm = 4.0;
-  static const double radiusMd = 8.0;
-  static const double radiusLg = 12.0;
-  static const double radiusXl = 16.0;
-  static const double radiusXxl = 24.0;
+  static const double radiusSm = 8.0;
+  static const double radiusMd = 18.0; // Buttons, inputs
+  static const double radiusLg = 28.0; // Cards
+  static const double radiusXl = 30.0; // Dialogs
+  static const double radiusXxl = 32.0; // Floating widgets
 
   // Device Breakpoints
   static const double maxMobileWidth = 600.0;

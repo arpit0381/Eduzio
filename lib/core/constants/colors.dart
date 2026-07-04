@@ -4,46 +4,50 @@ class AppColors {
   AppColors._();
 
   // Primary Colors (Deep Indigo / Sapphire)
-  static const Color primaryLight = Color(0xFF2A3066);
+  static const Color primaryLight = Color(0xFF4F46E5);
   static const Color onPrimaryLight = Colors.white;
-  static const Color primaryContainerLight = Color(0xFFE2E4FF);
-  static const Color onPrimaryContainerLight = Color(0xFF00083B);
+  static const Color primaryContainerLight = Color(0xFFEEF2F6);
+  static const Color onPrimaryContainerLight = Color(0xFF1E293B);
 
-  static const Color primaryDark = Color(0xFFB3C5FF);
-  static const Color onPrimaryDark = Color(0xFF001562);
-  static const Color primaryContainerDark = Color(0xFF00278A);
-  static const Color onPrimaryContainerDark = Color(0xFFDCE1FF);
+  static const Color primaryDark = Color(0xFF7C8CFF);
+  static const Color onPrimaryDark = Color(0xFF0F172A);
+  static const Color primaryContainerDark = Color(0xFF1E293B);
+  static const Color onPrimaryContainerDark = Color(0xFFE2E8F0);
 
-  // Secondary Colors (Teal / Slate Accent)
-  static const Color secondaryLight = Color(0xFF006A6A);
+  // Secondary Colors (Teal / Accent)
+  static const Color secondaryLight = Color(0xFF06B6D4);
   static const Color onSecondaryLight = Colors.white;
-  static const Color secondaryContainerLight = Color(0xFF9CF2F2);
-  static const Color onSecondaryContainerLight = Color(0xFF002020);
+  static const Color secondaryContainerLight = Color(0xFFECFDF5);
+  static const Color onSecondaryContainerLight = Color(0xFF064E3B);
 
-  static const Color secondaryDark = Color(0xFF80D8D8);
-  static const Color onSecondaryDark = Color(0xFF003737);
-  static const Color secondaryContainerDark = Color(0xFF004F4F);
-  static const Color onSecondaryContainerDark = Color(0xFF9CF2F2);
+  static const Color secondaryDark = Color(0xFF5EEAD4);
+  static const Color onSecondaryDark = Color(0xFF0F172A);
+  static const Color secondaryContainerDark = Color(0xFF115E59);
+  static const Color onSecondaryContainerDark = Color(0xFFCCFBF1);
 
   // Neutral Colors (Slate / Charcoal)
-  static const Color backgroundLight = Color(0xFFF8F9FD);
-  static const Color onBackgroundLight = Color(0xFF191A23);
+  static const Color backgroundLight = Color(0xFFF8FAFC);
+  static const Color onBackgroundLight = Color(0xFF111827);
   static const Color surfaceLight = Colors.white;
-  static const Color onSurfaceLight = Color(0xFF191A23);
+  static const Color onSurfaceLight = Color(0xFF111827);
 
-  static const Color backgroundDark = Color(0xFF0F1016);
-  static const Color onBackgroundDark = Color(0xFFE2E2EA);
-  static const Color surfaceDark = Color(0xFF16171F);
-  static const Color onSurfaceDark = Color(0xFFE2E2EA);
+  static const Color backgroundDark = Color(0xFF0B1220);
+  static const Color onBackgroundDark = Color(0xFFF8FAFC);
+  static const Color surfaceDark = Color(0xFF151B2E);
+  static const Color onSurfaceDark = Color(0xFFF8FAFC);
 
   // Error Colors
-  static const Color error = Color(0xFFBA1A1A);
+  static const Color error = Color(0xFFEF4444);
   static const Color onError = Colors.white;
-  static const Color errorContainer = Color(0xFFFFDAD6);
-  static const Color onErrorContainer = Color(0xFF410002);
+  static const Color errorContainer = Color(0xFFFEE2E2);
+  static const Color onErrorContainer = Color(0xFF991B1B);
 
   // Status Colors (Custom Alert/Status colors)
-  static const Color success = Color(0xFF2E7D32);
-  static const Color warning = Color(0xFFEF6C00);
-  static const Color info = Color(0xFF1565C0);
+  static const Color success = Color(0xFF22C55E);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color info = Color(0xFF3B82F6);
+  static const Color borderLight = Color(0xFFE5E7EB);
+  static const Color borderDark = Color(0xFF1E293B);
+  static const Color textSecondaryLight = Color(0xFF6B7280);
+  static const Color textSecondaryDark = Color(0xFF94A3B8);
 }

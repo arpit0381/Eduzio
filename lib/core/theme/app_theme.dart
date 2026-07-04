@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'color_schemes.dart';
 import '../constants/sizes.dart';
 
@@ -11,23 +12,40 @@ class AppTheme {
   static ThemeData _buildTheme(ColorScheme colorScheme) {
     final isDark = colorScheme.brightness == Brightness.dark;
     
+    final baseTextTheme = GoogleFonts.plusJakartaSansTextTheme(
+      isDark ? ThemeData.dark().textTheme : ThemeData.light().textTheme,
+    );
+
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       brightness: colorScheme.brightness,
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: isDark ? const Color(0xFF0B1220) : const Color(0xFFF8FAFC),
       
       // Typography
-      fontFamily: 'Outfit',
+      textTheme: baseTextTheme.copyWith(
+        displayLarge: baseTextTheme.displayLarge?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily),
+        displayMedium: baseTextTheme.displayMedium?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily),
+        displaySmall: baseTextTheme.displaySmall?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily),
+        headlineLarge: baseTextTheme.headlineLarge?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily, fontWeight: FontWeight.bold),
+        headlineMedium: baseTextTheme.headlineMedium?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily, fontWeight: FontWeight.bold),
+        headlineSmall: baseTextTheme.headlineSmall?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily, fontWeight: FontWeight.bold),
+        titleLarge: baseTextTheme.titleLarge?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily, fontWeight: FontWeight.w600),
+        titleMedium: baseTextTheme.titleMedium?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily, fontWeight: FontWeight.w600),
+        titleSmall: baseTextTheme.titleSmall?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily, fontWeight: FontWeight.w600),
+        bodyLarge: baseTextTheme.bodyLarge?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily),
+        bodyMedium: baseTextTheme.bodyMedium?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily),
+        bodySmall: baseTextTheme.bodySmall?.copyWith(fontFamily: GoogleFonts.plusJakartaSans().fontFamily),
+      ),
       
       // Card Theme
       cardTheme: CardThemeData(
-        color: colorScheme.surface,
+        color: isDark ? const Color(0xFF151B2E) : Colors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg), // 28px
           side: BorderSide(
-            color: colorScheme.outline.withValues(alpha: isDark ? 0.15 : 0.08),
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE5E7EB),
             width: 1.0,
           ),
         ),
@@ -37,16 +55,19 @@ class AppTheme {
       // Input Decoration (Text Fields)
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? colorScheme.surface : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        fillColor: isDark ? const Color(0xFF151B2E) : Colors.white,
         contentPadding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.md),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd), // 18px
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE5E7EB),
+            width: 1,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           borderSide: BorderSide(
-            color: colorScheme.outline.withValues(alpha: 0.2),
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE5E7EB),
             width: 1,
           ),
         ),
@@ -83,12 +104,11 @@ class AppTheme {
           backgroundColor: colorScheme.primary,
           minimumSize: const Size.fromHeight(48),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd), // 18px
           ),
-          textStyle: const TextStyle(
+          textStyle: GoogleFonts.plusJakartaSans(
             fontSize: AppSizes.fontLg,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Outfit',
           ),
         ),
       ),
@@ -100,12 +120,11 @@ class AppTheme {
           minimumSize: const Size.fromHeight(48),
           side: BorderSide(color: colorScheme.primary),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd), // 18px
           ),
-          textStyle: const TextStyle(
+          textStyle: GoogleFonts.plusJakartaSans(
             fontSize: AppSizes.fontLg,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Outfit',
           ),
         ),
       ),
@@ -114,26 +133,24 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: colorScheme.primary,
-          textStyle: const TextStyle(
+          textStyle: GoogleFonts.plusJakartaSans(
             fontSize: AppSizes.fontMd,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Outfit',
           ),
         ),
       ),
 
       // AppBar Theme
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: isDark ? const Color(0xFF0B1220) : const Color(0xFFF8FAFC),
         elevation: 0,
         centerTitle: false,
         scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
-        titleTextStyle: TextStyle(
+        titleTextStyle: GoogleFonts.plusJakartaSans(
           color: colorScheme.onSurface,
           fontSize: AppSizes.fontXl,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Outfit',
         ),
       ),
     );

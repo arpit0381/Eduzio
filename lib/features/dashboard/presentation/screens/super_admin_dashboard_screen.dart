@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -21,54 +24,92 @@ class SuperAdminDashboardScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Super Admin Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {},
-          ),
-          const SizedBox(width: AppSizes.sm),
-        ],
-      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSizes.md),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Apple Health style dynamic greeting header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Overview',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'System Overview',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -1.0,
+                        color: colors.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: colors.outline.withValues(alpha: 0.1)),
+                  ),
+                  child: Icon(LucideIcons.settings, color: colors.onSurface, size: 20),
+                ),
+              ],
+            ).animate().fade(duration: 400.ms).slideY(begin: 0.1, end: 0),
+            const SizedBox(height: 32),
+
+            // Intro Card
             Card(
-              color: colors.tertiaryContainer.withValues(alpha: 0.5),
+              color: colors.primary.withValues(alpha: 0.03),
               child: Padding(
-                padding: const EdgeInsets.all(AppSizes.lg),
+                padding: const EdgeInsets.all(24.0),
                 child: Row(
                   children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: colors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(LucideIcons.shieldCheck, color: colors.primary, size: 22),
+                    ),
+                    const SizedBox(width: 20),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'System Overview',
-                            style: theme.textTheme.headlineSmall?.copyWith(
+                            'Super Admin Control',
+                            style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: colors.onTertiaryContainer,
+                              color: colors.onSurface,
                             ),
                           ),
-                          const SizedBox(height: AppSizes.xs),
+                          const SizedBox(height: 4),
                           Text(
-                            'Manage all registered institutes across the Eduzio platform.',
+                            'You have access to monitor and manage all registered organizations across the Eduzio network.',
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.onTertiaryContainer.withValues(alpha: 0.8),
+                              color: colors.onSurfaceVariant.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Icon(Icons.admin_panel_settings, size: 64, color: colors.tertiary.withValues(alpha: 0.3)),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: AppSizes.lg),
+            ).animate().fade(delay: 50.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+            const SizedBox(height: 32),
 
             ref.watch(superAdminDashboardStatsProvider).when(
               data: (stats) {
@@ -77,66 +118,69 @@ class SuperAdminDashboardScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'Platform Stats',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                      ),
                     ),
-                    const SizedBox(height: AppSizes.md),
+                    const SizedBox(height: 16),
                     GridView.count(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: AppSizes.md,
-                      mainAxisSpacing: AppSizes.md,
-                      childAspectRatio: 2.0,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 1.8,
                       children: [
-                        _buildStatCard(context, 'Total Institutes', '${stats.totalInstitutes}', Icons.business, Colors.blue),
-                        _buildStatCard(context, 'Total Users', '${stats.totalUsers}', Icons.people, Colors.teal),
+                        _buildMetricCard(context, 'Total Institutes', '${stats.totalInstitutes}', LucideIcons.building, Colors.blue),
+                        _buildMetricCard(context, 'Total Users', '${stats.totalUsers}', LucideIcons.users, Colors.teal),
                       ],
-                    ),
-                    const SizedBox(height: AppSizes.lg),
+                    ).animate().fade(delay: 100.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+                    const SizedBox(height: 32),
 
                     Text(
                       'Recent Institutes',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                      ),
                     ),
-                    const SizedBox(height: AppSizes.md),
+                    const SizedBox(height: 16),
                     Card(
                       child: stats.recentInstitutes.isEmpty
-                        ? const Padding(
-                            padding: EdgeInsets.all(AppSizes.lg),
-                            child: Center(child: Text('No institutes found.')),
-                          )
-                        : ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: stats.recentInstitutes.length,
-                            separatorBuilder: (_, _) => const Divider(height: 1),
-                            itemBuilder: (context, index) {
-                              final org = stats.recentInstitutes[index];
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: colors.surfaceContainerHighest,
-                                  child: const Icon(Icons.business_outlined),
-                                ),
-                                title: Text(org.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                subtitle: Text(org.subdomain),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.arrow_forward_ios, size: 14),
-                                  onPressed: () {
-                                    context.go('/institutes/${org.id}');
+                          ? _buildEmptyState(context, 'No registered institutes found.')
+                          : ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: stats.recentInstitutes.length,
+                              separatorBuilder: (_, __) => Divider(height: 1, color: colors.outline.withValues(alpha: 0.05)),
+                              itemBuilder: (context, index) {
+                                final org = stats.recentInstitutes[index];
+                                return ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  leading: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: colors.primary.withValues(alpha: 0.05),
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    child: Icon(LucideIcons.building, color: colors.primary, size: 20),
+                                  ),
+                                  title: Text(org.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  subtitle: Text(org.subdomain, style: GoogleFonts.inter()),
+                                  trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
+                                  onTap: () {
+                                    if (context.mounted) context.push('/institutes/${org.id}');
                                   },
-                                ),
-                                onTap: () {
-                                  context.go('/institutes/${org.id}');
-                                },
-                              );
-                            },
-                          ),
-                    ),
+                                );
+                              },
+                            ),
+                    ).animate().fade(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
                   ],
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Error: $err')),
+              error: (err, stack) => Center(child: Text('Error: $err', style: TextStyle(color: colors.error))),
             ),
           ],
         ),
@@ -144,35 +188,71 @@ class SuperAdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
+  Widget _buildMetricCard(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+    Color accentColor,
+  ) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(AppSizes.md),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(icon, color: color, size: AppSizes.iconMd),
-                const SizedBox(width: AppSizes.sm),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                Text(
+                  title,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colors.onSurfaceVariant.withValues(alpha: 0.6),
                   ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: accentColor, size: 20),
                 ),
               ],
             ),
-            const SizedBox(height: AppSizes.sm),
             Text(
               value,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
+              style: GoogleFonts.inter(
+                textStyle: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -1.0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context, String message) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(LucideIcons.building, size: 40, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2)),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
             ),
           ],

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
-import 'package:flutter/services.dart';
 import '../controllers/dashboard_controller.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
@@ -48,134 +51,136 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final colors = theme.colorScheme;
     final size = MediaQuery.sizeOf(context);
 
-    // Calculate grid columns dynamically based on screen width
     int crossAxisCount = 1;
     if (size.width > 1200) {
       crossAxisCount = 4;
-    } else if (size.width > 600) {
+    } else if (size.width > 800) {
       crossAxisCount = 2;
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-          const SizedBox(width: AppSizes.sm),
-        ],
-      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSizes.md),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Card
-            Card(
-              color: colors.primaryContainer.withValues(alpha: 0.5),
-              child: Padding(
-                padding: const EdgeInsets.all(AppSizes.lg),
-                child: Row(
+            // Apple Health style dynamic greeting header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Welcome to Eduzio!',
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colors.onPrimaryContainer,
-                            ),
-                          ),
-                          const SizedBox(height: AppSizes.xs),
-                          Text(
-                            'Here is what is happening at your institute today.',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.onPrimaryContainer.withValues(alpha: 0.8),
-                            ),
-                          ),
-                        ],
+                    Text(
+                      'Overview',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
                       ),
                     ),
-                    Icon(Icons.school, size: 64, color: colors.primary.withValues(alpha: 0.2)),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Institution Analytics',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -1.0,
+                        color: colors.onSurface,
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(height: AppSizes.lg),
-            
-            // Institute Code Display
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: colors.outline.withValues(alpha: 0.1)),
+                  ),
+                  child: Icon(LucideIcons.bell, color: colors.onSurface, size: 20),
+                ),
+              ],
+            ).animate().fade(duration: 400.ms).slideY(begin: 0.1, end: 0),
+            const SizedBox(height: 32),
+
+            // Share Institute Code Card
             if (_instituteCode != null) ...[
               Card(
-                color: colors.secondaryContainer.withValues(alpha: 0.3),
+                color: colors.primary.withValues(alpha: 0.03),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg, vertical: AppSizes.md),
+                  padding: const EdgeInsets.all(24.0),
                   child: Row(
                     children: [
-                      Icon(Icons.vpn_key_outlined, color: colors.secondary),
-                      const SizedBox(width: AppSizes.md),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: colors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(LucideIcons.key, color: colors.primary, size: 22),
+                      ),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Institute Code',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                color: colors.secondary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Share this code with your students and teachers so they can join your institute.',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.sm),
-                        decoration: BoxDecoration(
-                          color: colors.surface,
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                          border: Border.all(color: colors.outline.withValues(alpha: 0.2)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SelectableText(
-                              _instituteCode!,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: colors.onSurface,
                               ),
                             ),
-                            const SizedBox(width: AppSizes.sm),
-                            IconButton(
-                              icon: const Icon(Icons.copy, size: 18),
-                              visualDensity: VisualDensity.compact,
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              tooltip: 'Copy Code',
-                              onPressed: () {
-                                Clipboard.setData(ClipboardData(text: _instituteCode!));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Institute Code copied to clipboard')),
-                                );
-                              },
+                            const SizedBox(height: 4),
+                            Text(
+                              'Instructors and students can enter this code during signup to instantly join.',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                              ),
                             ),
                           ],
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      // Copy pill button
+                      Material(
+                        color: colors.surface,
+                        borderRadius: BorderRadius.circular(18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: colors.outline.withValues(alpha: 0.1)),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(18),
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(text: _instituteCode!));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Copied code to clipboard')),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                            child: Row(
+                              children: [
+                                Text(
+                                  _instituteCode!,
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.bold,
+                                    color: colors.primary,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Icon(LucideIcons.copy, color: colors.primary, size: 16),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSizes.lg),
+              ).animate().fade(delay: 50.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+              const SizedBox(height: 24),
             ],
 
             ref.watch(adminDashboardStatsProvider).when(
@@ -183,33 +188,28 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Statistics Section
-                    Text(
-                      'Quick Stats',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: AppSizes.md),
+                    // Grid statistics
                     GridView.count(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: AppSizes.md,
-                      mainAxisSpacing: AppSizes.md,
-                      childAspectRatio: 1.5,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 1.6,
                       children: [
-                        _buildStatCard(context, 'Total Students', '${stats.totalStudents}', Icons.people, colors.primary),
-                        _buildStatCard(context, 'Active Batches', '${stats.activeBatches}', Icons.class_, Colors.teal),
-                        _buildStatCard(context, 'Today\'s Attendance', '${stats.attendancePercentage.toStringAsFixed(1)}%', Icons.check_circle, Colors.green),
-                        _buildStatCard(context, 'Fees Collected', '₹${stats.feesCollected.toStringAsFixed(0)}', Icons.currency_rupee, Colors.orange),
+                        _buildMetricCard(context, 'Total Students', '${stats.totalStudents}', LucideIcons.users, Colors.blue),
+                        _buildMetricCard(context, 'Active Batches', '${stats.activeBatches}', LucideIcons.grid, Colors.teal),
+                        _buildMetricCard(context, 'Attendance', '${stats.attendancePercentage.toStringAsFixed(1)}%', LucideIcons.checkCircle2, Colors.green),
+                        _buildMetricCard(context, 'Fees Collected', '₹${stats.feesCollected.toStringAsFixed(0)}', LucideIcons.creditCard, Colors.orange),
                       ],
-                    ),
-                    const SizedBox(height: AppSizes.lg),
+                    ).animate().fade(delay: 100.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+                    const SizedBox(height: 32),
 
-                    // Main Columns (Schedule and Recent Activity)
+                    // Main dynamic columns (Schedule + Actions)
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Active Batches (Takes up remaining width or full width on mobile)
+                        // Left Column (Active Batches)
                         Expanded(
                           flex: size.width > 900 ? 2 : 1,
                           child: Column(
@@ -217,93 +217,108 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                             children: [
                               Text(
                                 'Active Batches',
-                                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: -0.5,
+                                ),
                               ),
-                              const SizedBox(height: AppSizes.md),
+                              const SizedBox(height: 16),
                               Card(
                                 child: stats.recentBatches.isEmpty
-                                  ? const Padding(
-                                      padding: EdgeInsets.all(AppSizes.lg),
-                                      child: Center(child: Text('No batches found.')),
-                                    )
-                                  : ListView.separated(
-                                      shrinkWrap: true,
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      itemCount: stats.recentBatches.length,
-                                      separatorBuilder: (_, _) => const Divider(height: 1),
-                                      itemBuilder: (context, index) {
-                                        final batch = stats.recentBatches[index];
-                                        return ListTile(
-                                          leading: CircleAvatar(
-                                            backgroundColor: colors.surfaceContainerHighest,
-                                            child: Text('${index + 1}', style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold)),
-                                          ),
-                                          title: Text(batch.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                          subtitle: Text('Code: ${batch.code}'),
-                                          trailing: const Icon(Icons.arrow_forward_ios, size: 14),
-                                        );
-                                      },
-                                    ),
+                                    ? _buildEmptyState(context, 'No active batches found.')
+                                    : ListView.separated(
+                                        shrinkWrap: true,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        itemCount: stats.recentBatches.length,
+                                        separatorBuilder: (_, __) => Divider(height: 1, color: colors.outline.withValues(alpha: 0.05)),
+                                        itemBuilder: (context, index) {
+                                          final batch = stats.recentBatches[index];
+                                          return ListTile(
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                                            leading: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: colors.primary.withValues(alpha: 0.05),
+                                                borderRadius: BorderRadius.circular(14),
+                                              ),
+                                              child: Icon(LucideIcons.bookOpen, color: colors.primary, size: 20),
+                                            ),
+                                            title: Text(batch.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                            subtitle: Text('Code: ${batch.code}', style: GoogleFonts.inter()),
+                                            trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
+                                            onTap: () {},
+                                          );
+                                        },
+                                      ),
                               ),
                             ],
                           ),
                         ),
 
-
-                // Spacing
-                if (size.width > 900) const SizedBox(width: AppSizes.lg),
-
-                // Quick Actions (Sidebar on Desktop/Tablet)
-                if (size.width > 900)
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Quick Actions',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: AppSizes.md),
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(AppSizes.md),
+                        // Right Column (Quick Actions)
+                        if (size.width > 900) ...[
+                          const SizedBox(width: 24),
+                          Expanded(
+                            flex: 1,
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildActionButton(context, 'Take Attendance', Icons.fact_check, colors.primary),
-                                const SizedBox(height: AppSizes.sm),
-                                _buildActionButton(context, 'Add New Student', Icons.person_add, colors.secondary),
-                                const SizedBox(height: AppSizes.sm),
-                                _buildActionButton(context, 'Create Homework', Icons.upload_file, Colors.blueGrey),
-                                const SizedBox(height: AppSizes.sm),
-                                _buildActionButton(context, 'View Reports', Icons.bar_chart, Colors.orange),
+                                Text(
+                                  'Quick Actions',
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(24.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                        _buildActionButton(context, 'Take Attendance', LucideIcons.clipboardCheck, colors.primary),
+                                        const SizedBox(height: 12),
+                                        _buildActionButton(context, 'Add New Student', LucideIcons.userPlus, colors.secondary),
+                                        const SizedBox(height: 12),
+                                        _buildActionButton(context, 'Create Homework', LucideIcons.plusCircle, Colors.blueGrey),
+                                        const SizedBox(height: 12),
+                                        _buildActionButton(context, 'View Reports', LucideIcons.barChart3, Colors.orange),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ),
+                        ],
                       ],
-                    ),
-                  ),
-              ],
+                    ).animate().fade(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err', style: TextStyle(color: colors.error))),
             ),
-                    ],
-                  );
-                },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
-      ),
-    ],
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
+  Widget _buildMetricCard(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+    Color accentColor,
+  ) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(AppSizes.md),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -313,16 +328,28 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                  ),
                 ),
-                Icon(icon, color: color, size: AppSizes.iconLg),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: accentColor, size: 20),
+                ),
               ],
             ),
             Text(
               value,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
+              style: GoogleFonts.inter(
+                textStyle: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -1.0,
+                ),
               ),
             ),
           ],
@@ -333,20 +360,50 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
 
   Widget _buildActionButton(BuildContext context, String label, IconData icon, Color color) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return InkWell(
       onTap: () {},
-      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      borderRadius: BorderRadius.circular(18),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.sm),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.15)),
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          color: theme.scaffoldBackgroundColor,
+          border: Border.all(color: colors.outline.withValues(alpha: 0.1)),
+          borderRadius: BorderRadius.circular(18),
         ),
         child: Row(
           children: [
-            Icon(icon, color: color),
-            const SizedBox(width: AppSizes.md),
-            Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colors.onSurface,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context, String message) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(LucideIcons.grid, size: 40, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2)),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              ),
+            ),
           ],
         ),
       ),

@@ -105,7 +105,9 @@ class InstituteListScreen extends ConsumerWidget {
                           Expanded(
                             child: OutlinedButton.icon(
                               onPressed: () {
-                                context.go('/institutes/${inst.id}');
+                                if (context.mounted) {
+                                  context.push('/institutes/${inst.id}');
+                                }
                               },
                               icon: const Icon(Icons.visibility, size: 18),
                               label: const Text('View Details'),
