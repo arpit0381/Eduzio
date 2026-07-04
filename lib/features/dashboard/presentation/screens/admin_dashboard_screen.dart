@@ -359,12 +359,13 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final isDark = theme.brightness == Brightness.dark;
     
     return Container(
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: accentColor.withValues(alpha: isDark ? 0.15 : 0.4),
         borderRadius: BorderRadius.circular(32),
       ),
       child: Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: Clip.hardEdge,
         children: [
           // Background Icon Watermark
           Positioned(
@@ -372,12 +373,12 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             bottom: -20,
             child: Icon(
               icon,
-              size: 140,
+              size: 100,
               color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -385,36 +386,44 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: isDark ? Colors.black : const Color(0xFF1E293B),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(icon, color: Colors.white, size: 20),
+                      child: Icon(icon, color: Colors.white, size: 16),
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      title,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white70 : const Color(0xFF475569),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        title,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white70 : const Color(0xFF475569),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
-                Text(
-                  value,
-                  style: GoogleFonts.plusJakartaSans(
-                    textStyle: theme.textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -1.0,
-                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    style: GoogleFonts.plusJakartaSans(
+                      textStyle: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -1.0,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                      ),
                     ),
                   ),
                 ),
                 // Pill tag
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: isDark ? Colors.black : const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(100),
@@ -422,14 +431,18 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(LucideIcons.trendingUp, size: 14, color: accentColor),
-                      const SizedBox(width: 6),
-                      Text(
-                        badgeText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                      Icon(LucideIcons.trendingUp, size: 12, color: accentColor),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          badgeText,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
