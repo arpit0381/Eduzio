@@ -229,7 +229,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                                         shrinkWrap: true,
                                         physics: const NeverScrollableScrollPhysics(),
                                         itemCount: stats.recentBatches.length,
-                                        separatorBuilder: (_, __) => Divider(height: 1, color: colors.outline.withValues(alpha: 0.05)),
+                                        separatorBuilder: (_, index) => Divider(height: 1, color: colors.outline.withValues(alpha: 0.05)),
                                         itemBuilder: (context, index) {
                                           final batch = stats.recentBatches[index];
                                           return ListTile(

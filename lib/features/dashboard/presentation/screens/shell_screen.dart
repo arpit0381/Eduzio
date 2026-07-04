@@ -373,7 +373,7 @@ class ShellScreen extends ConsumerWidget {
                       );
                     },
                     loading: () => const Text('Loading...'),
-                    error: (_, __) => const Text('Error'),
+                    error: (err, stack) => const Text('Error'),
                   ),
                 ),
                 const SizedBox(width: 4),
