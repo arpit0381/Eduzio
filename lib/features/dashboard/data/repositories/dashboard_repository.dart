@@ -25,7 +25,7 @@ class DashboardRepository {
         .from('batches')
         .select('id')
         .eq('organization_id', orgId)
-        .is_('deleted_at', null);
+        .isFilter('deleted_at', null);
     final activeBatches = batchesRes.length;
 
     // 3. Today's Attendance
@@ -66,7 +66,7 @@ class DashboardRepository {
         .from('batches')
         .select('id, name, code')
         .eq('organization_id', orgId)
-        .is_('deleted_at', null)
+        .isFilter('deleted_at', null)
         .order('created_at', ascending: false)
         .limit(5);
 
@@ -158,8 +158,8 @@ class DashboardRepository {
   }
 
   Future<SuperAdminDashboardStats> getSuperAdminStats() async {
-    final orgsRes = await _client.from('organizations').select('id', const FetchOptions(count: CountOption.exact));
-    final profilesRes = await _client.from('profiles').select('id', const FetchOptions(count: CountOption.exact));
+    final orgsRes = await _client.from('organizations').select('id');
+    final profilesRes = await _client.from('profiles').select('id');
     
     final recentOrgs = await _client
         .from('organizations')
@@ -174,8 +174,8 @@ class DashboardRepository {
     )).toList();
 
     return SuperAdminDashboardStats(
-      totalInstitutes: orgsRes.count ?? 0,
-      totalUsers: profilesRes.count ?? 0,
+      totalInstitutes: orgsRes.length,
+      totalUsers: profilesRes.length,
       recentInstitutes: recentInstitutes,
     );
   }
