@@ -52,7 +52,7 @@ final joinBatchControllerProvider = Provider<JoinBatchController>((ref) {
 });
 
 class JoinBatchController {
-  final ProviderRef ref;
+  final Ref ref;
   JoinBatchController(this.ref);
 
   Future<void> joinBatch(String code) async {

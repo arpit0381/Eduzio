@@ -140,6 +140,9 @@ class ShellScreen extends ConsumerWidget {
     final userProfileAsync = ref.watch(authStateProvider);
     final role = userProfileAsync.value?.role ?? UserProfileRole.student;
     
+    final orgId = userProfileAsync.value?.organizationId;
+    final orgDetailsAsync = orgId != null ? ref.watch(instituteDetailsProvider(orgId)) : null;
+
     final navItems = _getNavItems(role);
     final selectedIndex = _getSelectedIndex(context, navItems);
 
@@ -151,7 +154,7 @@ class ShellScreen extends ConsumerWidget {
     );
 
     if (isMobile) {
-      return _buildMobileLayout(context, ref, role, userProfileAsync);
+      return _buildMobileLayout(context, ref, role, userProfileAsync, orgDetailsAsync);
     }
 
     final isTablet = getValueForScreenType<bool>(
@@ -167,7 +170,7 @@ class ShellScreen extends ConsumerWidget {
           if (isTablet)
             _buildTabletNavigationRail(context, navItems, selectedIndex),
           if (!isTablet)
-            _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync),
+            _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync, orgDetailsAsync),
           const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
           Expanded(child: child),
         ],
@@ -176,7 +179,7 @@ class ShellScreen extends ConsumerWidget {
   }
 
   // ── MOBILE LAYOUT ──────────────────────────────────────────────────────
-  Widget _buildMobileLayout(BuildContext context, WidgetRef ref, UserProfileRole role, AsyncValue<UserProfile?> userProfileAsync) {
+  Widget _buildMobileLayout(BuildContext context, WidgetRef ref, UserProfileRole role, AsyncValue<UserProfile?> userProfileAsync, AsyncValue<InstituteDetails>? orgDetailsAsync) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
@@ -206,15 +209,31 @@ class ShellScreen extends ConsumerWidget {
                         ),
                         child: Icon(LucideIcons.graduationCap, color: colors.primary, size: 20),
                       ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Eduzio',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.5,
-                          color: colors.primary,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Eduzio',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: -0.5,
+                              color: colors.primary,
+                            ),
+                          ),
+                          if (orgDetailsAsync != null)
+                            orgDetailsAsync.when(
+                              data: (org) => Text(
+                                org.name,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              loading: () => const SizedBox.shrink(),
+                              error: (e, s) => const SizedBox.shrink(),
+                            ),
+                        ],
                       ),
                       const Spacer(),
                       // Profile avatar
@@ -443,6 +462,7 @@ class ShellScreen extends ConsumerWidget {
     List<_NavItem> items,
     int selectedIndex,
     AsyncValue<UserProfile?> userProfileAsync,
+    AsyncValue<InstituteDetails>? orgDetailsAsync,
   ) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -467,13 +487,30 @@ class ShellScreen extends ConsumerWidget {
                 child: Icon(LucideIcons.graduationCap, color: colors.primary, size: 24),
               ),
               const SizedBox(width: AppSizes.md),
-              Text(
-                'Eduzio',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
-                  color: colors.onSurface,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Eduzio',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -0.5,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                  if (orgDetailsAsync != null)
+                    orgDetailsAsync.when(
+                      data: (org) => Text(
+                        org.name,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      loading: () => const SizedBox.shrink(),
+                      error: (e, s) => const SizedBox.shrink(),
+                    ),
+                ],
               ),
             ],
           ),
