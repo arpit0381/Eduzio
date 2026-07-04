@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/sizes.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -121,15 +122,11 @@ class SuperAdminDashboardScreen extends ConsumerWidget {
                                 trailing: IconButton(
                                   icon: const Icon(Icons.arrow_forward_ios, size: 14),
                                   onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Viewing details for ${org.name} coming soon!')),
-                                    );
+                                    context.go('/institutes/${org.id}');
                                   },
                                 ),
                                 onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Viewing details for ${org.name} coming soon!')),
-                                  );
+                                  context.go('/institutes/${org.id}');
                                 },
                               );
                             },

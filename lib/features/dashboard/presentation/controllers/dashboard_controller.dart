@@ -30,3 +30,13 @@ final superAdminDashboardStatsProvider = FutureProvider<SuperAdminDashboardStats
   
   return repository.getSuperAdminStats();
 });
+
+final allInstitutesProvider = FutureProvider<List<DashboardInstituteItem>>((ref) async {
+  final repository = ref.watch(dashboardRepositoryProvider);
+  return repository.getAllInstitutes();
+});
+
+final instituteDetailsProvider = FutureProvider.family<InstituteDetails, String>((ref, orgId) async {
+  final repository = ref.watch(dashboardRepositoryProvider);
+  return repository.getInstituteDetails(orgId);
+});

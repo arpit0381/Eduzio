@@ -81,3 +81,29 @@ class DashboardInstituteItem {
     required this.subdomain,
   });
 }
+
+class InstituteDetails {
+  final String id;
+  final String name;
+  final String subdomain;
+  final DateTime createdAt;
+  final String? adminName;
+  final String? adminEmail;
+  final int totalUsers;
+  final int totalStudents;
+  final int totalTeachers;
+  final int totalBatches;
+
+  InstituteDetails({
+    required this.id,
+    required this.name,
+    required this.subdomain,
+    required this.createdAt,
+    this.adminName,
+    this.adminEmail,
+    required this.totalUsers,
+    required this.totalStudents,
+    required this.totalTeachers,
+    required this.totalBatches,
+  });
+}

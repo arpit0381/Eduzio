@@ -179,4 +179,56 @@ class DashboardRepository {
       recentInstitutes: recentInstitutes,
     );
   }
+
+  Future<List<DashboardInstituteItem>> getAllInstitutes() async {
+    final orgsRes = await _client
+        .from('organizations')
+        .select('id, name, subdomain')
+        .order('name', ascending: true);
+        
+    return orgsRes.map((o) => DashboardInstituteItem(
+      id: o['id'] as String,
+      name: o['name'] as String,
+      subdomain: o['subdomain'] as String,
+    )).toList();
+  }
+
+  Future<InstituteDetails> getInstituteDetails(String orgId) async {
+    // Fetch organization info
+    final orgRes = await _client
+        .from('organizations')
+        .select('id, name, subdomain, created_at')
+        .eq('id', orgId)
+        .single();
+        
+    // Fetch admin info (first profile with role admin for this org)
+    final adminRes = await _client
+        .from('profiles')
+        .select('name, email')
+        .eq('organization_id', orgId)
+        .eq('role', 'admin')
+        .limit(1)
+        .maybeSingle();
+
+    // Fetch counts
+    final usersRes = await _client.from('profiles').select('id, role').eq('organization_id', orgId);
+    final batchesRes = await _client.from('batches').select('id').eq('organization_id', orgId);
+
+    int totalUsers = usersRes.length;
+    int totalStudents = usersRes.where((u) => u['role'] == 'student').length;
+    int totalTeachers = usersRes.where((u) => u['role'] == 'teacher').length;
+
+    return InstituteDetails(
+      id: orgRes['id'] as String,
+      name: orgRes['name'] as String,
+      subdomain: orgRes['subdomain'] as String,
+      createdAt: DateTime.parse(orgRes['created_at'] as String),
+      adminName: adminRes?['name'] as String?,
+      adminEmail: adminRes?['email'] as String?,
+      totalUsers: totalUsers,
+      totalStudents: totalStudents,
+      totalTeachers: totalTeachers,
+      totalBatches: batchesRes.length,
+    );
+  }
 }

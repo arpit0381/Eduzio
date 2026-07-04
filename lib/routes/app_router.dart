@@ -15,6 +15,7 @@ import '../features/dashboard/presentation/screens/student_dashboard_screen.dart
 import '../features/dashboard/presentation/screens/super_admin_dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/shell_screen.dart';
 import '../features/dashboard/presentation/screens/institute_list_screen.dart';
+import '../features/dashboard/presentation/screens/institute_details_screen.dart';
 import '../features/auth/domain/entities/user_profile.dart';
 import '../features/batch/presentation/screens/batch_list_screen.dart';
 import '../features/student/presentation/screens/student_list_screen.dart';
@@ -144,6 +145,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/institutes',
             name: 'institutes',
             builder: (context, state) => const InstituteListScreen(),
+            routes: [
+              GoRoute(
+                path: ':id',
+                name: 'institute-details',
+                builder: (context, state) => InstituteDetailsScreen(
+                  orgId: state.pathParameters['id']!,
+                ),
+              ),
+            ],
           ),
           GoRoute(
             path: '/settings',
