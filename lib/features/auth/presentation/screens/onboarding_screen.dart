@@ -52,13 +52,49 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             );
         if (mounted) {
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Onboarding successful! Please login with your administrator account.'),
-              backgroundColor: Colors.green,
+          
+          final generatedCode = _subdomainController.text.trim().toLowerCase();
+          
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => AlertDialog(
+              title: const Text('Institute Created Successfully! 🎉'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Please share this Institute Code with your students and teachers so they can join:'),
+                  const SizedBox(height: AppSizes.md),
+                  Container(
+                    padding: const EdgeInsets.all(AppSizes.md),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    ),
+                    child: Center(
+                      child: SelectableText(
+                        generatedCode,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                FilledButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    context.go('/login');
+                  },
+                  child: const Text('Go to Login'),
+                ),
+              ],
             ),
           );
-          context.go('/login');
         }
       } catch (e) {
         if (mounted) {

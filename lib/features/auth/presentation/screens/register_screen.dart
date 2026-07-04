@@ -175,9 +175,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       TextFormField(
                         controller: _orgCodeController,
                         decoration: const InputDecoration(
-                          labelText: 'Institute ID (Tenant Code)',
+                          labelText: 'Institute Code (Required to Join)',
                           prefixIcon: Icon(Icons.business_outlined),
-                          hintText: 'Enter code provided by institute',
+                          hintText: 'Enter code provided by your institute',
                         ),
                         validator: (value) => value == null || value.isEmpty ? 'Please enter institute ID' : null,
                       ),

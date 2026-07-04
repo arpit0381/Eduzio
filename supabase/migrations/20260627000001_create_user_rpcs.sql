@@ -34,11 +34,13 @@ BEGIN
     raw_app_meta_data, 
     raw_user_meta_data, 
     is_super_admin, 
+    aud,
+    role, 
+    created_at, 
     updated_at,
     confirmation_token,
     recovery_token,
     email_change_token_new,
-    email_change_token_current,
     email_change_token_current,
     email_change
   )
@@ -55,8 +57,6 @@ BEGIN
     'authenticated',
     now(),
     now(),
-    '',
-    '',
     '',
     '',
     '',
@@ -145,10 +145,7 @@ BEGIN
     recovery_token,
     email_change_token_new,
     email_change_token_current,
-    email_change,
-    phone_change,
-    phone_change_token,
-    phone
+    email_change
   )
   VALUES (
     gen_random_uuid(),
@@ -163,8 +160,6 @@ BEGIN
     'authenticated',
     now(),
     now(),
-    '',
-    '',
     '',
     '',
     '',
