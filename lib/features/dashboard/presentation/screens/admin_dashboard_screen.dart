@@ -147,7 +147,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                         borderRadius: BorderRadius.circular(18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: colors.outline.withValues(alpha: 0.1)),
+                          side: BorderSide(color: colors.outline.withValues(alpha: 0.1)),
                         ),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(18),
