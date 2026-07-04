@@ -5,54 +5,72 @@ import '../../../../core/constants/sizes.dart';
 import '../../../../shared/widgets/responsive_layout.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 
+import '../../../auth/domain/entities/user_profile.dart';
+
+class _NavItem {
+  final String label;
+  final IconData icon;
+  final IconData selectedIcon;
+  final String path;
+
+  const _NavItem({
+    required this.label,
+    required this.icon,
+    required this.selectedIcon,
+    required this.path,
+  });
+}
+
 class ShellScreen extends ConsumerWidget {
   final Widget child;
 
   const ShellScreen({super.key, required this.child});
 
+  List<_NavItem> _getNavItems(UserProfileRole role) {
+    if (role == UserProfileRole.superAdmin) {
+      return [
+        const _NavItem(label: 'Dashboard', icon: Icons.dashboard_outlined, selectedIcon: Icons.dashboard, path: '/dashboard'),
+        const _NavItem(label: 'Institutes', icon: Icons.business_outlined, selectedIcon: Icons.business, path: '/settings'),
+        const _NavItem(label: 'Settings', icon: Icons.settings_outlined, selectedIcon: Icons.settings, path: '/settings'),
+      ];
+    } else if (role == UserProfileRole.student) {
+      return [
+        const _NavItem(label: 'Dashboard', icon: Icons.dashboard_outlined, selectedIcon: Icons.dashboard, path: '/dashboard'),
+        const _NavItem(label: 'Homework', icon: Icons.assignment_outlined, selectedIcon: Icons.assignment, path: '/homework'),
+        const _NavItem(label: 'Attendance', icon: Icons.fact_check_outlined, selectedIcon: Icons.fact_check, path: '/attendance'),
+        const _NavItem(label: 'Fees', icon: Icons.receipt_long_outlined, selectedIcon: Icons.receipt_long, path: '/fees'),
+        const _NavItem(label: 'Settings', icon: Icons.settings_outlined, selectedIcon: Icons.settings, path: '/settings'),
+      ];
+    } else {
+      // Admin / Teacher
+      return [
+        const _NavItem(label: 'Dashboard', icon: Icons.dashboard_outlined, selectedIcon: Icons.dashboard, path: '/dashboard'),
+        const _NavItem(label: 'Batches', icon: Icons.class_outlined, selectedIcon: Icons.class_, path: '/batches'),
+        const _NavItem(label: 'Students', icon: Icons.people_outline, selectedIcon: Icons.people, path: '/students'),
+        const _NavItem(label: 'Teachers', icon: Icons.school_outlined, selectedIcon: Icons.school, path: '/teachers'),
+        const _NavItem(label: 'Attendance', icon: Icons.fact_check_outlined, selectedIcon: Icons.fact_check, path: '/attendance'),
+        const _NavItem(label: 'Homework', icon: Icons.assignment_outlined, selectedIcon: Icons.assignment, path: '/homework'),
+        const _NavItem(label: 'Exams', icon: Icons.quiz_outlined, selectedIcon: Icons.quiz, path: '/exams'),
+        const _NavItem(label: 'Fees', icon: Icons.receipt_long_outlined, selectedIcon: Icons.receipt_long, path: '/fees'),
+        const _NavItem(label: 'Settings', icon: Icons.settings_outlined, selectedIcon: Icons.settings, path: '/settings'),
+      ];
+    }
+  }
+
   // Helper to determine active index based on route path
-  int _getSelectedIndex(BuildContext context) {
+  int _getSelectedIndex(BuildContext context, List<_NavItem> items) {
     final String location = GoRouterState.of(context).matchedLocation;
-    if (location.startsWith('/batches')) return 1;
-    if (location.startsWith('/students')) return 2;
-    if (location.startsWith('/teachers')) return 3;
-    if (location.startsWith('/attendance')) return 4;
-    if (location.startsWith('/homework')) return 5;
-    if (location.startsWith('/exams')) return 6;
-    if (location.startsWith('/fees')) return 7;
-    if (location.startsWith('/settings')) return 8;
+    for (int i = 0; i < items.length; i++) {
+      if (location.startsWith(items[i].path) && items[i].path != '/') {
+        return i;
+      }
+    }
     return 0; // default to dashboard
   }
 
-  void _onItemTapped(int index, BuildContext context) {
-    switch (index) {
-      case 0:
-        context.go('/dashboard');
-        break;
-      case 1:
-        context.go('/batches');
-        break;
-      case 2:
-        context.go('/students');
-        break;
-      case 3:
-        context.go('/teachers');
-        break;
-      case 4:
-        context.go('/attendance');
-        break;
-      case 5:
-        context.go('/homework');
-        break;
-      case 6:
-        context.go('/exams');
-        break;
-      case 7:
-        context.go('/fees');
-        break;
-      case 8:
-        context.go('/settings');
-        break;
+  void _onItemTapped(int index, BuildContext context, List<_NavItem> items) {
+    if (index >= 0 && index < items.length) {
+      context.go(items[index].path);
     }
   }
 
@@ -60,57 +78,20 @@ class ShellScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final selectedIndex = _getSelectedIndex(context);
     final userProfileAsync = ref.watch(authStateProvider);
+    final role = userProfileAsync.value?.role ?? UserProfileRole.student;
+    
+    final navItems = _getNavItems(role);
+    final selectedIndex = _getSelectedIndex(context, navItems);
 
     // Sidebar/Drawer navigation items
-    final destinations = [
-      const NavigationDestination(
-        icon: Icon(Icons.dashboard_outlined),
-        selectedIcon: Icon(Icons.dashboard),
-        label: 'Dashboard',
-      ),
-      const NavigationDestination(
-        icon: Icon(Icons.class_outlined),
-        selectedIcon: Icon(Icons.class_),
-        label: 'Batches',
-      ),
-      const NavigationDestination(
-        icon: Icon(Icons.people_outline),
-        selectedIcon: Icon(Icons.people),
-        label: 'Students',
-      ),
-      const NavigationDestination(
-        icon: Icon(Icons.school_outlined),
-        selectedIcon: Icon(Icons.school),
-        label: 'Teachers',
-      ),
-      const NavigationDestination(
-        icon: Icon(Icons.fact_check_outlined),
-        selectedIcon: Icon(Icons.fact_check),
-        label: 'Attendance',
-      ),
-      const NavigationDestination(
-        icon: Icon(Icons.assignment_outlined),
-        selectedIcon: Icon(Icons.assignment),
-        label: 'Homework',
-      ),
-      const NavigationDestination(
-        icon: Icon(Icons.quiz_outlined),
-        selectedIcon: Icon(Icons.quiz),
-        label: 'Exams',
-      ),
-      const NavigationDestination(
-        icon: Icon(Icons.receipt_long_outlined),
-        selectedIcon: Icon(Icons.receipt_long),
-        label: 'Fees',
-      ),
-      const NavigationDestination(
-        icon: Icon(Icons.settings_outlined),
-        selectedIcon: Icon(Icons.settings),
-        label: 'Settings',
-      ),
-    ];
+    final destinations = navItems.map((item) {
+      return NavigationDestination(
+        icon: Icon(item.icon),
+        selectedIcon: Icon(item.selectedIcon),
+        label: item.label,
+      );
+    }).toList();
 
     return Scaffold(
       body: ResponsiveLayout(
