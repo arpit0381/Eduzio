@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
+import '../../domain/entities/dashboard_stats.dart';
 import '../controllers/dashboard_controller.dart';
 
 class _NavItem {
