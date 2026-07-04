@@ -22,9 +22,14 @@ class FeesScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Responsive Apple Health styled summary analytics row
-            ResponsiveBuilder(
-              builder: (context, sizingInformation) {
-                final isMobile = sizingInformation.isMobile;
+            Builder(
+              builder: (context) {
+                final isMobile = getValueForScreenType<bool>(
+                  context: context,
+                  mobile: true,
+                  tablet: false,
+                  desktop: false,
+                );
                 return Flex(
                   direction: isMobile ? Axis.vertical : Axis.horizontal,
                   crossAxisAlignment: isMobile ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,

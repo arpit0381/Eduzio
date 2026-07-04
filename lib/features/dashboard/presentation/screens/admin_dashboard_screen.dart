@@ -207,9 +207,14 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     const SizedBox(height: 32),
 
                     // Main dynamic columns (Schedule + Actions)
-                    ResponsiveBuilder(
-                      builder: (context, sizingInformation) {
-                        final isDesktop = sizingInformation.isDesktop;
+                    Builder(
+                      builder: (context) {
+                        final isDesktop = getValueForScreenType<bool>(
+                          context: context,
+                          mobile: false,
+                          tablet: false,
+                          desktop: true,
+                        );
                         
                         return Flex(
                           direction: isDesktop ? Axis.horizontal : Axis.vertical,
