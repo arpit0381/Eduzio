@@ -131,7 +131,7 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
                 if (isMobile) ...[
                   // Batch dropdown full width
                   DropdownButtonFormField<String>(
-                    value: _selectedBatchId,
+                    initialValue: _selectedBatchId,
                     decoration: const InputDecoration(
                       labelText: 'Select Batch',
                       border: OutlineInputBorder(),
@@ -219,7 +219,7 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
                       Expanded(
                         flex: 2,
                         child: DropdownButtonFormField<String>(
-                          value: _selectedBatchId,
+                          initialValue: _selectedBatchId,
                           decoration: const InputDecoration(
                             labelText: 'Select Batch',
                             border: OutlineInputBorder(),
