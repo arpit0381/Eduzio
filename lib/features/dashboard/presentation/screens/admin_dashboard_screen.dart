@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/dashboard_controller.dart';
+import '../../../../core/constants/colors.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -195,10 +196,10 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       mainAxisSpacing: 16,
                       childAspectRatio: 1.6,
                       children: [
-                        _buildMetricCard(context, 'Total Students', '${stats.totalStudents}', LucideIcons.users, Colors.blue),
-                        _buildMetricCard(context, 'Active Batches', '${stats.activeBatches}', LucideIcons.grid, Colors.teal),
-                        _buildMetricCard(context, 'Attendance', '${stats.attendancePercentage.toStringAsFixed(1)}%', LucideIcons.checkCircle2, Colors.green),
-                        _buildMetricCard(context, 'Fees Collected', '₹${stats.feesCollected.toStringAsFixed(0)}', LucideIcons.creditCard, Colors.orange),
+                        _buildMetricCard(context, 'Total Students', '${stats.totalStudents}', LucideIcons.users, AppColors.pastelPurple, AppColors.pillBlack, '^ 12% This Month'),
+                        _buildMetricCard(context, 'Active Batches', '${stats.activeBatches}', LucideIcons.grid, AppColors.pastelBlue, AppColors.pillBlack, '^ 5% This Month'),
+                        _buildMetricCard(context, 'Attendance', '${stats.attendancePercentage.toStringAsFixed(1)}%', LucideIcons.checkCircle2, AppColors.pastelGreen, AppColors.pillBlack, '^ 2% This Month'),
+                        _buildMetricCard(context, 'Today\'s Classes', '${stats.todaysClasses}', LucideIcons.calendar, AppColors.pastelOrange, AppColors.pillBlack, 'Stable'),
                       ],
                     ).animate().fade(delay: 100.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
                     const SizedBox(height: 32),
@@ -309,12 +310,17 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     String title,
     String value,
     IconData icon,
-    Color accentColor,
+    Color bgColor,
+    Color iconColor,
+    String tagText,
   ) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     return Card(
+      color: bgColor,
+      shadowColor: bgColor.withValues(alpha: 0.4),
+      elevation: 8,
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -324,29 +330,47 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.pillBlack,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 24),
+                ),
                 Text(
                   title,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                    color: AppColors.textSecondaryLight,
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(icon, color: accentColor, size: 20),
                 ),
               ],
             ),
+            const Spacer(),
             Text(
               value,
-              style: GoogleFonts.inter(
-                textStyle: theme.textTheme.headlineMedium?.copyWith(
+              style: GoogleFonts.outfit(
+                textStyle: theme.textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  letterSpacing: -1.0,
+                  letterSpacing: -1.5,
+                  color: AppColors.pillBlack,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.pillBlack,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                tagText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
