@@ -47,9 +47,14 @@ class AttendanceScreen extends StatelessWidget {
                 const SizedBox(height: 48),
 
                 // Grid Menu Layout
-                ResponsiveBuilder(
-                  builder: (context, sizingInformation) {
-                    final isMobile = sizingInformation.isMobile;
+                Builder(
+                  builder: (context) {
+                    final isMobile = getValueForScreenType<bool>(
+                      context: context,
+                      mobile: true,
+                      tablet: false,
+                      desktop: false,
+                    );
                     return Flex(
                       direction: isMobile ? Axis.vertical : Axis.horizontal,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
