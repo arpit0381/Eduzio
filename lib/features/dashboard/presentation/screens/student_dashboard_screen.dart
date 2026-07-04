@@ -164,12 +164,33 @@ class StudentDashboardScreen extends ConsumerWidget {
                     const SizedBox(height: 32),
 
                     // Batches & Schedule Section
-                    Text(
-                      'Enrolled Batches',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Enrolled Batches',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const _JoinBatchDialog(),
+                            );
+                          },
+                          icon: const Icon(LucideIcons.plusCircle, size: 18),
+                          label: const Text('Join Batch'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: colors.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
 
@@ -467,6 +488,88 @@ class StudentDashboardScreen extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+class _JoinBatchDialog extends ConsumerStatefulWidget {
+  const _JoinBatchDialog();
+  @override
+  ConsumerState<_JoinBatchDialog> createState() => _JoinBatchDialogState();
+}
+
+class _JoinBatchDialogState extends ConsumerState<_JoinBatchDialog> {
+  final _codeController = TextEditingController();
+  bool _isLoading = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _joinBatch() async {
+    final code = _codeController.text.trim();
+    if (code.isEmpty) {
+      setState(() => _error = 'Please enter a batch code');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final controller = ref.read(joinBatchControllerProvider);
+      await controller.joinBatch(code);
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Successfully joined batch!')),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _error = e.toString().replaceAll('Exception:', '').trim();
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Join Batch'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Enter the batch code provided by your teacher.'),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _codeController,
+            decoration: InputDecoration(
+              labelText: 'Batch Code',
+              errorText: _error,
+              border: const OutlineInputBorder(),
+            ),
+            textCapitalization: TextCapitalization.characters,
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _isLoading ? null : _joinBatch,
+          child: _isLoading 
+            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+            : const Text('Join'),
         ),
       ],
     );

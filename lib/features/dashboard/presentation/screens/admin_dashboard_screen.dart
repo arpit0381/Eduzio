@@ -332,13 +332,13 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildActionButton(context, 'Take Attendance', LucideIcons.clipboardCheck, colors.primary),
+                _buildActionButton(context, 'Take Attendance', LucideIcons.clipboardCheck, colors.primary, () => context.go('/attendance/take')),
                 const SizedBox(height: 12),
-                _buildActionButton(context, 'Add New Student', LucideIcons.userPlus, colors.secondary),
+                _buildActionButton(context, 'Add New Student', LucideIcons.userPlus, colors.secondary, () => context.go('/students')),
                 const SizedBox(height: 12),
-                _buildActionButton(context, 'Create Homework', LucideIcons.plusCircle, Colors.blueGrey),
+                _buildActionButton(context, 'Create Homework', LucideIcons.plusCircle, Colors.blueGrey, () => context.go('/homework')),
                 const SizedBox(height: 12),
-                _buildActionButton(context, 'View Reports', LucideIcons.barChart3, Colors.orange),
+                _buildActionButton(context, 'View Reports', LucideIcons.barChart3, Colors.orange, () => context.go('/attendance/reports')),
               ],
             ),
           ),
@@ -456,12 +456,12 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildActionButton(BuildContext context, String label, IconData icon, Color color) {
+  Widget _buildActionButton(BuildContext context, String label, IconData icon, Color color, VoidCallback onTap) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

@@ -57,7 +57,7 @@ class AttendanceScreen extends StatelessWidget {
                     );
                     return Flex(
                       direction: isMobile ? Axis.vertical : Axis.horizontal,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: isMobile ? MainAxisAlignment.start : MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: isMobile ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
                       children: [
                         // Card 1: Mark Attendance
@@ -68,7 +68,7 @@ class AttendanceScreen extends StatelessWidget {
                               description: 'Select a batch and date to record present/absent/late registers.',
                               icon: LucideIcons.clipboardCheck,
                               color: colors.primary,
-                              onTap: () => context.push('/attendance/take'),
+                              onTap: () => context.go('/attendance/take'),
                             )
                           : Expanded(
                               child: _buildMenuCard(
@@ -77,7 +77,7 @@ class AttendanceScreen extends StatelessWidget {
                                 description: 'Select a batch and date to record present/absent/late registers.',
                                 icon: LucideIcons.clipboardCheck,
                                 color: colors.primary,
-                                onTap: () => context.push('/attendance/take'),
+                                onTap: () => context.go('/attendance/take'),
                               ),
                             ),
                         if (!isMobile) const SizedBox(width: 16) else const SizedBox(height: 16),
@@ -89,7 +89,7 @@ class AttendanceScreen extends StatelessWidget {
                               description: 'Scan student ID card QR codes for instantaneous daily check-ins.',
                               icon: LucideIcons.qrCode,
                               color: Colors.orange,
-                              onTap: () => context.push('/attendance/scan'),
+                              onTap: () => context.go('/attendance/scan'),
                             )
                           : Expanded(
                               child: _buildMenuCard(
@@ -98,7 +98,7 @@ class AttendanceScreen extends StatelessWidget {
                                 description: 'Scan student ID card QR codes for instantaneous daily check-ins.',
                                 icon: LucideIcons.qrCode,
                                 color: Colors.orange,
-                                onTap: () => context.push('/attendance/scan'),
+                                onTap: () => context.go('/attendance/scan'),
                               ),
                             ),
                         if (!isMobile) const SizedBox(width: 16) else const SizedBox(height: 16),
@@ -110,7 +110,7 @@ class AttendanceScreen extends StatelessWidget {
                               description: 'Generate monthly attendance reports, view charts and analyze individual stats.',
                               icon: LucideIcons.barChart3,
                               color: Colors.teal,
-                              onTap: () => context.push('/attendance/reports'),
+                              onTap: () => context.go('/attendance/reports'),
                             )
                           : Expanded(
                               child: _buildMenuCard(
@@ -119,7 +119,7 @@ class AttendanceScreen extends StatelessWidget {
                                 description: 'Generate monthly attendance reports, view charts and analyze individual stats.',
                                 icon: LucideIcons.barChart3,
                                 color: Colors.teal,
-                                onTap: () => context.push('/attendance/reports'),
+                                onTap: () => context.go('/attendance/reports'),
                               ),
                             ),
                       ],

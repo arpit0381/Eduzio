@@ -36,7 +36,36 @@ final allInstitutesProvider = FutureProvider<List<DashboardInstituteItem>>((ref)
   return repository.getAllInstitutes();
 });
 
+final superAdminUsersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final repository = ref.watch(dashboardRepositoryProvider);
+  return repository.getAllUsersForSuperAdmin();
+});
+
+
 final instituteDetailsProvider = FutureProvider.family<InstituteDetails, String>((ref, orgId) async {
   final repository = ref.watch(dashboardRepositoryProvider);
   return repository.getInstituteDetails(orgId);
 });
+
+final joinBatchControllerProvider = Provider<JoinBatchController>((ref) {
+  return JoinBatchController(ref);
+});
+
+class JoinBatchController {
+  final ProviderRef ref;
+  JoinBatchController(this.ref);
+
+  Future<void> joinBatch(String code) async {
+    final user = ref.read(authStateProvider).value;
+    if (user == null || user.organizationId == null) {
+      throw Exception('User not logged in or missing organization.');
+    }
+
+    final repository = ref.read(dashboardRepositoryProvider);
+    await repository.joinBatchByCode(code, user.organizationId!, user.id);
+    
+    // Refresh student dashboard stats so the new batch appears
+    ref.invalidate(studentDashboardStatsProvider);
+  }
+}
+

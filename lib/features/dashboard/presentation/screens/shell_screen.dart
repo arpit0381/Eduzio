@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
+import '../controllers/dashboard_controller.dart';
 
 class _NavItem {
   final String label;
@@ -30,6 +31,7 @@ class ShellScreen extends ConsumerWidget {
       return [
         const _NavItem(label: 'Dashboard', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
         const _NavItem(label: 'Institutes', icon: LucideIcons.building, path: '/institutes'),
+        const _NavItem(label: 'Users', icon: LucideIcons.users, path: '/users'),
         const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
       ];
     } else if (role == UserProfileRole.student) {
@@ -79,6 +81,7 @@ class ShellScreen extends ConsumerWidget {
       return [
         const _NavItem(label: 'Dashboard', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
         const _NavItem(label: 'Institutes', icon: LucideIcons.building, path: '/institutes'),
+        const _NavItem(label: 'Users', icon: LucideIcons.users, path: '/users'),
         const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
       ];
     } else if (role == UserProfileRole.student) {

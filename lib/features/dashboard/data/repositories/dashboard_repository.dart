@@ -11,6 +11,29 @@ class DashboardRepository {
 
   DashboardRepository(this._client);
 
+  Future<void> joinBatchByCode(String code, String orgId, String studentId) async {
+    // 1. Find the batch by code and organization ID
+    final response = await _client
+        .from('batches')
+        .select('id')
+        .eq('code', code)
+        .eq('organization_id', orgId)
+        .maybeSingle();
+
+    if (response == null) {
+      throw Exception('Invalid batch code or batch not found.');
+    }
+
+    final batchId = response['id'];
+
+    // 2. Insert into batch_students. (Ignore conflict if already enrolled)
+    await _client.from('batch_students').upsert({
+      'batch_id': batchId,
+      'student_id': studentId,
+      'enrolled_at': DateTime.now().toUtc().toIso8601String(),
+    }, onConflict: 'batch_id, student_id');
+  }
+
   Future<AdminDashboardStats> getAdminStats(String orgId) async {
     // 1. Total Students
     final studentsRes = await _client
@@ -155,6 +178,15 @@ class DashboardRepository {
       pendingHomework: pendingHomework > 0 ? pendingHomework : 0,
       enrolledBatches: enrolledBatches,
     );
+  }
+
+  Future<List<Map<String, dynamic>>> getAllUsersForSuperAdmin() async {
+    final response = await _client
+        .from('profiles')
+        .select('id, name, email, role, organization_id, organizations(name)')
+        .order('created_at', ascending: false);
+    
+    return List<Map<String, dynamic>>.from(response);
   }
 
   Future<SuperAdminDashboardStats> getSuperAdminStats() async {

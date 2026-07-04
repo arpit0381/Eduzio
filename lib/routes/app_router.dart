@@ -13,6 +13,7 @@ import '../features/auth/presentation/screens/onboarding_screen.dart';
 import '../features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/student_dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/super_admin_dashboard_screen.dart';
+import '../features/dashboard/presentation/screens/super_admin_users_screen.dart';
 import '../features/dashboard/presentation/screens/shell_screen.dart';
 import '../features/dashboard/presentation/screens/institute_list_screen.dart';
 import '../features/dashboard/presentation/screens/institute_details_screen.dart';
@@ -162,6 +163,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
           GoRoute(
+            path: '/users',
+            name: 'super-admin-users',
+            builder: (context, state) => const SuperAdminUsersScreen(),
+          ),
+          GoRoute(
             path: '/settings',
             name: 'settings',
             builder: (context, state) => const SettingsScreen(),
@@ -205,7 +211,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Students cannot access admin/teacher-only routes
       if (user.role == UserProfileRole.student) {
-        const studentBlockedRoutes = ['/batches', '/students', '/teachers', '/exams', '/institutes'];
+        const studentBlockedRoutes = ['/batches', '/students', '/teachers', '/exams', '/institutes', '/users'];
         for (final route in studentBlockedRoutes) {
           if (currentLoc.startsWith(route)) return '/dashboard';
         }
@@ -213,7 +219,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Admins/Teachers cannot access super-admin-only routes
       if (user.role == UserProfileRole.admin || user.role == UserProfileRole.teacher) {
-        const adminBlockedRoutes = ['/institutes'];
+        const adminBlockedRoutes = ['/institutes', '/users'];
         for (final route in adminBlockedRoutes) {
           if (currentLoc.startsWith(route)) return '/dashboard';
         }
