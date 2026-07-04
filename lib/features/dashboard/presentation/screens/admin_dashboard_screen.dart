@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import 'package:flutter/services.dart';
+import '../controllers/dashboard_controller.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -177,68 +178,77 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
               const SizedBox(height: AppSizes.lg),
             ],
 
-            // Statistics Section
-            Text(
-              'Quick Stats',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: AppSizes.md),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: AppSizes.md,
-              mainAxisSpacing: AppSizes.md,
-              childAspectRatio: 1.5,
-              children: [
-                _buildStatCard(context, 'Total Students', '342', Icons.people, colors.primary),
-                _buildStatCard(context, 'Active Batches', '12', Icons.class_, Colors.teal),
-                _buildStatCard(context, 'Today\'s Attendance', '94%', Icons.check_circle, Colors.green),
-                _buildStatCard(context, 'Fees Collected', '₹1.2L', Icons.currency_rupee, Colors.orange),
-              ],
-            ),
-            const SizedBox(height: AppSizes.lg),
+            ref.watch(adminDashboardStatsProvider).when(
+              data: (stats) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Statistics Section
+                    Text(
+                      'Quick Stats',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: AppSizes.md),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: AppSizes.md,
+                      mainAxisSpacing: AppSizes.md,
+                      childAspectRatio: 1.5,
+                      children: [
+                        _buildStatCard(context, 'Total Students', '${stats.totalStudents}', Icons.people, colors.primary),
+                        _buildStatCard(context, 'Active Batches', '${stats.activeBatches}', Icons.class_, Colors.teal),
+                        _buildStatCard(context, 'Today\'s Attendance', '${stats.attendancePercentage.toStringAsFixed(1)}%', Icons.check_circle, Colors.green),
+                        _buildStatCard(context, 'Fees Collected', '₹${stats.feesCollected.toStringAsFixed(0)}', Icons.currency_rupee, Colors.orange),
+                      ],
+                    ),
+                    const SizedBox(height: AppSizes.lg),
 
-            // Main Columns (Schedule and Recent Activity)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Today's Classes (Takes up remaining width or full width on mobile)
-                Expanded(
-                  flex: size.width > 900 ? 2 : 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Today\'s Classes',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: AppSizes.md),
-                      Card(
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: 3,
-                          separatorBuilder: (_, _) => const Divider(height: 1),
-                          itemBuilder: (context, index) {
-                            final times = ['09:00 AM - 10:30 AM', '11:00 AM - 12:30 PM', '02:00 PM - 03:30 PM'];
-                            final subjects = ['Physics - Batch A', 'Chemistry - Batch B', 'Mathematics - Batch C'];
-                            final rooms = ['Classroom 1', 'Classroom 3', 'Classroom 2'];
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: colors.surfaceContainerHighest,
-                                child: Text('${index + 1}', style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold)),
+                    // Main Columns (Schedule and Recent Activity)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Active Batches (Takes up remaining width or full width on mobile)
+                        Expanded(
+                          flex: size.width > 900 ? 2 : 1,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Active Batches',
+                                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                               ),
-                              title: Text(subjects[index], style: const TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: Text('${times[index]} | ${rooms[index]}'),
-                              trailing: const Icon(Icons.arrow_forward_ios, size: 14),
-                            );
-                          },
+                              const SizedBox(height: AppSizes.md),
+                              Card(
+                                child: stats.recentBatches.isEmpty
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(AppSizes.lg),
+                                      child: Center(child: Text('No batches found.')),
+                                    )
+                                  : ListView.separated(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: stats.recentBatches.length,
+                                      separatorBuilder: (_, _) => const Divider(height: 1),
+                                      itemBuilder: (context, index) {
+                                        final batch = stats.recentBatches[index];
+                                        return ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundColor: colors.surfaceContainerHighest,
+                                            child: Text('${index + 1}', style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold)),
+                                          ),
+                                          title: Text(batch.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                          subtitle: Text('Code: ${batch.code}'),
+                                          trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+                                        );
+                                      },
+                                    ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
+
 
                 // Spacing
                 if (size.width > 900) const SizedBox(width: AppSizes.lg),
@@ -267,7 +277,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                                 const SizedBox(height: AppSizes.sm),
                                 _buildActionButton(context, 'Create Homework', Icons.upload_file, Colors.blueGrey),
                                 const SizedBox(height: AppSizes.sm),
-                                _buildActionButton(context, 'Publish Notice', Icons.campaign, Colors.indigo),
+                                _buildActionButton(context, 'View Reports', Icons.bar_chart, Colors.orange),
                               ],
                             ),
                           ),
@@ -277,7 +287,12 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   ),
               ],
             ),
-          ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error: $err')),
+      ),
+    ],
         ),
       ),
     );
