@@ -1,8 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/sizes.dart';
+import '../../../auth/presentation/controllers/auth_controller.dart';
+import 'package:flutter/services.dart';
 
-class AdminDashboardScreen extends StatelessWidget {
+class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
+
+  @override
+  ConsumerState<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+}
+
+class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
+  String? _instituteCode;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchInstituteCode();
+  }
+
+  Future<void> _fetchInstituteCode() async {
+    final user = ref.read(authStateProvider).value;
+    if (user?.organizationId != null) {
+      try {
+        final data = await Supabase.instance.client
+            .from('organizations')
+            .select('subdomain')
+            .eq('id', user!.organizationId!)
+            .single();
+        if (mounted) {
+          setState(() {
+            _instituteCode = data['subdomain'] as String?;
+          });
+        }
+      } catch (e) {
+        debugPrint('Failed to fetch institute code: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +105,77 @@ class AdminDashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSizes.lg),
+            
+            // Institute Code Display
+            if (_instituteCode != null) ...[
+              Card(
+                color: colors.secondaryContainer.withValues(alpha: 0.3),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg, vertical: AppSizes.md),
+                  child: Row(
+                    children: [
+                      Icon(Icons.vpn_key_outlined, color: colors.secondary),
+                      const SizedBox(width: AppSizes.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Institute Code',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                color: colors.secondary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Share this code with your students and teachers so they can join your institute.',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.sm),
+                        decoration: BoxDecoration(
+                          color: colors.surface,
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                          border: Border.all(color: colors.outline.withValues(alpha: 0.2)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SelectableText(
+                              _instituteCode!,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: colors.onSurface,
+                              ),
+                            ),
+                            const SizedBox(width: AppSizes.sm),
+                            IconButton(
+                              icon: const Icon(Icons.copy, size: 18),
+                              visualDensity: VisualDensity.compact,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              tooltip: 'Copy Code',
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(text: _instituteCode!));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Institute Code copied to clipboard')),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSizes.lg),
+            ],
 
             // Statistics Section
             Text(
