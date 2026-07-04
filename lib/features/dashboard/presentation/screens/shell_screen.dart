@@ -232,7 +232,7 @@ class ShellScreen extends ConsumerWidget {
                           ),
                         ),
                         loading: () => const SizedBox(width: 32, height: 32),
-                        error: (_, _a) => const SizedBox(width: 32, height: 32),
+                        error: (e, s) => const SizedBox(width: 32, height: 32),
                       ),
                       const SizedBox(width: 4),
                       IconButton(
@@ -254,7 +254,7 @@ class ShellScreen extends ConsumerWidget {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: topItems.length,
-                        separatorBuilder: (_, _a) => const SizedBox(width: 8),
+                        separatorBuilder: (context, index) => const SizedBox(width: 8),
                         itemBuilder: (context, index) {
                           final item = topItems[index];
                           final String location = GoRouterState.of(context).matchedLocation;
