@@ -218,14 +218,14 @@ class ShellScreen extends ConsumerWidget {
                     message: item.label,
                     child: InkWell(
                       onTap: () => _onItemTapped(index, context, items),
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(100),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
                           color: isSelected ? colors.primary.withValues(alpha: 0.1) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(100),
                         ),
                         child: Icon(
                           item.icon,
@@ -298,7 +298,7 @@ class ShellScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: InkWell(
                     onTap: () => _onItemTapped(index, context, items),
-                    borderRadius: BorderRadius.circular(18), // Apple-like
+                    borderRadius: BorderRadius.circular(100),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -306,7 +306,7 @@ class ShellScreen extends ConsumerWidget {
                         color: isSelected
                             ? colors.primary.withValues(alpha: 0.1)
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: BorderRadius.circular(100),
                       ),
                       child: Row(
                         children: [

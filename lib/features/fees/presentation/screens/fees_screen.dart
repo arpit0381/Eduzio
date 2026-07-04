@@ -20,83 +20,33 @@ class FeesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Apple Health styled summary analytics row
-            Row(
-              children: [
-                Expanded(
-                  child: Card(
-                    color: colors.primary.withValues(alpha: 0.03),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Total Collected',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Icon(LucideIcons.arrowUpRight, color: Colors.green, size: 18),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            '₹1,45,000',
-                            style: GoogleFonts.inter(
-                              textStyle: theme.textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: -1.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Card(
-                    color: colors.primary.withValues(alpha: 0.03),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Outstanding',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Icon(LucideIcons.arrowDownRight, color: Colors.red, size: 18),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            '₹38,000',
-                            style: GoogleFonts.inter(
-                              textStyle: theme.textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: -1.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            // Responsive Apple Health styled summary analytics row
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth > 500;
+                return Flex(
+                  direction: isWide ? Axis.horizontal : Axis.vertical,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Flex(
+                      direction: isWide ? Axis.horizontal : Axis.vertical,
+                      // The child needs to be flexible only in horizontal mode
+                    ) == null ? const SizedBox() : const SizedBox(), // dummy for spacing
+                    
+                    // First Card
+                    isWide 
+                      ? Expanded(child: _buildFeeCard('Total Collected', '₹1,45,000', true, theme, colors))
+                      : _buildFeeCard('Total Collected', '₹1,45,000', true, theme, colors),
+                    
+                    if (isWide) const SizedBox(width: 16) else const SizedBox(height: 16),
+                    
+                    // Second Card
+                    isWide 
+                      ? Expanded(child: _buildFeeCard('Outstanding', '₹38,000', false, theme, colors))
+                      : _buildFeeCard('Outstanding', '₹38,000', false, theme, colors),
+                  ],
+                );
+              }
             ).animate().fade(duration: 400.ms).slideY(begin: 0.1, end: 0),
             const SizedBox(height: 32),
 
