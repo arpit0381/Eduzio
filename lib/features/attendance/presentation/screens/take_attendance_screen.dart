@@ -140,7 +140,7 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
                     items: batches.map<DropdownMenuItem<String>>((b) {
                       return DropdownMenuItem<String>(
                         value: b.id,
-                        child: Text('${b.name} (${b.code})'),
+                        child: Text('${b.name} (${b.code})', overflow: TextOverflow.ellipsis),
                       );
                     }).toList(),
                     onChanged: (val) {
@@ -189,11 +189,11 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
                         child: ElevatedButton.icon(
                           onPressed: () => _bulkMarkAll(AttendanceStatus.present),
                           icon: const Icon(Icons.check_circle_outline, size: 18),
-                          label: const Text('All Present'),
+                          label: const FittedBox(child: Text('All Present')),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green.shade50,
                             foregroundColor: Colors.green.shade800,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                           ),
                         ),
                       ),
@@ -202,11 +202,11 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
                         child: ElevatedButton.icon(
                           onPressed: () => _bulkMarkAll(AttendanceStatus.absent),
                           icon: const Icon(Icons.remove_circle_outline, size: 18),
-                          label: const Text('All Absent'),
+                          label: const FittedBox(child: Text('All Absent')),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red.shade50,
                             foregroundColor: Colors.red.shade800,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                           ),
                         ),
                       ),
@@ -228,7 +228,7 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
                           items: batches.map<DropdownMenuItem<String>>((b) {
                             return DropdownMenuItem<String>(
                               value: b.id,
-                              child: Text('${b.name} (${b.code})'),
+                              child: Text('${b.name} (${b.code})', overflow: TextOverflow.ellipsis),
                             );
                           }).toList(),
                           onChanged: (val) {
@@ -486,32 +486,36 @@ class _TakeAttendanceScreenState extends ConsumerState<TakeAttendanceScreen> {
             // Bottom row: Status toggle buttons (full width)
             SizedBox(
               width: double.infinity,
-              child: ToggleButtons(
-                isSelected: [
-                  currentStatus == AttendanceStatus.present,
-                  currentStatus == AttendanceStatus.absent,
-                  currentStatus == AttendanceStatus.late,
-                  currentStatus == AttendanceStatus.leave,
-                ],
-                onPressed: (index) {
-                  setState(() {
-                    _tempAttendance[studentId] = AttendanceStatus.values[index];
-                  });
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return ToggleButtons(
+                    isSelected: [
+                      currentStatus == AttendanceStatus.present,
+                      currentStatus == AttendanceStatus.absent,
+                      currentStatus == AttendanceStatus.late,
+                      currentStatus == AttendanceStatus.leave,
+                    ],
+                    onPressed: (index) {
+                      setState(() {
+                        _tempAttendance[studentId] = AttendanceStatus.values[index];
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    selectedColor: Colors.white,
+                    fillColor: _getStatusColor(currentStatus),
+                    color: theme.hintColor,
+                    constraints: BoxConstraints.expand(
+                      width: (constraints.maxWidth - 5) / 4,
+                      height: 36,
+                    ),
+                    children: const [
+                      Text('Present', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                      Text('Absent', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                      Text('Late', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                      Text('Leave', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    ],
+                  );
                 },
-                borderRadius: BorderRadius.circular(8),
-                selectedColor: Colors.white,
-                fillColor: _getStatusColor(currentStatus),
-                color: theme.hintColor,
-                constraints: BoxConstraints.expand(
-                  width: (MediaQuery.sizeOf(context).width - 96) / 4,
-                  height: 36,
-                ),
-                children: const [
-                  Text('Present', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                  Text('Absent', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                  Text('Late', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                  Text('Leave', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                ],
               ),
             ),
           ],
