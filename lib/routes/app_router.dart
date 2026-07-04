@@ -10,6 +10,7 @@ import '../features/auth/presentation/controllers/auth_controller.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/onboarding_screen.dart';
+import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/student_dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/super_admin_dashboard_screen.dart';
@@ -53,10 +54,15 @@ final routerProvider = Provider<GoRouter>((ref) {
   final repository = ref.read(authRepositoryProvider);
 
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/',
     refreshListenable: GoRouterRefreshStream(repository.authStateChanges),
     routes: [
       // Auth Routes
+      GoRoute(
+        path: '/',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(
         path: '/login',
         name: 'login',
@@ -168,13 +174,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       final user = authState.value;
       final currentLoc = state.matchedLocation;
       
-      final isAuthPage = currentLoc == '/login' ||
+      final isAuthPage = currentLoc == '/' ||
+          currentLoc == '/login' ||
           currentLoc == '/register' ||
           currentLoc == '/onboard';
 
-      // 1. If user is NOT logged in, redirect them to login
+      // 1. If user is NOT logged in, redirect them to splash
       if (user == null) {
-        return isAuthPage ? null : '/login';
+        return isAuthPage ? null : '/';
       }
 
       // 2. If user IS logged in and trying to access login/register, push them to dashboard
