@@ -57,9 +57,23 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
       desktop: 4,
     );
 
+    final cardAspectRatio = getValueForScreenType<double>(
+      context: context,
+      mobile: 2.2,
+      tablet: 1.6,
+      desktop: 1.6,
+    );
+
+    final horizontalPadding = getValueForScreenType<double>(
+      context: context,
+      mobile: 16,
+      tablet: 24,
+      desktop: 24,
+    );
+
     return Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -159,8 +173,10 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                             child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Expanded(
+                                ConstrainedBox(
+                                  constraints: const BoxConstraints(maxWidth: 120),
                                   child: Text(
                                     _instituteCode!,
                                     style: GoogleFonts.inter(
@@ -196,7 +212,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       crossAxisCount: crossAxisCount,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio: 1.6,
+                      childAspectRatio: cardAspectRatio,
                       children: [
                         _buildMetricCard(context, 'Total Students', '${stats.totalStudents}', LucideIcons.users, const Color(0xFFC4B5FD), '+10% This Month'),
                         _buildMetricCard(context, 'Active Batches', '${stats.activeBatches}', LucideIcons.layoutGrid, const Color(0xFFBAE6FD), '+5 This Month'),

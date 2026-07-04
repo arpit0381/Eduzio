@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import '../controllers/dashboard_controller.dart';
 
 class StudentDashboardScreen extends ConsumerWidget {
@@ -12,19 +13,25 @@ class StudentDashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final size = MediaQuery.sizeOf(context);
 
     // Dynamic grid columns
-    int gridCount = 1;
-    if (size.width > 900) {
-      gridCount = 3;
-    } else if (size.width > 600) {
-      gridCount = 2;
-    }
+    final gridCount = getValueForScreenType<int>(
+      context: context,
+      mobile: 1,
+      tablet: 2,
+      desktop: 3,
+    );
+
+    final horizontalPadding = getValueForScreenType<double>(
+      context: context,
+      mobile: 16,
+      tablet: 24,
+      desktop: 24,
+    );
 
     return Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -74,23 +81,60 @@ class StudentDashboardScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Apple Health Asymmetrical Grid Layout
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isDesktop = constraints.maxWidth > 800;
+                    Builder(
+                      builder: (context) {
+                        final isMobile = getValueForScreenType<bool>(
+                          context: context,
+                          mobile: true,
+                          tablet: false,
+                          desktop: false,
+                        );
+                        if (isMobile) {
+                          // Stack vertically on mobile
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _buildAttendanceCard(context, stats.attendancePercentage),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildMetricCard(
+                                      context,
+                                      'Pending Homework',
+                                      '${stats.pendingHomework}',
+                                      'Due this week',
+                                      LucideIcons.clock,
+                                      Colors.amber,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: _buildMetricCard(
+                                      context,
+                                      'Achievements',
+                                      '4 Badges',
+                                      'Keep going!',
+                                      LucideIcons.award,
+                                      colors.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        }
+                        // Desktop/Tablet: side by side
                         return Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Large Circular Attendance Card
                             Expanded(
-                              flex: isDesktop ? 3 : 1,
+                              flex: 3,
                               child: _buildAttendanceCard(context, stats.attendancePercentage),
                             ),
-                            if (isDesktop) const SizedBox(width: 24),
-                            if (!isDesktop) const SizedBox(height: 16),
-                            
-                            // Small metrics (Homework & Achievements)
+                            const SizedBox(width: 24),
                             Expanded(
-                              flex: isDesktop ? 2 : 1,
+                              flex: 2,
                               child: Column(
                                 children: [
                                   _buildMetricCard(

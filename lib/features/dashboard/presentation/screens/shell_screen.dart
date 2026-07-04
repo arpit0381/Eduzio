@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -57,10 +56,65 @@ class ShellScreen extends ConsumerWidget {
     }
   }
 
+  // Top bar items for mobile (shown in the top app bar area)
+  List<_NavItem> _getMobileTopItems(UserProfileRole role) {
+    if (role == UserProfileRole.superAdmin) {
+      return [];
+    } else if (role == UserProfileRole.student) {
+      return [];
+    } else {
+      // Admin/Teacher: Attendance, Homework, Exams, Fees go to top action bar
+      return [
+        const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
+        const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
+        const _NavItem(label: 'Exams', icon: LucideIcons.fileText, path: '/exams'),
+        const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
+      ];
+    }
+  }
+
+  // Bottom bar items for mobile
+  List<_NavItem> _getMobileBottomItems(UserProfileRole role) {
+    if (role == UserProfileRole.superAdmin) {
+      return [
+        const _NavItem(label: 'Dashboard', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
+        const _NavItem(label: 'Institutes', icon: LucideIcons.building, path: '/institutes'),
+        const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
+      ];
+    } else if (role == UserProfileRole.student) {
+      return [
+        const _NavItem(label: 'Home', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
+        const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
+        const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
+        const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
+        const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
+      ];
+    } else {
+      // Admin/Teacher: Bottom = Dashboard, Batches, Students, Teachers, Settings
+      return [
+        const _NavItem(label: 'Home', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
+        const _NavItem(label: 'Batches', icon: LucideIcons.grid, path: '/batches'),
+        const _NavItem(label: 'Students', icon: LucideIcons.users, path: '/students'),
+        const _NavItem(label: 'Teachers', icon: LucideIcons.graduationCap, path: '/teachers'),
+        const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
+      ];
+    }
+  }
+
   int _getSelectedIndex(BuildContext context, List<_NavItem> items) {
     final String location = GoRouterState.of(context).matchedLocation;
     for (int i = 0; i < items.length; i++) {
       if (location.startsWith(items[i].path) && items[i].path != '/') {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  int _getSelectedBottomIndex(BuildContext context, List<_NavItem> bottomItems) {
+    final String location = GoRouterState.of(context).matchedLocation;
+    for (int i = 0; i < bottomItems.length; i++) {
+      if (location.startsWith(bottomItems[i].path) && bottomItems[i].path != '/') {
         return i;
       }
     }
@@ -86,55 +140,249 @@ class ShellScreen extends ConsumerWidget {
     final navItems = _getNavItems(role);
     final selectedIndex = _getSelectedIndex(context, navItems);
 
-    return ResponsiveBuilder(
-      builder: (context, sizingInformation) {
-        final isMobile = sizingInformation.isMobile;
+    final isMobile = getValueForScreenType<bool>(
+      context: context,
+      mobile: true,
+      tablet: false,
+      desktop: false,
+    );
 
-        return Scaffold(
-          extendBody: true,
-          appBar: isMobile
-              ? AppBar(
-                  title: Text(
-                    'Eduzio',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  elevation: 0,
-                  iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
-                )
-              : null,
-          drawer: isMobile
-              ? Drawer(
-                  child: _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync),
-                )
-              : null,
-          body: ScreenTypeLayout.builder(
-            mobile: (context) => child,
-            tablet: (context) => Row(
-              children: [
-                _buildTabletNavigationRail(context, navItems, selectedIndex),
-                const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
-                Expanded(child: child),
-              ],
-            ),
-            desktop: (context) => Row(
-              children: [
-                _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync),
-                const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
-                Expanded(child: child),
-              ],
-            ),
-          ),
-        );
-      },
+    if (isMobile) {
+      return _buildMobileLayout(context, ref, role, userProfileAsync);
+    }
+
+    final isTablet = getValueForScreenType<bool>(
+      context: context,
+      mobile: false,
+      tablet: true,
+      desktop: false,
+    );
+
+    return Scaffold(
+      body: Row(
+        children: [
+          if (isTablet)
+            _buildTabletNavigationRail(context, navItems, selectedIndex),
+          if (!isTablet)
+            _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync),
+          const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
+          Expanded(child: child),
+        ],
+      ),
     );
   }
 
-  // Tablet Side Rail
+  // ── MOBILE LAYOUT ──────────────────────────────────────────────────────
+  Widget _buildMobileLayout(BuildContext context, WidgetRef ref, UserProfileRole role, AsyncValue<UserProfile?> userProfileAsync) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final bottomItems = _getMobileBottomItems(role);
+    final topItems = _getMobileTopItems(role);
+    final selectedBottomIndex = _getSelectedBottomIndex(context, bottomItems);
+
+    return Scaffold(
+      body: Column(
+        children: [
+          // ── TOP: Custom App Bar with logo + action icons ──
+          SafeArea(
+            bottom: false,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 12, 12, 0),
+              child: Column(
+                children: [
+                  // Row 1: Logo + Profile/Logout
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: colors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(LucideIcons.graduationCap, color: colors.primary, size: 20),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Eduzio',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                          color: colors.primary,
+                        ),
+                      ),
+                      const Spacer(),
+                      // Profile avatar
+                      userProfileAsync.when(
+                        data: (profile) => GestureDetector(
+                          onTap: () => context.go('/settings'),
+                          child: CircleAvatar(
+                            radius: 16,
+                            backgroundColor: colors.primary.withValues(alpha: 0.1),
+                            child: Text(
+                              (profile?.name ?? 'U').substring(0, 1).toUpperCase(),
+                              style: TextStyle(
+                                color: colors.primary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                        loading: () => const SizedBox(width: 32, height: 32),
+                        error: (_, _a) => const SizedBox(width: 32, height: 32),
+                      ),
+                      const SizedBox(width: 4),
+                      IconButton(
+                        icon: Icon(LucideIcons.logOut, color: colors.error, size: 18),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                        onPressed: () {
+                          ref.read(authControllerProvider.notifier).signOut();
+                        },
+                      ),
+                    ],
+                  ),
+
+                  // Row 2: Top action icon chips (only for admin/teacher)
+                  if (topItems.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 40,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: topItems.length,
+                        separatorBuilder: (_, _a) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final item = topItems[index];
+                          final String location = GoRouterState.of(context).matchedLocation;
+                          final isActive = location.startsWith(item.path);
+                          return GestureDetector(
+                            onTap: () => context.go(item.path),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: isActive
+                                    ? colors.primary.withValues(alpha: 0.1)
+                                    : (isDark ? colors.surface : const Color(0xFFF1F5F9)),
+                                borderRadius: BorderRadius.circular(100),
+                                border: isActive
+                                    ? Border.all(color: colors.primary.withValues(alpha: 0.3))
+                                    : Border.all(color: colors.outline.withValues(alpha: 0.08)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    item.icon,
+                                    size: 16,
+                                    color: isActive ? colors.primary : colors.onSurfaceVariant.withValues(alpha: 0.7),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    item.label,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                                      color: isActive ? colors.primary : colors.onSurfaceVariant.withValues(alpha: 0.8),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ),
+          Divider(height: 1, color: colors.outline.withValues(alpha: 0.08)),
+
+          // ── BODY ──
+          Expanded(child: child),
+        ],
+      ),
+
+      // ── BOTTOM NAVIGATION BAR ──
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF151B2E) : Colors.white,
+          border: Border(
+            top: BorderSide(
+              color: colors.outline.withValues(alpha: 0.08),
+              width: 1,
+            ),
+          ),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: 64,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(bottomItems.length, (index) {
+                final item = bottomItems[index];
+                final isSelected = selectedBottomIndex == index;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => _onItemTapped(index, context, bottomItems),
+                    behavior: HitTestBehavior.opaque,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? colors.primary.withValues(alpha: 0.12)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Icon(
+                              item.icon,
+                              color: isSelected
+                                  ? colors.primary
+                                  : colors.onSurfaceVariant.withValues(alpha: 0.5),
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            item.label,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                              color: isSelected
+                                  ? colors.primary
+                                  : colors.onSurfaceVariant.withValues(alpha: 0.5),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── TABLET SIDE RAIL ───────────────────────────────────────────────────
   Widget _buildTabletNavigationRail(BuildContext context, List<_NavItem> items, int selectedIndex) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -185,7 +433,7 @@ class ShellScreen extends ConsumerWidget {
     );
   }
 
-  // Stripe Dashboard style Persistent Desktop Sidebar
+  // ── DESKTOP SIDEBAR ────────────────────────────────────────────────────
   Widget _buildDesktopSidebar(
     BuildContext context,
     WidgetRef ref,
@@ -273,7 +521,7 @@ class ShellScreen extends ConsumerWidget {
             ),
           ),
 
-          // User Section (Apple-like floating panel inside sidebar)
+          // User Section
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
