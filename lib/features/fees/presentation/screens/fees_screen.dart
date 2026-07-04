@@ -26,13 +26,8 @@ class FeesScreen extends StatelessWidget {
                 final isWide = constraints.maxWidth > 500;
                 return Flex(
                   direction: isWide ? Axis.horizontal : Axis.vertical,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: isWide ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
                   children: [
-                    Flex(
-                      direction: isWide ? Axis.horizontal : Axis.vertical,
-                      // The child needs to be flexible only in horizontal mode
-                    ) == null ? const SizedBox() : const SizedBox(), // dummy for spacing
-                    
                     // First Card
                     isWide 
                       ? Expanded(child: _buildFeeCard('Total Collected', '₹1,45,000', true, theme, colors))
@@ -167,10 +162,51 @@ class FeesScreen extends StatelessWidget {
         backgroundColor: colors.primary,
         foregroundColor: colors.onPrimary,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18), // Apple UI
+          borderRadius: BorderRadius.circular(100), // Pill Shape
         ),
         icon: const Icon(LucideIcons.creditCard),
         label: const Text('Create Structure'),
+      ),
+    );
+  }
+
+  Widget _buildFeeCard(String title, String amount, bool isPositive, ThemeData theme, ColorScheme colors) {
+    return Card(
+      color: colors.primary.withValues(alpha: 0.03),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Icon(
+                  isPositive ? LucideIcons.arrowUpRight : LucideIcons.arrowDownRight, 
+                  color: isPositive ? Colors.green : Colors.red, 
+                  size: 18,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              amount,
+              style: GoogleFonts.inter(
+                textStyle: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -1.0,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
