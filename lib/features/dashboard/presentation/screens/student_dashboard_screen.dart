@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../core/constants/sizes.dart';
 import '../controllers/dashboard_controller.dart';
 
 class StudentDashboardScreen extends ConsumerWidget {
@@ -305,7 +304,6 @@ class StudentDashboardScreen extends ConsumerWidget {
   Widget _buildBatchCard(BuildContext context, String name, String code) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
 
     return Card(
       child: Padding(
