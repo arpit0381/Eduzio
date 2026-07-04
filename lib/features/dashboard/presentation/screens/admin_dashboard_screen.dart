@@ -195,10 +195,10 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       mainAxisSpacing: 16,
                       childAspectRatio: 1.6,
                       children: [
-                        _buildMetricCard(context, 'Total Students', '${stats.totalStudents}', LucideIcons.users, Colors.blue),
-                        _buildMetricCard(context, 'Active Batches', '${stats.activeBatches}', LucideIcons.grid, Colors.teal),
-                        _buildMetricCard(context, 'Attendance', '${stats.attendancePercentage.toStringAsFixed(1)}%', LucideIcons.checkCircle2, Colors.green),
-                        _buildMetricCard(context, 'Fees Collected', '₹${stats.feesCollected.toStringAsFixed(0)}', LucideIcons.creditCard, Colors.orange),
+                        _buildMetricCard(context, 'Total Students', '${stats.totalStudents}', LucideIcons.users, const Color(0xFFC4B5FD), '+10% This Month'),
+                        _buildMetricCard(context, 'Active Batches', '${stats.activeBatches}', LucideIcons.layoutGrid, const Color(0xFFBAE6FD), '+5 This Month'),
+                        _buildMetricCard(context, 'Attendance', '${stats.attendancePercentage.toStringAsFixed(1)}%', LucideIcons.checkCircle2, const Color(0xFFbbf7d0), '+2% This Month'),
+                        _buildMetricCard(context, 'Fees Collected', '₹${stats.feesCollected.toStringAsFixed(0)}', LucideIcons.wallet, const Color(0xFFfed7aa), '+15% This Month'),
                       ],
                     ).animate().fade(delay: 100.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
                     const SizedBox(height: 32),
@@ -310,48 +310,92 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     String value,
     IconData icon,
     Color accentColor,
+    String badgeText,
   ) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
+    final isDark = theme.brightness == Brightness.dark;
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: isDark ? 0.15 : 0.4),
+        borderRadius: BorderRadius.circular(32),
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Background Icon Watermark
+          Positioned(
+            right: -20,
+            bottom: -20,
+            child: Icon(
+              icon,
+              size: 140,
+              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.black : const Color(0xFF1E293B),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(icon, color: Colors.white, size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      title,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white70 : const Color(0xFF475569),
+                      ),
+                    ),
+                  ],
+                ),
                 Text(
-                  title,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                  value,
+                  style: GoogleFonts.plusJakartaSans(
+                    textStyle: theme.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -1.0,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
                   ),
                 ),
+                // Pill tag
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(14),
+                    color: isDark ? Colors.black : const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(100),
                   ),
-                  child: Icon(icon, color: accentColor, size: 20),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(LucideIcons.trendingUp, size: 14, color: accentColor),
+                      const SizedBox(width: 6),
+                      Text(
+                        badgeText,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-            Text(
-              value,
-              style: GoogleFonts.inter(
-                textStyle: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -1.0,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
