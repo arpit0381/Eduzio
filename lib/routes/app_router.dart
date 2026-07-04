@@ -10,8 +10,11 @@ import '../features/auth/presentation/controllers/auth_controller.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/onboarding_screen.dart';
-import '../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../features/dashboard/presentation/screens/admin_dashboard_screen.dart';
+import '../features/dashboard/presentation/screens/student_dashboard_screen.dart';
+import '../features/dashboard/presentation/screens/super_admin_dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/shell_screen.dart';
+import '../features/auth/domain/entities/user_profile.dart';
 import '../features/batch/presentation/screens/batch_list_screen.dart';
 import '../features/student/presentation/screens/student_list_screen.dart';
 import '../features/teacher/presentation/screens/teacher_list_screen.dart';
@@ -77,7 +80,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/dashboard',
             name: 'dashboard',
-            builder: (context, state) => const DashboardScreen(),
+            builder: (context, state) {
+              final role = ref.read(authStateProvider).value?.role;
+              if (role == UserProfileRole.student) return const StudentDashboardScreen();
+              if (role == UserProfileRole.superAdmin) return const SuperAdminDashboardScreen();
+              return const AdminDashboardScreen();
+            },
           ),
           GoRoute(
             path: '/batches',
@@ -163,7 +171,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       // 3. If user is logged in but belongs to no organization, force onboarding
-      if (user.organizationId == null && currentLoc != '/onboard') {
+      // (Unless they are a superAdmin, who doesn't need an org)
+      if (user.organizationId == null && user.role != UserProfileRole.superAdmin && currentLoc != '/onboard') {
         return '/onboard';
       }
 
