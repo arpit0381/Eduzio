@@ -101,7 +101,7 @@ class ShellScreen extends ConsumerWidget {
             Expanded(child: child),
             NavigationBar(
               selectedIndex: selectedIndex,
-              onDestinationSelected: (index) => _onItemTapped(index, context),
+              onDestinationSelected: (index) => _onItemTapped(index, context, navItems),
               destinations: destinations.take(5).toList(), // Limit mobile bottom nav to 5 items
             ),
           ],
@@ -112,7 +112,7 @@ class ShellScreen extends ConsumerWidget {
           children: [
             NavigationRail(
               selectedIndex: selectedIndex,
-              onDestinationSelected: (index) => _onItemTapped(index, context),
+              onDestinationSelected: (index) => _onItemTapped(index, context, navItems),
               labelType: NavigationRailLabelType.selected,
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
@@ -182,7 +182,7 @@ class ShellScreen extends ConsumerWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                             ),
-                            onTap: () => _onItemTapped(index, context),
+                            onTap: () => _onItemTapped(index, context, navItems),
                           ),
                         );
                       },
