@@ -152,7 +152,7 @@ class SuperAdminDashboardScreen extends ConsumerWidget {
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: stats.recentInstitutes.length,
-                              separatorBuilder: (_, __) => Divider(height: 1, color: colors.outline.withValues(alpha: 0.05)),
+                              separatorBuilder: (_, index) => Divider(height: 1, color: colors.outline.withValues(alpha: 0.05)),
                               itemBuilder: (context, index) {
                                 final org = stats.recentInstitutes[index];
                                 return ListTile(

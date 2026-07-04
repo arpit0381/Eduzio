@@ -52,7 +52,7 @@ class AttendanceScreen extends StatelessWidget {
                     return Flex(
                       direction: isWide ? Axis.horizontal : Axis.vertical,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: isWide ? CrossAxisAlignment.start : CrossAxisAlignment.stretch,
                       children: [
                         // Card 1: Mark Attendance
                         Expanded(

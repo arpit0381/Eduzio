@@ -144,7 +144,6 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       // Copy pill button
                       Material(
                         color: colors.surface,
-                        borderRadius: BorderRadius.circular(18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18),
                           side: BorderSide(color: colors.outline.withValues(alpha: 0.1)),

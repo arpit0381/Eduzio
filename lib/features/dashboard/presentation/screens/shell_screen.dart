@@ -68,7 +68,12 @@ class ShellScreen extends ConsumerWidget {
 
   void _onItemTapped(int index, BuildContext context, List<_NavItem> items) {
     if (index >= 0 && index < items.length) {
-      context.go(items[index].path);
+      final path = items[index].path;
+      Future.microtask(() {
+        if (context.mounted) {
+          context.go(path);
+        }
+      });
     }
   }
 
