@@ -207,13 +207,18 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     const SizedBox(height: 32),
 
                     // Main dynamic columns (Schedule + Actions)
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Left Column (Active Batches)
-                        Expanded(
-                          flex: size.width > 900 ? 2 : 1,
-                          child: Column(
+                    ResponsiveBuilder(
+                      builder: (context, sizingInformation) {
+                        final isDesktop = sizingInformation.isDesktop;
+                        
+                        return Flex(
+                          direction: isDesktop ? Axis.horizontal : Axis.vertical,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Left Column (Active Batches)
+                            Expanded(
+                              flex: isDesktop ? 2 : 0, // Expanded only makes sense if there's flexible space. 0 makes it take required space in vertical.
+                              child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -253,14 +258,15 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                                       ),
                               ),
                             ],
+                            ),
                           ),
-                        ),
-
-                        // Right Column (Quick Actions)
-                        if (size.width > 900) ...[
-                          const SizedBox(width: 24),
+                          
+                          // Right Column (Quick Actions)
+                          if (!isDesktop) const SizedBox(height: 32),
+                          if (isDesktop) const SizedBox(width: 24),
+                          
                           Expanded(
-                            flex: 1,
+                            flex: isDesktop ? 1 : 0,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -290,10 +296,11 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                                   ),
                                 ),
                               ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
+                          ],
+                        );
+                      }
                     ).animate().fade(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
                   ],
                 );
