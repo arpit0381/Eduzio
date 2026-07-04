@@ -216,88 +216,23 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Left Column (Active Batches)
-                            Expanded(
-                              flex: isDesktop ? 2 : 0, // Expanded only makes sense if there's flexible space. 0 makes it take required space in vertical.
-                              child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Active Batches',
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Card(
-                                child: stats.recentBatches.isEmpty
-                                    ? _buildEmptyState(context, 'No active batches found.')
-                                    : ListView.separated(
-                                        shrinkWrap: true,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemCount: stats.recentBatches.length,
-                                        separatorBuilder: (_, index) => Divider(height: 1, color: colors.outline.withValues(alpha: 0.05)),
-                                        itemBuilder: (context, index) {
-                                          final batch = stats.recentBatches[index];
-                                          return ListTile(
-                                            contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                                            leading: Container(
-                                              padding: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                color: colors.primary.withValues(alpha: 0.05),
-                                                borderRadius: BorderRadius.circular(14),
-                                              ),
-                                              child: Icon(LucideIcons.bookOpen, color: colors.primary, size: 20),
-                                            ),
-                                            title: Text(batch.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                            subtitle: Text('Code: ${batch.code}', style: GoogleFonts.inter()),
-                                            trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
-                                            onTap: () {},
-                                          );
-                                        },
-                                      ),
-                              ),
-                            ],
-                            ),
-                          ),
+                            isDesktop 
+                              ? Expanded(
+                                  flex: 2,
+                                  child: _buildLeftColumn(theme, stats, colors, context),
+                                )
+                              : _buildLeftColumn(theme, stats, colors, context),
                           
                           // Right Column (Quick Actions)
                           if (!isDesktop) const SizedBox(height: 32),
                           if (isDesktop) const SizedBox(width: 24),
                           
-                          Expanded(
-                            flex: isDesktop ? 1 : 0,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Quick Actions',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: -0.5,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(24.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: [
-                                        _buildActionButton(context, 'Take Attendance', LucideIcons.clipboardCheck, colors.primary),
-                                        const SizedBox(height: 12),
-                                        _buildActionButton(context, 'Add New Student', LucideIcons.userPlus, colors.secondary),
-                                        const SizedBox(height: 12),
-                                        _buildActionButton(context, 'Create Homework', LucideIcons.plusCircle, Colors.blueGrey),
-                                        const SizedBox(height: 12),
-                                        _buildActionButton(context, 'View Reports', LucideIcons.barChart3, Colors.orange),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              ),
-                            ),
+                          isDesktop
+                            ? Expanded(
+                                flex: 1,
+                                child: _buildRightColumn(theme, colors, context),
+                              )
+                            : _buildRightColumn(theme, colors, context),
                           ],
                         );
                       }
@@ -311,6 +246,83 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildLeftColumn(ThemeData theme, dynamic stats, ColorScheme colors, BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Active Batches',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Card(
+          child: stats.recentBatches.isEmpty
+              ? _buildEmptyState(context, 'No active batches found.')
+              : ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: stats.recentBatches.length,
+                  separatorBuilder: (_, index) => Divider(height: 1, color: colors.outline.withValues(alpha: 0.05)),
+                  itemBuilder: (context, index) {
+                    final batch = stats.recentBatches[index];
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      leading: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: colors.primary.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(LucideIcons.bookOpen, color: colors.primary, size: 20),
+                      ),
+                      title: Text(batch.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text('Code: ${batch.code}', style: GoogleFonts.inter()),
+                      trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
+                      onTap: () {},
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRightColumn(ThemeData theme, ColorScheme colors, BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Actions',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildActionButton(context, 'Take Attendance', LucideIcons.clipboardCheck, colors.primary),
+                const SizedBox(height: 12),
+                _buildActionButton(context, 'Add New Student', LucideIcons.userPlus, colors.secondary),
+                const SizedBox(height: 12),
+                _buildActionButton(context, 'Create Homework', LucideIcons.plusCircle, Colors.blueGrey),
+                const SizedBox(height: 12),
+                _buildActionButton(context, 'View Reports', LucideIcons.barChart3, Colors.orange),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
