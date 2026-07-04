@@ -201,6 +201,24 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/onboard';
       }
 
+      // ── 4. Role-based route guards ──
+
+      // Students cannot access admin/teacher-only routes
+      if (user.role == UserProfileRole.student) {
+        const studentBlockedRoutes = ['/batches', '/students', '/teachers', '/exams', '/institutes'];
+        for (final route in studentBlockedRoutes) {
+          if (currentLoc.startsWith(route)) return '/dashboard';
+        }
+      }
+
+      // Admins/Teachers cannot access super-admin-only routes
+      if (user.role == UserProfileRole.admin || user.role == UserProfileRole.teacher) {
+        const adminBlockedRoutes = ['/institutes'];
+        for (final route in adminBlockedRoutes) {
+          if (currentLoc.startsWith(route)) return '/dashboard';
+        }
+      }
+
       return null;
     },
   );

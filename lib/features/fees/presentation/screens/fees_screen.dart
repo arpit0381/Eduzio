@@ -12,12 +12,19 @@ class FeesScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
+    final horizontalPadding = getValueForScreenType<double>(
+      context: context,
+      mobile: 16,
+      tablet: 24,
+      desktop: 24,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fee Management'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
