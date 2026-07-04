@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/sizes.dart';
+import '../controllers/dashboard_controller.dart';
 
-class SuperAdminDashboardScreen extends StatelessWidget {
+class SuperAdminDashboardScreen extends ConsumerWidget {
   const SuperAdminDashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final size = MediaQuery.sizeOf(context);
@@ -67,52 +68,68 @@ class SuperAdminDashboardScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSizes.lg),
 
-            Text(
-              'Platform Stats',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: AppSizes.md),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: AppSizes.md,
-              mainAxisSpacing: AppSizes.md,
-              childAspectRatio: 2.0,
-              children: [
-                _buildStatCard(context, 'Total Institutes', '45', Icons.business, Colors.blue),
-                _buildStatCard(context, 'Total Users', '12,400', Icons.people, Colors.teal),
-                _buildStatCard(context, 'Active Sessions', '890', Icons.stacked_line_chart, Colors.orange),
-              ],
-            ),
-            const SizedBox(height: AppSizes.lg),
+            ref.watch(superAdminDashboardStatsProvider).when(
+              data: (stats) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Platform Stats',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: AppSizes.md),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: AppSizes.md,
+                      mainAxisSpacing: AppSizes.md,
+                      childAspectRatio: 2.0,
+                      children: [
+                        _buildStatCard(context, 'Total Institutes', '${stats.totalInstitutes}', Icons.business, Colors.blue),
+                        _buildStatCard(context, 'Total Users', '${stats.totalUsers}', Icons.people, Colors.teal),
+                      ],
+                    ),
+                    const SizedBox(height: AppSizes.lg),
 
-            Text(
-              'Recent Institutes',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: AppSizes.md),
-            Card(
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 3,
-                separatorBuilder: (_, _) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: colors.surfaceContainerHighest,
-                      child: const Icon(Icons.business_outlined),
+                    Text(
+                      'Recent Institutes',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    title: Text('Institute ${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('inst${index + 1}.eduzio.in'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.arrow_forward_ios, size: 14),
-                      onPressed: () {},
+                    const SizedBox(height: AppSizes.md),
+                    Card(
+                      child: stats.recentInstitutes.isEmpty
+                        ? const Padding(
+                            padding: EdgeInsets.all(AppSizes.lg),
+                            child: Center(child: Text('No institutes found.')),
+                          )
+                        : ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: stats.recentInstitutes.length,
+                            separatorBuilder: (_, _) => const Divider(height: 1),
+                            itemBuilder: (context, index) {
+                              final org = stats.recentInstitutes[index];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: colors.surfaceContainerHighest,
+                                  child: const Icon(Icons.business_outlined),
+                                ),
+                                title: Text(org.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                subtitle: Text(org.subdomain),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.arrow_forward_ios, size: 14),
+                                  onPressed: () {},
+                                ),
+                              );
+                            },
+                          ),
                     ),
-                  );
-                },
-              ),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err')),
             ),
           ],
         ),
