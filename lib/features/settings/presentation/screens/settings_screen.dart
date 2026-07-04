@@ -156,9 +156,9 @@ class SettingsScreen extends ConsumerWidget {
                         color: colors.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
                     ),
-                    value: true,
+                    value: ref.watch(notificationsEnabledProvider),
                     onChanged: (val) {
-                      // TODO: Implement notification toggle
+                      ref.read(notificationsEnabledProvider.notifier).toggle();
                     },
                   ),
                 ],

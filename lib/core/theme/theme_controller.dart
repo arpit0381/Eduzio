@@ -39,3 +39,31 @@ class ThemeController extends Notifier<ThemeMode> {
     await setThemeMode(newMode);
   }
 }
+
+// ── Notification Preference ──────────────────────────────────────────────
+
+const _notifPrefKey = 'eduzio_notifications_enabled';
+
+final notificationsEnabledProvider =
+    NotifierProvider<NotificationsController, bool>(() {
+  return NotificationsController();
+});
+
+class NotificationsController extends Notifier<bool> {
+  @override
+  bool build() {
+    _loadFromPrefs();
+    return true; // default: enabled
+  }
+
+  Future<void> _loadFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = prefs.getBool(_notifPrefKey) ?? true;
+  }
+
+  Future<void> toggle() async {
+    state = !state;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_notifPrefKey, state);
+  }
+}
