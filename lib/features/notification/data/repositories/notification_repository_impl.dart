@@ -63,26 +63,26 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<List<CachedNotification6200>> getNotificationHistory() async {
-    final list = await _isar.collection<CachedNotification6200>().where().findAll();
+  Future<List<CachedNotification1816>> getNotificationHistory() async {
+    final list = await _isar.collection<CachedNotification1816>().where().findAll();
     list.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
     return list;
   }
 
   @override
-  Future<void> saveNotification(CachedNotification6200 notification) async {
+  Future<void> saveNotification(CachedNotification1816 notification) async {
     await _isar.writeTxn(() async {
-      await _isar.collection<CachedNotification6200>().put(notification);
+      await _isar.collection<CachedNotification1816>().put(notification);
     });
   }
 
   @override
   Future<void> markAsRead(int id) async {
     await _isar.writeTxn(() async {
-      final notification = await _isar.collection<CachedNotification6200>().get(id);
+      final notification = await _isar.collection<CachedNotification1816>().get(id);
       if (notification != null) {
         notification.isRead = true;
-        await _isar.collection<CachedNotification6200>().put(notification);
+        await _isar.collection<CachedNotification1816>().put(notification);
       }
     });
   }
@@ -90,11 +90,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   Future<void> markAllAsRead() async {
     await _isar.writeTxn(() async {
-      final list = await _isar.collection<CachedNotification6200>().where().findAll();
+      final list = await _isar.collection<CachedNotification1816>().where().findAll();
       final unread = list.where((n) => !n.isRead).toList();
       for (final n in unread) {
         n.isRead = true;
-        await _isar.collection<CachedNotification6200>().put(n);
+        await _isar.collection<CachedNotification1816>().put(n);
       }
     });
   }
@@ -102,20 +102,20 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   Future<void> deleteNotification(int id) async {
     await _isar.writeTxn(() async {
-      await _isar.collection<CachedNotification6200>().delete(id);
+      await _isar.collection<CachedNotification1816>().delete(id);
     });
   }
 
   @override
   Future<void> clearAllNotifications() async {
     await _isar.writeTxn(() async {
-      await _isar.collection<CachedNotification6200>().clear();
+      await _isar.collection<CachedNotification1816>().clear();
     });
   }
 
   @override
-  Future<List<CachedNotification6200>> searchNotifications(String query) async {
-    final list = await _isar.collection<CachedNotification6200>().where().findAll();
+  Future<List<CachedNotification1816>> searchNotifications(String query) async {
+    final list = await _isar.collection<CachedNotification1816>().where().findAll();
     if (query.isEmpty) {
       list.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
       return list;

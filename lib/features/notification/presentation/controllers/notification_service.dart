@@ -180,7 +180,7 @@ class NotificationService {
     final payload = data['payload'] as String?;
 
     // Create local Isar record
-    final localNotif = CachedNotification6200()
+    final localNotif = CachedNotification1816()
       ..remoteId = message.messageId
       ..title = notification.title ?? 'No Title'
       ..body = notification.body ?? 'No Body'

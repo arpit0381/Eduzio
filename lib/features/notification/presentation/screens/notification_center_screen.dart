@@ -160,7 +160,7 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
     );
   }
 
-  Widget _buildNotificationCard(BuildContext context, CachedNotification6200 item) {
+  Widget _buildNotificationCard(BuildContext context, CachedNotification1816 item) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 

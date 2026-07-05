@@ -15,9 +15,9 @@ abstract class NotificationRepository {
   
   Future<void> savePreferences(NotificationPreferences prefs);
 
-  Future<List<CachedNotification6200>> getNotificationHistory();
+  Future<List<CachedNotification1816>> getNotificationHistory();
 
-  Future<void> saveNotification(CachedNotification6200 notification);
+  Future<void> saveNotification(CachedNotification1816 notification);
 
   Future<void> markAsRead(int id);
 
@@ -27,5 +27,5 @@ abstract class NotificationRepository {
 
   Future<void> clearAllNotifications();
 
-  Future<List<CachedNotification6200>> searchNotifications(String query);
+  Future<List<CachedNotification1816>> searchNotifications(String query);
 }

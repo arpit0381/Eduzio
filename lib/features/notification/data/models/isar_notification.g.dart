@@ -9,14 +9,14 @@ part of 'isar_notification.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetCachedNotification6200Collection on Isar {
-  IsarCollection<CachedNotification6200> get cachedNotification6200s =>
+extension GetCachedNotification1816Collection on Isar {
+  IsarCollection<CachedNotification1816> get cachedNotification1816s =>
       this.collection();
 }
 
-const CachedNotification6200Schema = CollectionSchema(
-  name: r'CachedNotification6200',
-  id: 1044350065313109056,
+const CachedNotification1816Schema = CollectionSchema(
+  name: r'CachedNotification1816',
+  id: 4001865962407507,
   properties: {
     r'body': PropertySchema(
       id: 0,
@@ -59,15 +59,15 @@ const CachedNotification6200Schema = CollectionSchema(
       type: IsarType.string,
     )
   },
-  estimateSize: _cachedNotification6200EstimateSize,
-  serialize: _cachedNotification6200Serialize,
-  deserialize: _cachedNotification6200Deserialize,
-  deserializeProp: _cachedNotification6200DeserializeProp,
+  estimateSize: _cachedNotification1816EstimateSize,
+  serialize: _cachedNotification1816Serialize,
+  deserialize: _cachedNotification1816Deserialize,
+  deserializeProp: _cachedNotification1816DeserializeProp,
   idName: r'id',
   indexes: {
-    r'remoteId1700': IndexSchema(
-      id: -4184055308194292598,
-      name: r'remoteId1700',
+    r'remoteId991': IndexSchema(
+      id: -6230338909875174,
+      name: r'remoteId991',
       unique: true,
       replace: true,
       properties: [
@@ -81,14 +81,14 @@ const CachedNotification6200Schema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
-  getId: _cachedNotification6200GetId,
-  getLinks: _cachedNotification6200GetLinks,
-  attach: _cachedNotification6200Attach,
+  getId: _cachedNotification1816GetId,
+  getLinks: _cachedNotification1816GetLinks,
+  attach: _cachedNotification1816Attach,
   version: '3.1.0+1',
 );
 
-int _cachedNotification6200EstimateSize(
-  CachedNotification6200 object,
+int _cachedNotification1816EstimateSize(
+  CachedNotification1816 object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -122,8 +122,8 @@ int _cachedNotification6200EstimateSize(
   return bytesCount;
 }
 
-void _cachedNotification6200Serialize(
-  CachedNotification6200 object,
+void _cachedNotification1816Serialize(
+  CachedNotification1816 object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
@@ -138,13 +138,13 @@ void _cachedNotification6200Serialize(
   writer.writeString(offsets[7], object.type);
 }
 
-CachedNotification6200 _cachedNotification6200Deserialize(
+CachedNotification1816 _cachedNotification1816Deserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = CachedNotification6200();
+  final object = CachedNotification1816();
   object.body = reader.readString(offsets[0]);
   object.id = id;
   object.isRead = reader.readBool(offsets[1]);
@@ -157,7 +157,7 @@ CachedNotification6200 _cachedNotification6200Deserialize(
   return object;
 }
 
-P _cachedNotification6200DeserializeProp<P>(
+P _cachedNotification1816DeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -185,81 +185,81 @@ P _cachedNotification6200DeserializeProp<P>(
   }
 }
 
-Id _cachedNotification6200GetId(CachedNotification6200 object) {
+Id _cachedNotification1816GetId(CachedNotification1816 object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _cachedNotification6200GetLinks(
-    CachedNotification6200 object) {
+List<IsarLinkBase<dynamic>> _cachedNotification1816GetLinks(
+    CachedNotification1816 object) {
   return [];
 }
 
-void _cachedNotification6200Attach(
-    IsarCollection<dynamic> col, Id id, CachedNotification6200 object) {
+void _cachedNotification1816Attach(
+    IsarCollection<dynamic> col, Id id, CachedNotification1816 object) {
   object.id = id;
 }
 
-extension CachedNotification6200ByIndex
-    on IsarCollection<CachedNotification6200> {
-  Future<CachedNotification6200?> getByRemoteId(String? remoteId) {
-    return getByIndex(r'remoteId1700', [remoteId]);
+extension CachedNotification1816ByIndex
+    on IsarCollection<CachedNotification1816> {
+  Future<CachedNotification1816?> getByRemoteId(String? remoteId) {
+    return getByIndex(r'remoteId991', [remoteId]);
   }
 
-  CachedNotification6200? getByRemoteIdSync(String? remoteId) {
-    return getByIndexSync(r'remoteId1700', [remoteId]);
+  CachedNotification1816? getByRemoteIdSync(String? remoteId) {
+    return getByIndexSync(r'remoteId991', [remoteId]);
   }
 
   Future<bool> deleteByRemoteId(String? remoteId) {
-    return deleteByIndex(r'remoteId1700', [remoteId]);
+    return deleteByIndex(r'remoteId991', [remoteId]);
   }
 
   bool deleteByRemoteIdSync(String? remoteId) {
-    return deleteByIndexSync(r'remoteId1700', [remoteId]);
+    return deleteByIndexSync(r'remoteId991', [remoteId]);
   }
 
-  Future<List<CachedNotification6200?>> getAllByRemoteId(
+  Future<List<CachedNotification1816?>> getAllByRemoteId(
       List<String?> remoteIdValues) {
     final values = remoteIdValues.map((e) => [e]).toList();
-    return getAllByIndex(r'remoteId1700', values);
+    return getAllByIndex(r'remoteId991', values);
   }
 
-  List<CachedNotification6200?> getAllByRemoteIdSync(
+  List<CachedNotification1816?> getAllByRemoteIdSync(
       List<String?> remoteIdValues) {
     final values = remoteIdValues.map((e) => [e]).toList();
-    return getAllByIndexSync(r'remoteId1700', values);
+    return getAllByIndexSync(r'remoteId991', values);
   }
 
   Future<int> deleteAllByRemoteId(List<String?> remoteIdValues) {
     final values = remoteIdValues.map((e) => [e]).toList();
-    return deleteAllByIndex(r'remoteId1700', values);
+    return deleteAllByIndex(r'remoteId991', values);
   }
 
   int deleteAllByRemoteIdSync(List<String?> remoteIdValues) {
     final values = remoteIdValues.map((e) => [e]).toList();
-    return deleteAllByIndexSync(r'remoteId1700', values);
+    return deleteAllByIndexSync(r'remoteId991', values);
   }
 
-  Future<Id> putByRemoteId(CachedNotification6200 object) {
-    return putByIndex(r'remoteId1700', object);
+  Future<Id> putByRemoteId(CachedNotification1816 object) {
+    return putByIndex(r'remoteId991', object);
   }
 
-  Id putByRemoteIdSync(CachedNotification6200 object, {bool saveLinks = true}) {
-    return putByIndexSync(r'remoteId1700', object, saveLinks: saveLinks);
+  Id putByRemoteIdSync(CachedNotification1816 object, {bool saveLinks = true}) {
+    return putByIndexSync(r'remoteId991', object, saveLinks: saveLinks);
   }
 
-  Future<List<Id>> putAllByRemoteId(List<CachedNotification6200> objects) {
-    return putAllByIndex(r'remoteId1700', objects);
+  Future<List<Id>> putAllByRemoteId(List<CachedNotification1816> objects) {
+    return putAllByIndex(r'remoteId991', objects);
   }
 
-  List<Id> putAllByRemoteIdSync(List<CachedNotification6200> objects,
+  List<Id> putAllByRemoteIdSync(List<CachedNotification1816> objects,
       {bool saveLinks = true}) {
-    return putAllByIndexSync(r'remoteId1700', objects, saveLinks: saveLinks);
+    return putAllByIndexSync(r'remoteId991', objects, saveLinks: saveLinks);
   }
 }
 
-extension CachedNotification6200QueryWhereSort
-    on QueryBuilder<CachedNotification6200, CachedNotification6200, QWhere> {
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterWhere>
+extension CachedNotification1816QueryWhereSort
+    on QueryBuilder<CachedNotification1816, CachedNotification1816, QWhere> {
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterWhere>
       anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
@@ -267,9 +267,9 @@ extension CachedNotification6200QueryWhereSort
   }
 }
 
-extension CachedNotification6200QueryWhere on QueryBuilder<
-    CachedNotification6200, CachedNotification6200, QWhereClause> {
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+extension CachedNotification1816QueryWhere on QueryBuilder<
+    CachedNotification1816, CachedNotification1816, QWhereClause> {
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
@@ -279,7 +279,7 @@ extension CachedNotification6200QueryWhere on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
@@ -302,7 +302,7 @@ extension CachedNotification6200QueryWhere on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -311,7 +311,7 @@ extension CachedNotification6200QueryWhere on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -320,7 +320,7 @@ extension CachedNotification6200QueryWhere on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterWhereClause> idBetween(
     Id lowerId,
     Id upperId, {
@@ -337,21 +337,21 @@ extension CachedNotification6200QueryWhere on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterWhereClause> remoteIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'remoteId1700',
+        indexName: r'remoteId991',
         value: [null],
       ));
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterWhereClause> remoteIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'remoteId1700',
+        indexName: r'remoteId991',
         lower: [null],
         includeLower: false,
         upper: [],
@@ -359,29 +359,29 @@ extension CachedNotification6200QueryWhere on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterWhereClause> remoteIdEqualTo(String? remoteId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'remoteId1700',
+        indexName: r'remoteId991',
         value: [remoteId],
       ));
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterWhereClause> remoteIdNotEqualTo(String? remoteId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'remoteId1700',
+              indexName: r'remoteId991',
               lower: [],
               upper: [remoteId],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'remoteId1700',
+              indexName: r'remoteId991',
               lower: [remoteId],
               includeLower: false,
               upper: [],
@@ -389,13 +389,13 @@ extension CachedNotification6200QueryWhere on QueryBuilder<
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'remoteId1700',
+              indexName: r'remoteId991',
               lower: [remoteId],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'remoteId1700',
+              indexName: r'remoteId991',
               lower: [],
               upper: [remoteId],
               includeUpper: false,
@@ -405,9 +405,9 @@ extension CachedNotification6200QueryWhere on QueryBuilder<
   }
 }
 
-extension CachedNotification6200QueryFilter on QueryBuilder<
-    CachedNotification6200, CachedNotification6200, QFilterCondition> {
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+extension CachedNotification1816QueryFilter on QueryBuilder<
+    CachedNotification1816, CachedNotification1816, QFilterCondition> {
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> bodyEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -421,7 +421,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> bodyGreaterThan(
     String value, {
     bool include = false,
@@ -437,7 +437,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> bodyLessThan(
     String value, {
     bool include = false,
@@ -453,7 +453,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> bodyBetween(
     String lower,
     String upper, {
@@ -473,7 +473,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> bodyStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -487,7 +487,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> bodyEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -501,7 +501,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       bodyContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -513,7 +513,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       bodyMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -525,7 +525,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> bodyIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -535,7 +535,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> bodyIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -545,7 +545,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -555,7 +555,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> idGreaterThan(
     Id value, {
     bool include = false,
@@ -569,7 +569,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> idLessThan(
     Id value, {
     bool include = false,
@@ -583,7 +583,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> idBetween(
     Id lower,
     Id upper, {
@@ -601,7 +601,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> isReadEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -611,7 +611,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -620,7 +620,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -629,7 +629,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadEqualTo(
     String? value, {
     bool caseSensitive = true,
@@ -643,7 +643,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadGreaterThan(
     String? value, {
     bool include = false,
@@ -659,7 +659,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadLessThan(
     String? value, {
     bool include = false,
@@ -675,7 +675,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadBetween(
     String? lower,
     String? upper, {
@@ -695,7 +695,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -709,7 +709,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -723,7 +723,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       payloadContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -735,7 +735,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       payloadMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -747,7 +747,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -757,7 +757,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> payloadIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -767,7 +767,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> receivedAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -777,7 +777,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> receivedAtGreaterThan(
     DateTime value, {
     bool include = false,
@@ -791,7 +791,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> receivedAtLessThan(
     DateTime value, {
     bool include = false,
@@ -805,7 +805,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> receivedAtBetween(
     DateTime lower,
     DateTime upper, {
@@ -823,7 +823,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -832,7 +832,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -841,7 +841,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdEqualTo(
     String? value, {
     bool caseSensitive = true,
@@ -855,7 +855,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdGreaterThan(
     String? value, {
     bool include = false,
@@ -871,7 +871,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdLessThan(
     String? value, {
     bool include = false,
@@ -887,7 +887,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdBetween(
     String? lower,
     String? upper, {
@@ -907,7 +907,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -921,7 +921,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -935,7 +935,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       remoteIdContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -947,7 +947,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       remoteIdMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -959,7 +959,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -969,7 +969,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> remoteIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -979,7 +979,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -988,7 +988,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -997,7 +997,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenEqualTo(
     String? value, {
     bool caseSensitive = true,
@@ -1011,7 +1011,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenGreaterThan(
     String? value, {
     bool include = false,
@@ -1027,7 +1027,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenLessThan(
     String? value, {
     bool include = false,
@@ -1043,7 +1043,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenBetween(
     String? lower,
     String? upper, {
@@ -1063,7 +1063,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -1077,7 +1077,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -1091,7 +1091,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       screenContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1103,7 +1103,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       screenMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1115,7 +1115,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1125,7 +1125,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> screenIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -1135,7 +1135,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -1149,7 +1149,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> titleGreaterThan(
     String value, {
     bool include = false,
@@ -1165,7 +1165,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> titleLessThan(
     String value, {
     bool include = false,
@@ -1181,7 +1181,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> titleBetween(
     String lower,
     String upper, {
@@ -1201,7 +1201,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> titleStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -1215,7 +1215,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> titleEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -1229,7 +1229,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       titleContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1241,7 +1241,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       titleMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1253,7 +1253,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> titleIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1263,7 +1263,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> titleIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -1273,7 +1273,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1282,7 +1282,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
@@ -1291,7 +1291,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeEqualTo(
     String? value, {
     bool caseSensitive = true,
@@ -1305,7 +1305,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeGreaterThan(
     String? value, {
     bool include = false,
@@ -1321,7 +1321,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeLessThan(
     String? value, {
     bool include = false,
@@ -1337,7 +1337,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeBetween(
     String? lower,
     String? upper, {
@@ -1357,7 +1357,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeStartsWith(
     String value, {
     bool caseSensitive = true,
@@ -1371,7 +1371,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeEndsWith(
     String value, {
     bool caseSensitive = true,
@@ -1385,7 +1385,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       typeContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1397,7 +1397,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
           QAfterFilterCondition>
       typeMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1409,7 +1409,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1419,7 +1419,7 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200,
+  QueryBuilder<CachedNotification1816, CachedNotification1816,
       QAfterFilterCondition> typeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
@@ -1430,120 +1430,120 @@ extension CachedNotification6200QueryFilter on QueryBuilder<
   }
 }
 
-extension CachedNotification6200QueryObject on QueryBuilder<
-    CachedNotification6200, CachedNotification6200, QFilterCondition> {}
+extension CachedNotification1816QueryObject on QueryBuilder<
+    CachedNotification1816, CachedNotification1816, QFilterCondition> {}
 
-extension CachedNotification6200QueryLinks on QueryBuilder<
-    CachedNotification6200, CachedNotification6200, QFilterCondition> {}
+extension CachedNotification1816QueryLinks on QueryBuilder<
+    CachedNotification1816, CachedNotification1816, QFilterCondition> {}
 
-extension CachedNotification6200QuerySortBy
-    on QueryBuilder<CachedNotification6200, CachedNotification6200, QSortBy> {
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+extension CachedNotification1816QuerySortBy
+    on QueryBuilder<CachedNotification1816, CachedNotification1816, QSortBy> {
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByBody() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'body', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByBodyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'body', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByIsRead() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isRead', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByIsReadDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isRead', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByPayload() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'payload', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByPayloadDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'payload', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByReceivedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'receivedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByReceivedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'receivedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByRemoteId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'remoteId', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByRemoteIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'remoteId', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByScreen() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'screen', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByScreenDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'screen', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       sortByTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.desc);
@@ -1551,128 +1551,128 @@ extension CachedNotification6200QuerySortBy
   }
 }
 
-extension CachedNotification6200QuerySortThenBy on QueryBuilder<
-    CachedNotification6200, CachedNotification6200, QSortThenBy> {
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+extension CachedNotification1816QuerySortThenBy on QueryBuilder<
+    CachedNotification1816, CachedNotification1816, QSortThenBy> {
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByBody() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'body', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByBodyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'body', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByIsRead() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isRead', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByIsReadDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isRead', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByPayload() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'payload', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByPayloadDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'payload', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByReceivedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'receivedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByReceivedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'receivedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByRemoteId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'remoteId', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByRemoteIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'remoteId', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByScreen() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'screen', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByScreenDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'screen', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QAfterSortBy>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QAfterSortBy>
       thenByTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.desc);
@@ -1680,58 +1680,58 @@ extension CachedNotification6200QuerySortThenBy on QueryBuilder<
   }
 }
 
-extension CachedNotification6200QueryWhereDistinct
-    on QueryBuilder<CachedNotification6200, CachedNotification6200, QDistinct> {
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QDistinct>
+extension CachedNotification1816QueryWhereDistinct
+    on QueryBuilder<CachedNotification1816, CachedNotification1816, QDistinct> {
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QDistinct>
       distinctByBody({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'body', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QDistinct>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QDistinct>
       distinctByIsRead() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isRead');
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QDistinct>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QDistinct>
       distinctByPayload({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'payload', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QDistinct>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QDistinct>
       distinctByReceivedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'receivedAt');
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QDistinct>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QDistinct>
       distinctByRemoteId({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'remoteId', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QDistinct>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QDistinct>
       distinctByScreen({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'screen', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QDistinct>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QDistinct>
       distinctByTitle({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<CachedNotification6200, CachedNotification6200, QDistinct>
+  QueryBuilder<CachedNotification1816, CachedNotification1816, QDistinct>
       distinctByType({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'type', caseSensitive: caseSensitive);
@@ -1739,64 +1739,64 @@ extension CachedNotification6200QueryWhereDistinct
   }
 }
 
-extension CachedNotification6200QueryProperty on QueryBuilder<
-    CachedNotification6200, CachedNotification6200, QQueryProperty> {
-  QueryBuilder<CachedNotification6200, int, QQueryOperations> idProperty() {
+extension CachedNotification1816QueryProperty on QueryBuilder<
+    CachedNotification1816, CachedNotification1816, QQueryProperty> {
+  QueryBuilder<CachedNotification1816, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<CachedNotification6200, String, QQueryOperations>
+  QueryBuilder<CachedNotification1816, String, QQueryOperations>
       bodyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'body');
     });
   }
 
-  QueryBuilder<CachedNotification6200, bool, QQueryOperations>
+  QueryBuilder<CachedNotification1816, bool, QQueryOperations>
       isReadProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isRead');
     });
   }
 
-  QueryBuilder<CachedNotification6200, String?, QQueryOperations>
+  QueryBuilder<CachedNotification1816, String?, QQueryOperations>
       payloadProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'payload');
     });
   }
 
-  QueryBuilder<CachedNotification6200, DateTime, QQueryOperations>
+  QueryBuilder<CachedNotification1816, DateTime, QQueryOperations>
       receivedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'receivedAt');
     });
   }
 
-  QueryBuilder<CachedNotification6200, String?, QQueryOperations>
+  QueryBuilder<CachedNotification1816, String?, QQueryOperations>
       remoteIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'remoteId');
     });
   }
 
-  QueryBuilder<CachedNotification6200, String?, QQueryOperations>
+  QueryBuilder<CachedNotification1816, String?, QQueryOperations>
       screenProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'screen');
     });
   }
 
-  QueryBuilder<CachedNotification6200, String, QQueryOperations>
+  QueryBuilder<CachedNotification1816, String, QQueryOperations>
       titleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'title');
     });
   }
 
-  QueryBuilder<CachedNotification6200, String?, QQueryOperations>
+  QueryBuilder<CachedNotification1816, String?, QQueryOperations>
       typeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'type');

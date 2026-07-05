@@ -3,10 +3,10 @@ import 'package:isar/isar.dart';
 part 'isar_notification.g.dart';
 
 @collection
-class CachedNotification6200 {
+class CachedNotification1816 {
   Id id = Isar.autoIncrement;
 
-  @Index(name: 'remoteId1700', unique: true, replace: true)
+  @Index(name: 'remoteId991', unique: true, replace: true)
   String? remoteId;
 
   late String title;
