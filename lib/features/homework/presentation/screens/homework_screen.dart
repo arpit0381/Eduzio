@@ -133,7 +133,7 @@ class HomeworkScreen extends ConsumerWidget {
   void _showAddDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (ctx) => _HomeworkFormDialog(
+      builder: (ctx) => HomeworkFormDialog(
         onSave: (hw) => ref.read(homeworkListProvider.notifier).addHomework(hw),
       ),
     );
@@ -142,7 +142,7 @@ class HomeworkScreen extends ConsumerWidget {
   void _showEditDialog(BuildContext context, WidgetRef ref, Homework hw) {
     showDialog(
       context: context,
-      builder: (ctx) => _HomeworkFormDialog(
+      builder: (ctx) => HomeworkFormDialog(
         initialHomework: hw,
         onSave: (updated) => ref.read(homeworkListProvider.notifier).editHomework(updated),
       ),
@@ -267,17 +267,17 @@ class _HomeworkCard extends StatelessWidget {
   }
 }
 
-class _HomeworkFormDialog extends ConsumerStatefulWidget {
+class HomeworkFormDialog extends ConsumerStatefulWidget {
   final Homework? initialHomework;
   final Future<void> Function(Homework) onSave;
 
-  const _HomeworkFormDialog({this.initialHomework, required this.onSave});
+  const HomeworkFormDialog({super.key, this.initialHomework, required this.onSave});
 
   @override
-  ConsumerState<_HomeworkFormDialog> createState() => _HomeworkFormDialogState();
+  ConsumerState<HomeworkFormDialog> createState() => _HomeworkFormDialogState();
 }
 
-class _HomeworkFormDialogState extends ConsumerState<_HomeworkFormDialog> {
+class _HomeworkFormDialogState extends ConsumerState<HomeworkFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleCtrl;
   late final TextEditingController _descCtrl;

@@ -11,6 +11,7 @@ import '../../domain/entities/attendance_record.dart';
 import '../../../student/domain/entities/student_detail.dart';
 import '../../../student/domain/entities/student_guardian.dart';
 import '../../../auth/domain/entities/user_profile.dart';
+import '../../../auth/presentation/controllers/auth_controller.dart';
 
 /// Provider for AttendanceRepository
 final attendanceRepositoryProvider = Provider<AttendanceRepository>((ref) {
@@ -144,6 +145,55 @@ final batchAttendanceReportProvider = FutureProvider.family<List<AttendanceRecor
       markedBy: json['marked_by'] as String?,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+    );
+  }).toList();
+});
+
+class StudentAttendanceLog {
+  final AttendanceRecord record;
+  final String batchName;
+  final String batchCode;
+
+  StudentAttendanceLog({
+    required this.record,
+    required this.batchName,
+    required this.batchCode,
+  });
+}
+
+final studentAttendanceLogsProvider = FutureProvider<List<StudentAttendanceLog>>((ref) async {
+  final client = ref.watch(supabaseClientProvider);
+  final user = ref.watch(authStateProvider).value;
+  if (user == null) return [];
+
+  final response = await client
+      .from('attendance')
+      .select('*, batches(name, code)')
+      .eq('student_id', user.id)
+      .order('date', ascending: false);
+
+  return (response as List).map((json) {
+    final record = AttendanceRecord(
+      id: json['id'] as String,
+      organizationId: json['organization_id'] as String,
+      batchId: json['batch_id'] as String,
+      studentId: json['student_id'] as String,
+      date: DateTime.parse(json['date'] as String),
+      status: AttendanceStatus.fromKey(json['status'] as String),
+      remarks: json['remarks'] as String?,
+      markedBy: json['marked_by'] as String?,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+    );
+
+    final batchData = json['batches'] as Map<String, dynamic>?;
+    final batchName = batchData?['name'] as String? ?? 'Unknown Batch';
+    final batchCode = batchData?['code'] as String? ?? 'N/A';
+
+    return StudentAttendanceLog(
+      record: record,
+      batchName: batchName,
+      batchCode: batchCode,
     );
   }).toList();
 });

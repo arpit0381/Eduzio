@@ -10,6 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/dashboard_controller.dart';
+import '../../../homework/presentation/screens/homework_screen.dart';
+import '../../../homework/presentation/controllers/homework_controller.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -364,7 +366,30 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 const SizedBox(height: 12),
                 _buildActionButton(context, 'Add New Student', LucideIcons.userPlus, colors.secondary, () => context.go('/students')),
                 const SizedBox(height: 12),
-                _buildActionButton(context, 'Create Homework', LucideIcons.plusCircle, Colors.blueGrey, () => context.go('/homework')),
+                _buildActionButton(
+                  context,
+                  'Create Homework',
+                  LucideIcons.plusCircle,
+                  Colors.blueGrey,
+                  () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => HomeworkFormDialog(
+                        onSave: (hw) async {
+                          await ref.read(homeworkListProvider.notifier).addHomework(hw);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Homework assignment posted successfully!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    );
+                  },
+                ),
                 const SizedBox(height: 12),
                 _buildActionButton(context, 'View Reports', LucideIcons.barChart3, Colors.orange, () => context.go('/attendance/reports')),
               ],
