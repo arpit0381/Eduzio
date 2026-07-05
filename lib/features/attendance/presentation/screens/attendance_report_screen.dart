@@ -6,6 +6,7 @@ import '../../domain/entities/attendance_record.dart';
 import '../controllers/attendance_controller.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
 import '../../../../shared/widgets/responsive_layout.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AttendanceReportScreen extends ConsumerStatefulWidget {
   const AttendanceReportScreen({super.key});
@@ -35,30 +36,30 @@ class _AttendanceReportScreenState extends ConsumerState<AttendanceReportScreen>
         data: (batches) {
           if (batches.isEmpty) {
             return Center(
-              child: Card(
-                elevation: 0,
-                color: theme.colorScheme.errorContainer,
-                margin: const EdgeInsets.all(24),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.warning, size: 48, color: theme.colorScheme.error),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No Batches Available',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.onErrorContainer,
-                        ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(
+                      'public/undraw_share-results_lfh5.svg',
+                      height: 180,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'No Batches Available',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Create a batch to view attendance statistics and reports.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Create a batch to view attendance statistics and reports.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             );

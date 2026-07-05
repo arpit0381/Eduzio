@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class FeesScreen extends StatelessWidget {
   const FeesScreen({super.key});
@@ -28,6 +29,69 @@ class FeesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Premium Welcome Card with SVG
+            Builder(
+              builder: (context) {
+                final isMobile = getValueForScreenType<bool>(
+                  context: context,
+                  mobile: true,
+                  tablet: false,
+                  desktop: false,
+                );
+                return Card(
+                  elevation: 0,
+                  color: colors.primaryContainer.withValues(alpha: 0.15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    side: BorderSide(color: colors.primary.withValues(alpha: 0.08)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Fee Management 💰',
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colors.onSurface,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Review, collect, and manage student fee structures, track outstanding balances, and check invoice histories.',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colors.onSurfaceVariant.withValues(alpha: 0.7),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!isMobile) ...[
+                          const SizedBox(width: 24),
+                          Expanded(
+                            flex: 2,
+                            child: SvgPicture.asset(
+                              'public/undraw_calculator_os9t.svg',
+                              height: 100,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              }
+            ).animate().fade(duration: 400.ms).slideY(begin: 0.1, end: 0),
+            const SizedBox(height: 24),
+
             // Responsive Apple Health styled summary analytics row
             Builder(
               builder: (context) {

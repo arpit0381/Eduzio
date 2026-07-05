@@ -6,6 +6,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../controllers/dashboard_controller.dart';
+import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../domain/entities/dashboard_stats.dart';
 
 class StudentDashboardScreen extends ConsumerWidget {
   const StudentDashboardScreen({super.key});
@@ -80,7 +82,7 @@ class StudentDashboardScreen extends ConsumerWidget {
                                     letterSpacing: -0.5,
                                   ),
                                 ),
-                                error: (_, __) => Text(
+                                error: (_, s) => Text(
                                   'Welcome back! 👋',
                                   style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,

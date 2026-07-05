@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/sizes.dart';
 
 class AttendanceScreen extends StatelessWidget {
@@ -44,7 +45,15 @@ class AttendanceScreen extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 24),
+                Center(
+                  child: SvgPicture.asset(
+                    'public/undraw_reading-time_jva3.svg',
+                    height: 160,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 36),
 
                 // Grid Menu Layout
                 Builder(

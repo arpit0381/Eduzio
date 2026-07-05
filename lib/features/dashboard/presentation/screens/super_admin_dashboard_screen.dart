@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -29,41 +30,62 @@ class SuperAdminDashboardScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Apple Health style dynamic greeting header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Overview',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
+            Builder(
+              builder: (context) {
+                final isTabletOrDesktop = MediaQuery.sizeOf(context).width > 600;
+                return Card(
+                  elevation: 0,
+                  color: colors.primaryContainer.withValues(alpha: 0.15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    side: BorderSide(
+                      color: colors.primary.withValues(alpha: 0.08),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'System Overview',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -1.0,
-                        color: colors.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: colors.outline.withValues(alpha: 0.1)),
                   ),
-                  child: Icon(LucideIcons.settings, color: colors.onSurface, size: 20),
-                ),
-              ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Super Admin Platform Control 🛡️',
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colors.onSurface,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Manage all organizations, active users, domains, subscription configurations, and monitor network health from a single premium panel.',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colors.onSurfaceVariant.withValues(alpha: 0.7),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isTabletOrDesktop) ...[
+                          const SizedBox(width: 24),
+                          Expanded(
+                            flex: 2,
+                            child: SvgPicture.asset(
+                              'public/undraw_investing_uzcu.svg',
+                              height: 110,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              }
             ).animate().fade(duration: 400.ms).slideY(begin: 0.1, end: 0),
             const SizedBox(height: 32),
 
