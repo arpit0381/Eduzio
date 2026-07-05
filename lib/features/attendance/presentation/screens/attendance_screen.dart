@@ -10,7 +10,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
-import '../../../dashboard/presentation/controllers/dashboard_controller.dart';
 import '../controllers/attendance_controller.dart';
 import '../../domain/entities/attendance_record.dart';
 
