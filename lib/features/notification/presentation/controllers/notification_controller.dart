@@ -73,16 +73,16 @@ final notificationPreferencesProvider = NotifierProvider<NotificationPreferences
 });
 
 // AsyncNotifier for NotificationHistory
-class NotificationHistoryController extends AsyncNotifier<List<IsarNotification>> {
+class NotificationHistoryController extends AsyncNotifier<List<CachedNotification6200>> {
   late final NotificationRepository _repository;
 
   @override
-  Future<List<IsarNotification>> build() async {
+  Future<List<CachedNotification6200>> build() async {
     _repository = ref.watch(notificationRepositoryProvider);
     return _repository.getNotificationHistory();
   }
 
-  Future<void> addNotification(IsarNotification notification) async {
+  Future<void> addNotification(CachedNotification6200 notification) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await _repository.saveNotification(notification);
@@ -130,6 +130,6 @@ class NotificationHistoryController extends AsyncNotifier<List<IsarNotification>
   }
 }
 
-final notificationHistoryProvider = AsyncNotifierProvider<NotificationHistoryController, List<IsarNotification>>(() {
+final notificationHistoryProvider = AsyncNotifierProvider<NotificationHistoryController, List<CachedNotification6200>>(() {
   return NotificationHistoryController();
 });

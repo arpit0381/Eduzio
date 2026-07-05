@@ -15,7 +15,7 @@ Future<Widget> createRootWidget(Widget child, SharedPreferences prefs) async {
   final isar = await Isar.open(
     [
       IsarAttendanceRecordSchema,
-      IsarNotificationSchema,
+      CachedNotification6200Schema,
       IsarUploadTaskSchema,
     ],
     directory: dir.path,
