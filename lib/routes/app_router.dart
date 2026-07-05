@@ -29,6 +29,8 @@ import '../features/homework/presentation/screens/homework_screen.dart';
 import '../features/exam/presentation/screens/exam_screen.dart';
 import '../features/fees/presentation/screens/fees_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
+import '../features/notification/presentation/screens/notification_center_screen.dart';
+import '../features/notification/presentation/screens/notification_preferences_screen.dart';
 import '../features/splash/presentation/screens/splash_screen.dart';
 
 /// Helper class to convert a Stream into a Listenable for GoRouter refresh notifier
