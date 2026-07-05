@@ -440,7 +440,6 @@ class StudentDashboardScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
         child: Column(
           children: [
-          children: [
             SvgPicture.asset(
               'public/undraw_reading-time_jva3.svg',
               height: 120,
