@@ -5,6 +5,8 @@ import 'package:responsive_builder/responsive_builder.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/theme/theme_controller.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../../auth/domain/entities/user_profile.dart';
+import '../../../../shared/widgets/logout_confirmation_dialog.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
