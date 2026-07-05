@@ -20,12 +20,15 @@ final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
   return NotificationRepositoryImpl(supabase, isar, prefs);
 });
 
-// StateNotifier for NotificationPreferences
-class NotificationPreferencesController extends StateNotifier<NotificationPreferences> {
-  final NotificationRepository _repository;
+// Notifier for NotificationPreferences
+class NotificationPreferencesController extends Notifier<NotificationPreferences> {
+  late final NotificationRepository _repository;
 
-  NotificationPreferencesController(this._repository) : super(const NotificationPreferences()) {
+  @override
+  NotificationPreferences build() {
+    _repository = ref.watch(notificationRepositoryProvider);
     _loadPreferences();
+    return const NotificationPreferences();
   }
 
   Future<void> _loadPreferences() async {
@@ -65,9 +68,8 @@ class NotificationPreferencesController extends StateNotifier<NotificationPrefer
   }
 }
 
-final notificationPreferencesProvider = StateNotifierProvider<NotificationPreferencesController, NotificationPreferences>((ref) {
-  final repo = ref.watch(notificationRepositoryProvider);
-  return NotificationPreferencesController(repo);
+final notificationPreferencesProvider = NotifierProvider<NotificationPreferencesController, NotificationPreferences>(() {
+  return NotificationPreferencesController();
 });
 
 // AsyncNotifier for NotificationHistory
@@ -128,6 +130,6 @@ class NotificationHistoryController extends AutoDisposeAsyncNotifier<List<IsarNo
   }
 }
 
-final notificationHistoryProvider = AsyncNotifierProvider.autoDispose<NotificationHistoryController, List<IsarNotification>>(() {
+final notificationHistoryProvider = AutoDisposeAsyncNotifierProvider<NotificationHistoryController, List<IsarNotification>>(() {
   return NotificationHistoryController();
 });

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import '../../../../core/constants/sizes.dart';
@@ -161,6 +162,21 @@ class SettingsScreen extends ConsumerWidget {
                     value: ref.watch(notificationsEnabledProvider),
                     onChanged: (val) {
                       ref.read(notificationsEnabledProvider.notifier).toggle();
+                    },
+                  ),
+                  Divider(height: 1, color: colors.outline.withValues(alpha: 0.08)),
+                  ListTile(
+                    leading: Icon(LucideIcons.bellRing, color: colors.primary),
+                    title: const Text('Notification Preferences'),
+                    subtitle: Text(
+                      'Manage alerts for homework, fees, results, etc.',
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                      ),
+                    ),
+                    trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
+                    onTap: () {
+                      context.go('/settings/notifications');
                     },
                   ),
                 ],

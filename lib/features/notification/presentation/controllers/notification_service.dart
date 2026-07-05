@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
 import '../../domain/repositories/notification_repository.dart';
-import '../models/isar_notification.dart';
+import '../../data/models/isar_notification.dart';
 import 'notification_controller.dart';
 
 // Background handler must be a top-level function

@@ -10,6 +10,7 @@ import '../../../auth/domain/entities/user_profile.dart';
 import '../../../../shared/widgets/logout_confirmation_dialog.dart';
 import '../../domain/entities/dashboard_stats.dart';
 import '../controllers/dashboard_controller.dart';
+import '../../../notification/presentation/controllers/notification_controller.dart';
 
 class _NavItem {
   final String label;
@@ -145,6 +146,9 @@ class ShellScreen extends ConsumerWidget {
     final orgId = userProfileAsync.value?.organizationId;
     final orgDetailsAsync = orgId != null ? ref.watch(instituteDetailsProvider(orgId)) : null;
 
+    final historyAsync = ref.watch(notificationHistoryProvider);
+    final unreadCount = historyAsync.value?.where((n) => !n.isRead).length ?? 0;
+
     final navItems = _getNavItems(role);
     final selectedIndex = _getSelectedIndex(context, navItems);
 
@@ -156,7 +160,7 @@ class ShellScreen extends ConsumerWidget {
     );
 
     if (isMobile) {
-      return _buildMobileLayout(context, ref, role, userProfileAsync, orgDetailsAsync);
+      return _buildMobileLayout(context, ref, role, userProfileAsync, orgDetailsAsync, unreadCount);
     }
 
     final isTablet = getValueForScreenType<bool>(
@@ -172,7 +176,7 @@ class ShellScreen extends ConsumerWidget {
           if (isTablet)
             _buildTabletNavigationRail(context, navItems, selectedIndex),
           if (!isTablet)
-            _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync, orgDetailsAsync),
+            _buildDesktopSidebar(context, ref, navItems, selectedIndex, userProfileAsync, orgDetailsAsync, unreadCount),
           const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE5E7EB)),
           Expanded(child: child),
         ],
@@ -181,7 +185,14 @@ class ShellScreen extends ConsumerWidget {
   }
 
   // ── MOBILE LAYOUT ──────────────────────────────────────────────────────
-  Widget _buildMobileLayout(BuildContext context, WidgetRef ref, UserProfileRole role, AsyncValue<UserProfile?> userProfileAsync, AsyncValue<InstituteDetails>? orgDetailsAsync) {
+  Widget _buildMobileLayout(
+    BuildContext context,
+    WidgetRef ref,
+    UserProfileRole role,
+    AsyncValue<UserProfile?> userProfileAsync,
+    AsyncValue<InstituteDetails>? orgDetailsAsync,
+    int unreadCount,
+  ) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
@@ -257,6 +268,43 @@ class ShellScreen extends ConsumerWidget {
                         ),
                         loading: () => const SizedBox(width: 32, height: 32),
                         error: (e, s) => const SizedBox(width: 32, height: 32),
+                      ),
+                      const SizedBox(width: 4),
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          IconButton(
+                            icon: const Icon(LucideIcons.bell, size: 18),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                            onPressed: () => context.go('/notifications'),
+                          ),
+                          if (unreadCount > 0)
+                            Positioned(
+                              right: 2,
+                              top: 2,
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 14,
+                                  minHeight: 14,
+                                ),
+                                child: Text(
+                                  '$unreadCount',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(width: 4),
                       IconButton(
@@ -465,6 +513,7 @@ class ShellScreen extends ConsumerWidget {
     int selectedIndex,
     AsyncValue<UserProfile?> userProfileAsync,
     AsyncValue<InstituteDetails>? orgDetailsAsync,
+    int unreadCount,
   ) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -613,6 +662,43 @@ class ShellScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      icon: const Icon(LucideIcons.bell, size: 18),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => context.go('/notifications'),
+                    ),
+                    if (unreadCount > 0)
+                      Positioned(
+                        right: -2,
+                        top: -2,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 14,
+                            minHeight: 14,
+                          ),
+                          child: Text(
+                            '$unreadCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(width: 8),
                 IconButton(
                   icon: Icon(LucideIcons.logOut, color: colors.error, size: 18),
                   padding: EdgeInsets.zero,

@@ -59,13 +59,17 @@ class UploadState {
   }
 }
 
-// StateNotifier for active uploads
-class UploadController extends StateNotifier<UploadState> {
-  final UploadRepository _repository;
-  final Connectivity _connectivity;
+// Notifier for active uploads
+class UploadController extends AutoDisposeNotifier<UploadState> {
+  late final UploadRepository _repository;
+  late final Connectivity _connectivity;
 
-  UploadController(this._repository, this._connectivity) : super(const UploadState()) {
+  @override
+  UploadState build() {
+    _repository = ref.watch(uploadRepositoryProvider);
+    _connectivity = ref.watch(connectivityProvider);
     _initConnectivityListener();
+    return const UploadState();
   }
 
   void _initConnectivityListener() {
@@ -138,8 +142,6 @@ class UploadController extends StateNotifier<UploadState> {
   }
 }
 
-final uploadControllerProvider = StateNotifierProvider.autoDispose<UploadController, UploadState>((ref) {
-  final repo = ref.watch(uploadRepositoryProvider);
-  final connectivity = ref.watch(connectivityProvider);
-  return UploadController(repo, connectivity);
+final uploadControllerProvider = AutoDisposeNotifierProvider<UploadController, UploadState>(() {
+  return UploadController();
 });
