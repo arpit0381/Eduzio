@@ -174,6 +174,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'settings',
             builder: (context, state) => const SettingsScreen(),
           ),
+          GoRoute(
+            path: '/notifications',
+            name: 'notifications',
+            builder: (context, state) => const NotificationCenterScreen(),
+          ),
+          GoRoute(
+            path: '/settings/notifications',
+            name: 'notification-preferences',
+            builder: (context, state) => const NotificationPreferencesScreen(),
+          ),
         ],
       ),
     ],
