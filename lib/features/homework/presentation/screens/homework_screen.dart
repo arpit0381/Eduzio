@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../domain/entities/homework.dart';
 import '../controllers/homework_controller.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
+import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../../auth/domain/entities/user_profile.dart';
 
 
 class HomeworkScreen extends ConsumerWidget {
@@ -13,14 +16,18 @@ class HomeworkScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeworkAsync = ref.watch(homeworkListProvider);
+    final userAsync = ref.watch(authStateProvider);
     final theme = Theme.of(context);
+
+    // Only allow admin and superAdmin (and teacher) to edit
+    final bool canEdit = userAsync.value?.role != UserProfileRole.student;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Homework & Assignments'),
         centerTitle: false,
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: canEdit ? FloatingActionButton.extended(
         onPressed: () => _showAddDialog(context, ref),
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
@@ -29,7 +36,7 @@ class HomeworkScreen extends ConsumerWidget {
         ),
         icon: const Icon(LucideIcons.plus),
         label: const Text('Add Homework'),
-      ),
+      ) : null,
       body: homeworkAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(
@@ -55,12 +62,17 @@ class HomeworkScreen extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(LucideIcons.bookOpen, size: 64, color: theme.hintColor),
+                  SvgPicture.asset(
+                    'public/undraw_open-book_pet1.svg',
+                    height: 120,
+                  ),
                   const SizedBox(height: 16),
                   Text('No assignments yet', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 8),
                   Text(
-                    'Create your first homework assignment using the button below.',
+                    canEdit 
+                      ? 'Create your first homework assignment using the button below.'
+                      : 'You have no pending homework assignments.',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
                   ),
@@ -75,6 +87,7 @@ class HomeworkScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               return _HomeworkCard(
                 homework: homeworkList[index],
+                canEdit: canEdit,
                 onDelete: () => _confirmDelete(context, ref, homeworkList[index]),
                 onEdit: () => _showEditDialog(context, ref, homeworkList[index]),
               );
@@ -128,11 +141,13 @@ class HomeworkScreen extends ConsumerWidget {
 
 class _HomeworkCard extends StatelessWidget {
   final Homework homework;
+  final bool canEdit;
   final VoidCallback onDelete;
   final VoidCallback onEdit;
 
   const _HomeworkCard({
     required this.homework,
+    required this.canEdit,
     required this.onDelete,
     required this.onEdit,
   });
@@ -220,16 +235,18 @@ class _HomeworkCard extends StatelessWidget {
                     ),
                   ),
                 const Spacer(),
-                IconButton(
-                  icon: const Icon(LucideIcons.edit3, size: 18),
-                  tooltip: 'Edit',
-                  onPressed: onEdit,
-                ),
-                IconButton(
-                  icon: Icon(LucideIcons.trash2, color: theme.colorScheme.error, size: 18),
-                  tooltip: 'Delete',
-                  onPressed: onDelete,
-                ),
+                if (canEdit) ...[
+                  IconButton(
+                    icon: const Icon(LucideIcons.edit3, size: 18),
+                    tooltip: 'Edit',
+                    onPressed: onEdit,
+                  ),
+                  IconButton(
+                    icon: Icon(LucideIcons.trash2, color: theme.colorScheme.error, size: 18),
+                    tooltip: 'Delete',
+                    onPressed: onDelete,
+                  ),
+                ],
               ],
             ),
           ],
