@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../../core/theme/theme_controller.dart';
-import '../../../auth/domain/entities/user_profile.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -26,8 +24,6 @@ class SettingsScreen extends ConsumerWidget {
       desktop: 24,
     );
 
-    final canConfigureInstitute = userAsync.value?.role != UserProfileRole.student;
-
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 24),
@@ -35,22 +31,13 @@ class SettingsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Settings',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -1.0,
-                    color: colors.onSurface,
-                  ),
-                ),
-                SvgPicture.asset(
-                  'public/undraw_questions_52ic.svg',
-                  height: 60,
-                ),
-              ],
+            Text(
+              'Settings',
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                letterSpacing: -1.0,
+                color: colors.onSurface,
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -180,48 +167,46 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // ── Institute Configuration ──
-            if (canConfigureInstitute) ...[
-              Text(
-                'Institute Configuration',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colors.primary,
-                ),
+            Text(
+              'Institute Configuration',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colors.primary,
               ),
-              const SizedBox(height: AppSizes.sm),
-              Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(LucideIcons.building2, color: colors.onSurfaceVariant),
-                      title: const Text('Institute Profile'),
-                      subtitle: Text(
-                        'Name, logo, contact details',
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                        ),
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Card(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(LucideIcons.building2, color: colors.onSurfaceVariant),
+                    title: const Text('Institute Profile'),
+                    subtitle: Text(
+                      'Name, logo, contact details',
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
-                      trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
-                      onTap: () {},
                     ),
-                    Divider(height: 1, color: colors.outline.withValues(alpha: 0.08)),
-                    ListTile(
-                      leading: Icon(LucideIcons.creditCard, color: colors.onSurfaceVariant),
-                      title: const Text('ID Card Template'),
-                      subtitle: Text(
-                        'Customize printable student ID',
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                        ),
+                    trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
+                    onTap: () {},
+                  ),
+                  Divider(height: 1, color: colors.outline.withValues(alpha: 0.08)),
+                  ListTile(
+                    leading: Icon(LucideIcons.creditCard, color: colors.onSurfaceVariant),
+                    title: const Text('ID Card Template'),
+                    subtitle: Text(
+                      'Customize printable student ID',
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
-                      trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
-                      onTap: () {},
                     ),
-                  ],
-                ),
+                    trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
+                    onTap: () {},
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-            ],
+            ),
+            const SizedBox(height: 24),
 
             // ── Security ──
             Text(
@@ -246,27 +231,7 @@ class SettingsScreen extends ConsumerWidget {
                     leading: Icon(LucideIcons.logOut, color: colors.error),
                     title: Text('Sign Out', style: TextStyle(color: colors.error, fontWeight: FontWeight.w600)),
                     onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text('Sign Out'),
-                          content: const Text('Are you sure you want to sign out?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: const Text('Cancel'),
-                            ),
-                            FilledButton(
-                              style: FilledButton.styleFrom(backgroundColor: colors.error),
-                              onPressed: () {
-                                Navigator.pop(ctx);
-                                ref.read(authControllerProvider.notifier).signOut();
-                              },
-                              child: const Text('Sign Out'),
-                            ),
-                          ],
-                        ),
-                      );
+                      ref.read(authControllerProvider.notifier).signOut();
                     },
                   ),
                 ],

@@ -4,7 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../controllers/dashboard_controller.dart';
 
 class StudentDashboardScreen extends ConsumerWidget {
@@ -261,21 +260,16 @@ class StudentDashboardScreen extends ConsumerWidget {
                           textStyle: theme.textTheme.displayMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             letterSpacing: -1.5,
-                            color: colors.primary,
+                            color: colors.onSurface,
                           ),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Great job! Keep up the good work this month.',
+                        'You have attended almost all classes this month.',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                          color: colors.onSurfaceVariant.withValues(alpha: 0.6),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      SvgPicture.asset(
-                        'public/undraw_studying-science_kk9e.svg',
-                        height: 120,
                       ),
                     ],
                   ),
@@ -440,16 +434,12 @@ class StudentDashboardScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
         child: Column(
           children: [
-            SvgPicture.asset(
-              'public/undraw_reading-time_jva3.svg',
-              height: 120,
-            ),
-            const SizedBox(height: 24),
+            Icon(LucideIcons.layers, size: 40, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
+            const SizedBox(height: 16),
             Text(
               message,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                fontWeight: FontWeight.w500,
+                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
             ),
           ],

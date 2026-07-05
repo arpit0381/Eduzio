@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../controllers/dashboard_controller.dart';
 
 class SuperAdminDashboardScreen extends ConsumerWidget {
@@ -247,16 +246,12 @@ class SuperAdminDashboardScreen extends ConsumerWidget {
       child: Center(
         child: Column(
           children: [
-            SvgPicture.asset(
-              'public/undraw_exploring_d1vd.svg',
-              height: 120,
-            ),
-            const SizedBox(height: 24),
+            Icon(LucideIcons.building, size: 40, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2)),
+            const SizedBox(height: 16),
             Text(
               message,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                fontWeight: FontWeight.w500,
+                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
             ),
           ],

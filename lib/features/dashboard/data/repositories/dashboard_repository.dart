@@ -165,12 +165,38 @@ class DashboardRepository {
           .from('batches')
           .select('id, name, code')
           .inFilter('id', batchIds);
+
+      // Fetch student's attendance records for these batches
+      final studentAttendanceRes = await _client
+          .from('attendance')
+          .select('batch_id, status')
+          .eq('student_id', studentId)
+          .inFilter('batch_id', batchIds);
+
+      final Map<String, List<String>> batchAttendanceMap = {};
+      for (var r in studentAttendanceRes) {
+        final bId = r['batch_id'] as String?;
+        final status = r['status'] as String?;
+        if (bId != null && status != null) {
+          batchAttendanceMap.putIfAbsent(bId, () => []).add(status);
+        }
+      }
           
-      enrolledBatches = batchesRes.map((b) => DashboardBatchItem(
-        id: b['id'] as String,
-        name: b['name'] as String,
-        code: b['code'] as String,
-      )).toList();
+      enrolledBatches = batchesRes.map((b) {
+        final id = b['id'] as String;
+        final list = batchAttendanceMap[id] ?? [];
+        final total = list.length;
+        final attended = list.where((status) => status == 'present').length;
+        final percentage = total > 0 ? (attended / total) * 100 : 100.0;
+        return DashboardBatchItem(
+          id: id,
+          name: b['name'] as String,
+          code: b['code'] as String,
+          attendancePercentage: percentage,
+          totalClasses: total,
+          attendedClasses: attended,
+        );
+      }).toList();
     }
 
     return StudentDashboardStats(

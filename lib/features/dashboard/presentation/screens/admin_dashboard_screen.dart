@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -496,16 +495,12 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
       child: Center(
         child: Column(
           children: [
-            SvgPicture.asset(
-              'public/undraw_share-results_lfh5.svg',
-              height: 120,
-            ),
-            const SizedBox(height: 24),
+            Icon(LucideIcons.grid, size: 40, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2)),
+            const SizedBox(height: 16),
             Text(
               message,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                fontWeight: FontWeight.w500,
+                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
             ),
           ],

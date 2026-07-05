@@ -62,11 +62,17 @@ class DashboardBatchItem {
   final String id;
   final String name;
   final String code;
+  final double? attendancePercentage;
+  final int? totalClasses;
+  final int? attendedClasses;
 
   DashboardBatchItem({
     required this.id,
     required this.name,
     required this.code,
+    this.attendancePercentage,
+    this.totalClasses,
+    this.attendedClasses,
   });
 }
 
