@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/sizes.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
+import '../../../../shared/widgets/logout_confirmation_dialog.dart';
 import '../../domain/entities/dashboard_stats.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -263,7 +264,7 @@ class ShellScreen extends ConsumerWidget {
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                         onPressed: () {
-                          ref.read(authControllerProvider.notifier).signOut();
+                          showLogoutConfirmation(context);
                         },
                       ),
                     ],
@@ -617,7 +618,7 @@ class ShellScreen extends ConsumerWidget {
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () {
-                    ref.read(authControllerProvider.notifier).signOut();
+                    showLogoutConfirmation(context);
                   },
                 ),
               ],

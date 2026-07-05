@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../domain/entities/homework.dart';
 import '../controllers/homework_controller.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
+import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../../auth/domain/entities/user_profile.dart';
 
 
 class HomeworkScreen extends ConsumerWidget {
@@ -14,22 +17,28 @@ class HomeworkScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final homeworkAsync = ref.watch(homeworkListProvider);
     final theme = Theme.of(context);
+    
+    final userProfileAsync = ref.watch(authStateProvider);
+    final role = userProfileAsync.value?.role ?? UserProfileRole.student;
+    final canManage = role == UserProfileRole.admin || role == UserProfileRole.superAdmin;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Homework & Assignments'),
         centerTitle: false,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddDialog(context, ref),
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
-        icon: const Icon(LucideIcons.plus),
-        label: const Text('Add Homework'),
-      ),
+      floatingActionButton: canManage
+          ? FloatingActionButton.extended(
+              onPressed: () => _showAddDialog(context, ref),
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+              icon: const Icon(LucideIcons.plus),
+              label: const Text('Add Homework'),
+            )
+          : null,
       body: homeworkAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(
@@ -52,19 +61,33 @@ class HomeworkScreen extends ConsumerWidget {
         data: (homeworkList) {
           if (homeworkList.isEmpty) {
             return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(LucideIcons.bookOpen, size: 64, color: theme.hintColor),
-                  const SizedBox(height: 16),
-                  Text('No assignments yet', style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Create your first homework assignment using the button below.',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
-                  ),
-                ],
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(
+                      'public/undraw_open-book_pet1.svg',
+                      height: 180,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'No Assignments Yet',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      canManage
+                          ? 'Create your first homework assignment using the button below.'
+                          : 'No homework has been assigned to your batches yet.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -77,6 +100,7 @@ class HomeworkScreen extends ConsumerWidget {
                 homework: homeworkList[index],
                 onDelete: () => _confirmDelete(context, ref, homeworkList[index]),
                 onEdit: () => _showEditDialog(context, ref, homeworkList[index]),
+                canManage: canManage,
               );
             },
           );
@@ -130,11 +154,13 @@ class _HomeworkCard extends StatelessWidget {
   final Homework homework;
   final VoidCallback onDelete;
   final VoidCallback onEdit;
+  final bool canManage;
 
   const _HomeworkCard({
     required this.homework,
     required this.onDelete,
     required this.onEdit,
+    required this.canManage,
   });
 
   @override
@@ -220,16 +246,18 @@ class _HomeworkCard extends StatelessWidget {
                     ),
                   ),
                 const Spacer(),
-                IconButton(
-                  icon: const Icon(LucideIcons.edit3, size: 18),
-                  tooltip: 'Edit',
-                  onPressed: onEdit,
-                ),
-                IconButton(
-                  icon: Icon(LucideIcons.trash2, color: theme.colorScheme.error, size: 18),
-                  tooltip: 'Delete',
-                  onPressed: onDelete,
-                ),
+                if (canManage) ...[
+                  IconButton(
+                    icon: const Icon(LucideIcons.edit3, size: 18),
+                    tooltip: 'Edit',
+                    onPressed: onEdit,
+                  ),
+                  IconButton(
+                    icon: Icon(LucideIcons.trash2, color: theme.colorScheme.error, size: 18),
+                    tooltip: 'Delete',
+                    onPressed: onDelete,
+                  ),
+                ],
               ],
             ),
           ],

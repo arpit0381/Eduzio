@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../controllers/dashboard_controller.dart';
 
 class StudentDashboardScreen extends ConsumerWidget {
@@ -36,41 +37,85 @@ class StudentDashboardScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Apple Health style dynamic greeting header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Overview',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
+            Builder(
+              builder: (context) {
+                final isMobile = getValueForScreenType<bool>(
+                  context: context,
+                  mobile: true,
+                  tablet: false,
+                  desktop: false,
+                );
+                return Card(
+                  elevation: 0,
+                  color: colors.primaryContainer.withValues(alpha: 0.15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    side: BorderSide(
+                      color: colors.primary.withValues(alpha: 0.08),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Ready to Learn',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -1.0,
-                        color: colors.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: colors.outline.withValues(alpha: 0.1)),
                   ),
-                  child: Icon(LucideIcons.bell, color: colors.onSurface, size: 20),
-                ),
-              ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ref.watch(authStateProvider).when(
+                                data: (profile) => Text(
+                                  'Welcome back, ${profile?.name ?? "Student"}! 👋',
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colors.onSurface,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                loading: () => Text(
+                                  'Welcome back! 👋',
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colors.onSurface,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                error: (_, __) => Text(
+                                  'Welcome back! 👋',
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colors.onSurface,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Your road to knowledge is bright today! Track your course progress, pending homework, and check in on your attendance records below.',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colors.onSurfaceVariant.withValues(alpha: 0.7),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!isMobile) ...[
+                          const SizedBox(width: 24),
+                          Expanded(
+                            flex: 2,
+                            child: SvgPicture.asset(
+                              'public/undraw_road-to-knowledge_ufma.svg',
+                              height: 110,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              }
             ).animate().fade(duration: 400.ms).slideY(begin: 0.1, end: 0),
             const SizedBox(height: 32),
 
@@ -203,12 +248,12 @@ class StudentDashboardScreen extends ConsumerWidget {
                               crossAxisCount: gridCount,
                               crossAxisSpacing: 16,
                               mainAxisSpacing: 16,
-                              childAspectRatio: 1.4,
+                              childAspectRatio: 1.12,
                             ),
                             itemCount: stats.enrolledBatches.length,
                             itemBuilder: (context, index) {
                               final batch = stats.enrolledBatches[index];
-                              return _buildBatchCard(context, batch.name, batch.code);
+                              return _buildBatchCard(context, batch);
                             },
                           ).animate().fade(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
                   ],
@@ -366,13 +411,27 @@ class StudentDashboardScreen extends ConsumerWidget {
   }
 
   // Premium Batch Cards
-  Widget _buildBatchCard(BuildContext context, String name, String code) {
+  Widget _buildBatchCard(BuildContext context, DashboardBatchItem batch) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
+    final double attendanceVal = batch.attendancePercentage ?? 100.0;
+    final int total = batch.totalClasses ?? 0;
+    final int attended = batch.attendedClasses ?? 0;
+
+    // Color based on compliance
+    Color progressColor = colors.primary;
+    if (attendanceVal >= 75) {
+      progressColor = Colors.green;
+    } else if (attendanceVal >= 50) {
+      progressColor = Colors.orange;
+    } else {
+      progressColor = Colors.red;
+    }
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -381,15 +440,15 @@ class StudentDashboardScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: colors.primary.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(LucideIcons.bookOpen, color: colors.primary, size: 20),
+                  child: Icon(LucideIcons.bookOpen, color: colors.primary, size: 16),
                 ),
                 Text(
-                  code,
+                  batch.code,
                   style: GoogleFonts.inter(
                     textStyle: theme.textTheme.labelMedium?.copyWith(
                       color: colors.primary,
@@ -399,23 +458,57 @@ class StudentDashboardScreen extends ConsumerWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            Text(
+              batch.name,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.5,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Attendance',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      '${attendanceVal.toStringAsFixed(0)}%',
+                      style: GoogleFonts.inter(
+                        textStyle: theme.textTheme.bodySmall?.copyWith(
+                          color: progressColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: LinearProgressIndicator(
+                    value: total > 0 ? (attended / total) : 1.0,
+                    color: progressColor,
+                    backgroundColor: progressColor.withValues(alpha: 0.1),
+                    minHeight: 6,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Active Curriculum',
+                  total > 0 ? '$attended of $total classes' : 'No classes marked yet',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant.withValues(alpha: 0.5),
+                    color: colors.onSurfaceVariant.withValues(alpha: 0.4),
+                    fontSize: 10,
                   ),
                 ),
               ],
@@ -428,19 +521,26 @@ class StudentDashboardScreen extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context, String message) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Card(
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
         child: Column(
           children: [
-            Icon(LucideIcons.layers, size: 40, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
-            const SizedBox(height: 16),
+            SvgPicture.asset(
+              'public/undraw_studying-science_kk9e.svg',
+              height: 120,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 20),
             Text(
               message,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w500,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

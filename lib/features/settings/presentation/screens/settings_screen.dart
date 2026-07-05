@@ -169,46 +169,48 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // ── Institute Configuration ──
-            Text(
-              'Institute Configuration',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colors.primary,
+            if (userAsync.value != null && userAsync.value!.role != UserProfileRole.student) ...[
+              Text(
+                'Institute Configuration',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colors.primary,
+                ),
               ),
-            ),
-            const SizedBox(height: AppSizes.sm),
-            Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Icon(LucideIcons.building2, color: colors.onSurfaceVariant),
-                    title: const Text('Institute Profile'),
-                    subtitle: Text(
-                      'Name, logo, contact details',
-                      style: TextStyle(
-                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+              const SizedBox(height: AppSizes.sm),
+              Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(LucideIcons.building2, color: colors.onSurfaceVariant),
+                      title: const Text('Institute Profile'),
+                      subtitle: Text(
+                        'Name, logo, contact details',
+                        style: TextStyle(
+                          color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                        ),
                       ),
+                      trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
+                      onTap: () {},
                     ),
-                    trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
-                    onTap: () {},
-                  ),
-                  Divider(height: 1, color: colors.outline.withValues(alpha: 0.08)),
-                  ListTile(
-                    leading: Icon(LucideIcons.creditCard, color: colors.onSurfaceVariant),
-                    title: const Text('ID Card Template'),
-                    subtitle: Text(
-                      'Customize printable student ID',
-                      style: TextStyle(
-                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                    Divider(height: 1, color: colors.outline.withValues(alpha: 0.08)),
+                    ListTile(
+                      leading: Icon(LucideIcons.creditCard, color: colors.onSurfaceVariant),
+                      title: const Text('ID Card Template'),
+                      subtitle: Text(
+                        'Customize printable student ID',
+                        style: TextStyle(
+                          color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                        ),
                       ),
+                      trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
+                      onTap: () {},
                     ),
-                    trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
-                    onTap: () {},
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
+            ],
 
             // ── Security ──
             Text(
@@ -233,7 +235,7 @@ class SettingsScreen extends ConsumerWidget {
                     leading: Icon(LucideIcons.logOut, color: colors.error),
                     title: Text('Sign Out', style: TextStyle(color: colors.error, fontWeight: FontWeight.w600)),
                     onTap: () {
-                      ref.read(authControllerProvider.notifier).signOut();
+                      showLogoutConfirmation(context);
                     },
                   ),
                 ],
