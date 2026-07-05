@@ -1,13 +1,10 @@
 import 'dart:convert';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
-import '../../domain/repositories/notification_repository.dart';
 import '../../data/models/isar_notification.dart';
 import 'notification_controller.dart';
 
@@ -44,12 +41,16 @@ class NotificationService {
 
         // 3. Set up foreground message handler
         FirebaseMessaging.onMessage.listen((message) {
-          _handleForegroundMessage(context, message);
+          if (context.mounted) {
+            _handleForegroundMessage(context, message);
+          }
         });
 
         // 4. Set up message click handlers
         FirebaseMessaging.onMessageOpenedApp.listen((message) {
-          _handleMessageClick(context, message);
+          if (context.mounted) {
+            _handleMessageClick(context, message);
+          }
         });
 
         // Handle initial terminated app message launch

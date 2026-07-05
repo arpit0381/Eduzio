@@ -60,7 +60,7 @@ class UploadState {
 }
 
 // Notifier for active uploads
-class UploadController extends AutoDisposeNotifier<UploadState> {
+class UploadController extends Notifier<UploadState> {
   late final UploadRepository _repository;
   late final Connectivity _connectivity;
 
@@ -142,6 +142,6 @@ class UploadController extends AutoDisposeNotifier<UploadState> {
   }
 }
 
-final uploadControllerProvider = AutoDisposeNotifierProvider<UploadController, UploadState>(() {
+final uploadControllerProvider = NotifierProvider<UploadController, UploadState>(() {
   return UploadController();
 });

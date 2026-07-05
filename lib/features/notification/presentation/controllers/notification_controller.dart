@@ -73,7 +73,7 @@ final notificationPreferencesProvider = NotifierProvider<NotificationPreferences
 });
 
 // AsyncNotifier for NotificationHistory
-class NotificationHistoryController extends AutoDisposeAsyncNotifier<List<IsarNotification>> {
+class NotificationHistoryController extends AsyncNotifier<List<IsarNotification>> {
   late final NotificationRepository _repository;
 
   @override
@@ -130,6 +130,6 @@ class NotificationHistoryController extends AutoDisposeAsyncNotifier<List<IsarNo
   }
 }
 
-final notificationHistoryProvider = AutoDisposeAsyncNotifierProvider<NotificationHistoryController, List<IsarNotification>>(() {
+final notificationHistoryProvider = AsyncNotifierProvider<NotificationHistoryController, List<IsarNotification>>(() {
   return NotificationHistoryController();
 });
