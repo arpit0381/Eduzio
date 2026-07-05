@@ -145,7 +145,6 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
   }
 
   Widget _buildTabButton(BuildContext context, int index, String label) {
-    final theme = Theme.of(context);
     final isSelected = _activeTab == index;
 
     return ChoiceChip(
