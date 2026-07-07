@@ -6,9 +6,11 @@ import '../models/isar_attendance_record.dart';
 
 class AttendanceRepositoryImpl implements AttendanceRepository {
   final SupabaseClient _client;
-  final Isar _isar;
+  final Isar? __isar;
 
-  AttendanceRepositoryImpl(this._client, this._isar);
+  AttendanceRepositoryImpl(this._client, this.__isar);
+
+  Isar get _isar => __isar!;
 
   String _getOrgId() {
     final user = _client.auth.currentUser;
