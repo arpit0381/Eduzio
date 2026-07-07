@@ -1,0 +1,80 @@
+name: Build Flutter APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Java Development Kit (JDK) 17 (Required by Gradle for Android builds)
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Step 3: Set up Flutter SDK (uses latest stable channel by default)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # Step 4: Cache Flutter Pub dependencies to speed up subsequent builds
+      - name: Cache Flutter Pub Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-cache-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-cache-
+
+      # Step 5: Cache Gradle caches and wrapper to speed up subsequent builds
+      - name: Cache Gradle Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties', 'android/build.gradle.kts', 'android/app/build.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # Step 6: Install Flutter project dependencies
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # Step 7: Verify Flutter installation environment
+      - name: Verify Flutter Installation
+        run: flutter doctor -v
+
+      # Step 8: Build the Release APK
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      # Step 9: Verify that the APK was built successfully and exists at the target path
+      - name: Verify APK Exists
+        run: |
+          if [ ! -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+            echo "Error: Release APK not found at build/app/outputs/flutter-apk/app-release.apk!" >&2
+            exit 1
+          else
+            echo "Success: Release APK found successfully."
+          fi
+
+      # Step 10: Upload the generated APK as a workflow run artifact
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Eduzio-Release-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
