@@ -17,25 +17,92 @@ const _supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhY
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase Core
   try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase initialization failed: $e');
+    // Initialize Firebase Core
+    try {
+      await Firebase.initializeApp();
+    } catch (e, stack) {
+      debugPrint('Firebase initialization failed: $e\n$stack');
+    }
+
+    // Initialize SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+
+    // Initialize Supabase
+    await Supabase.initialize(
+      url: _supabaseUrl,
+      publishableKey: _supabaseAnonKey,
+    );
+
+    final root = await createRootWidget(const EduzioApp(), prefs);
+
+    runApp(root);
+  } catch (e, stack) {
+    debugPrint('Fatal Startup Error: $e\n$stack');
+    runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: const Color(0xFF0F172A), // Slate 900
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: Color(0xFFEF4444), // Red 500
+                  size: 64,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'App Initialization Failed',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'The application encountered a fatal error during startup. Please share the details below with the developer:',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF94A3B8), // Slate 400
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E293B), // Slate 800
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF334155)),
+                    ),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: SelectableText(
+                        '$e\n\n$stack',
+                        style: const TextStyle(
+                          color: Color(0xFFF1F5F9), // Slate 100
+                          fontFamily: 'monospace',
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ));
   }
-
-  // Initialize SharedPreferences
-  final prefs = await SharedPreferences.getInstance();
-
-  // Initialize Supabase
-  await Supabase.initialize(
-    url: _supabaseUrl,
-    publishableKey: _supabaseAnonKey,
-  );
-
-  final root = await createRootWidget(const EduzioApp(), prefs);
-
-  runApp(root);
 }
 
 class EduzioApp extends ConsumerStatefulWidget {
