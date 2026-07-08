@@ -481,99 +481,6 @@
       flex-shrink: 0;
     }
 
-    /* Developer / Tech Stack Section */
-    .dev-section {
-      padding: 80px 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .dev-grid {
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 48px;
-      align-items: center;
-    }
-
-    @media (max-width: 968px) {
-      .dev-grid {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-    }
-
-    .tech-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .tech-badge {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      padding: 10px 18px;
-      border-radius: 100px;
-      font-size: 13px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tech-badge span.indicator {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: var(--primary);
-    }
-
-    /* Architecture Block Visual Representation */
-    .architecture-box {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .arch-layer {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      padding: 16px;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .arch-layer-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .arch-title {
-      font-weight: 700;
-      font-size: 15px;
-    }
-
-    .arch-desc {
-      font-size: 12.5px;
-      color: var(--text-muted);
-    }
-
-    .arch-tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      background: var(--primary-glow);
-      color: #c0b3ff;
-      border: 1px solid rgba(107, 78, 255, 0.3);
-      padding: 4px 10px;
-      border-radius: 6px;
-    }
-
     /* Installation steps */
     .instructions-section {
       padding: 80px 0;
@@ -658,7 +565,6 @@
       
       <nav>
         <a href="#users">Users</a>
-        <a href="#developers">Developers</a>
         <a href="#installation">Installation Guide</a>
         <a href="https://github.com/arpit0381/Eduzio" target="_blank" class="github-link">
           <svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24">
@@ -827,58 +733,6 @@
               Fee invoice logs
             </li>
           </ul>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Developers Section -->
-    <div class="dev-section" id="developers">
-      <h2 class="section-title">Developer & <span>Architecture Info</span></h2>
-      
-      <div class="dev-grid">
-        
-        <!-- Tech Stack Details -->
-        <div>
-          <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 16px;">Modern Mobile Tech Stack</h3>
-          <p style="color: var(--text-muted); line-height: 1.6; font-size: 15px; margin-bottom: 16px;">Eduzio is structured as a clean, modular Flutter application following Domain-Driven Design (DDD) guidelines. Its layers ensure maximum performance, stability, and scale.</p>
-          
-          <div class="tech-badges">
-            <div class="tech-badge"><span class="indicator"></span>Flutter SDK</div>
-            <div class="tech-badge"><span class="indicator"></span>Riverpod (State)</div>
-            <div class="tech-badge"><span class="indicator"></span>Supabase (Backend/RLS)</div>
-            <div class="tech-badge"><span class="indicator"></span>Isar (Local Cache DB)</div>
-            <div class="tech-badge"><span class="indicator"></span>FCM (Push Notifications)</div>
-          </div>
-        </div>
-
-        <!-- Architecture Flow Representation -->
-        <div class="architecture-box">
-          
-          <div class="arch-layer">
-            <div class="arch-layer-info">
-              <span class="arch-title">Presentation Layer</span>
-              <span class="arch-desc">Flutter Widgets & State Controller</span>
-            </div>
-            <span class="arch-tag">Riverpod</span>
-          </div>
-
-          <div class="arch-layer">
-            <div class="arch-layer-info">
-              <span class="arch-title">Domain (Logic) Layer</span>
-              <span class="arch-desc">Entities & Repository Interfaces</span>
-            </div>
-            <span class="arch-tag">Clean Architecture</span>
-          </div>
-
-          <div class="arch-layer">
-            <div class="arch-layer-info">
-              <span class="arch-title">Data / Storage Layer</span>
-              <span class="arch-desc">Local caching & remote synchronizer</span>
-            </div>
-            <span class="arch-tag">Isar DB & Supabase</span>
-          </div>
-
         </div>
 
       </div>
