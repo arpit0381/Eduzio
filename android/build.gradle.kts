@@ -22,3 +22,22 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+subprojects {
+    val proj = this
+    val configureProject = {
+        val extension = proj.extensions.findByName("android") as? com.android.build.gradle.BaseExtension
+        if (extension != null && extension.namespace == null) {
+            val groupPath = proj.group.toString()
+            extension.namespace = if (groupPath.isNotEmpty()) groupPath else "com.eduzio.${proj.name.replace("-", "_")}"
+        }
+    }
+
+    if (proj.state.executed) {
+        configureProject()
+    } else {
+        proj.afterEvaluate {
+            configureProject()
+        }
+    }
+}
