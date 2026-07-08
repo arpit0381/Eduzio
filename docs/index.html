@@ -36,14 +36,20 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    body {
+    html, body {
       background-color: var(--bg-dark);
       color: var(--text-main);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      width: 100%;
       overflow-x: hidden;
       position: relative;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
     }
 
     /* Ambient Glow Blobs */
@@ -82,9 +88,6 @@
     header {
       width: 100%;
       padding: 24px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       background: rgba(7, 9, 19, 0.8);
       backdrop-filter: blur(8px);
@@ -545,6 +548,43 @@
         text-align: center;
       }
     }
+    /* Mobile Responsive Optimizations */
+    @media (max-width: 768px) {
+      .hero-text h1 {
+        font-size: 36px !important;
+        letter-spacing: -1.2px !important;
+      }
+      .hero-text p.tagline {
+        font-size: 16px !important;
+        margin-bottom: 24px !important;
+      }
+      .card {
+        padding: 24px 16px !important;
+        border-radius: 20px !important;
+      }
+      .app-title-section h2 {
+        font-size: 26px !important;
+      }
+      .roles-grid {
+        gap: 20px !important;
+      }
+      .role-card {
+        padding: 24px !important;
+      }
+      .step-box {
+        padding: 16px !important;
+        gap: 12px !important;
+      }
+      .step-num {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 14px !important;
+      }
+      .section-title {
+        font-size: 26px !important;
+        margin-bottom: 32px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -587,7 +627,7 @@
         <h1>Manage Education, <span>Elevate Learning.</span></h1>
         <p class="tagline">Eduzio connects students, teachers, and coaching administrators in one premium dashboard. Mark attendance, track batches, check exam cards, and pay fees effortlessly.</p>
         
-        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 24px;">
+        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 24px; flex-wrap: wrap;">
           <div style="display: flex; -webkit-user-select: none; user-select: none;">
             <!-- Simple overlapping design system circles representing stakeholders -->
             <span style="width: 32px; height: 32px; border-radius: 50%; background: #6b4eff; border: 2px solid var(--bg-dark); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">AD</span>
