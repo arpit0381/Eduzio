@@ -10,6 +10,8 @@ jobs:
   build:
     name: Build Android APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       # Step 1: Checkout the repository code
@@ -88,3 +90,26 @@ jobs:
           name: Eduzio-Release-APK
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+
+      # Step 11: Create GitHub Release and Upload APK
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Delete tag and release if they exist
+          gh release delete latest --yes || true
+          git tag -d latest || true
+          git push origin :refs/tags/latest || true
+          
+          # Create and push new tag
+          git tag latest
+          git push origin latest
+          
+          # Create release and upload APK
+          gh release create latest build/app/outputs/flutter-apk/app-release.apk \
+            --title "Eduzio Latest Build" \
+            --notes "Automated release containing the latest build of the Eduzio App. Commit: ${{ github.sha }} (Built on $(date))" \
+            --prerelease

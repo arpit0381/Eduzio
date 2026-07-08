@@ -8,6 +8,7 @@ import '../../../../core/theme/theme_controller.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
 import '../../../../shared/widgets/logout_confirmation_dialog.dart';
+import '../../../../core/services/update_checker.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -252,6 +253,50 @@ class SettingsScreen extends ConsumerWidget {
                     title: Text('Sign Out', style: TextStyle(color: colors.error, fontWeight: FontWeight.w600)),
                     onTap: () {
                       showLogoutConfirmation(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // ── App Info ──
+            Text(
+              'App Info',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colors.primary,
+              ),
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Card(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(LucideIcons.info, color: colors.onSurfaceVariant),
+                    title: const Text('Version'),
+                    trailing: Text(
+                      UpdateChecker.currentVersion,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ),
+                  Divider(height: 1, color: colors.outline.withValues(alpha: 0.08)),
+                  ListTile(
+                    leading: Icon(LucideIcons.refreshCw, color: colors.onSurfaceVariant),
+                    title: const Text('Check for Updates'),
+                    subtitle: Text(
+                      'Search for newer builds on GitHub',
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                        fontSize: 12,
+                      ),
+                    ),
+                    trailing: Icon(LucideIcons.chevronRight, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
+                    onTap: () {
+                      UpdateChecker.checkForUpdates(context, showNoUpdateToast: true);
                     },
                   ),
                 ],
