@@ -16,28 +16,41 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  bool _isSplashDelayOver = false;
+  bool _hasNavigated = false;
+
   @override
   void initState() {
     super.initState();
+    _startSplashTimer();
+  }
+
+  Future<void> _startSplashTimer() async {
+    // Wait for the animation to play beautifully (at least 2.5 seconds)
+    await Future.delayed(const Duration(milliseconds: 2500));
+    if (!mounted) return;
+
+    setState(() {
+      _isSplashDelayOver = true;
+    });
     _checkAuthAndNavigate();
   }
 
-  Future<void> _checkAuthAndNavigate() async {
-    // Wait for the animation to play beautifully (at least 2.5 seconds)
-    await Future.delayed(const Duration(milliseconds: 2500));
-    
-    if (!mounted) return;
+  void _checkAuthAndNavigate() {
+    if (_hasNavigated || !mounted) return;
 
     final authState = ref.read(authStateProvider);
     
-    // Fallback if still loading (unlikely after 2.5s)
-    if (authState.isLoading) {
-      // We will wait for the next change
-      return;
+    // Only navigate if the auth state has completed loading
+    if (!authState.isLoading) {
+      _navigateToNextScreen(authState.value);
     }
+  }
 
-    final user = authState.value;
-    
+  void _navigateToNextScreen(UserProfile? user) {
+    if (_hasNavigated || !mounted) return;
+    _hasNavigated = true;
+
     if (user == null) {
       context.go('/login');
     } else {
@@ -51,11 +64,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen for auth state changes if it was loading initially
+    // Listen for auth state changes and navigate once loading is complete AND splash delay has passed
     ref.listen(authStateProvider, (previous, next) {
-      if (!next.isLoading && mounted) {
-        // We wait a bit to ensure the minimum splash time has passed
-        // This is a simple implementation; ideally we check timestamps
+      if (_isSplashDelayOver && !next.isLoading && mounted) {
+        _navigateToNextScreen(next.value);
       }
     });
 
