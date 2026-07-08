@@ -3,25 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eduzio - Install & Update</title>
+  <title>Eduzio - The Future of Education</title>
   
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   
+  <!-- Custom Favicon using SVG Cap Logo -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%236b4eff%22><path d=%22M12 2L1 8l11 6 9-4.91V17h2V8L12 2z%22/><path d=%22M5 12.18V16l7 3.82L19 16v-3.82L12 16 5 12.18z%22/></svg>">
+
   <style>
     :root {
-      --bg-dark: #090d16;
-      --card-bg: rgba(17, 24, 39, 0.7);
+      --bg-dark: #070913;
+      --card-bg: rgba(13, 18, 36, 0.7);
       --card-border: rgba(255, 255, 255, 0.08);
       --primary: #6b4eff;
-      --primary-glow: rgba(107, 78, 255, 0.4);
+      --primary-glow: rgba(107, 78, 255, 0.35);
       --primary-hover: #563cd6;
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
+      --accent-blue: #3b82f6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
       --success: #10b981;
-      --success-glow: rgba(16, 185, 129, 0.2);
+      --success-glow: rgba(16, 185, 129, 0.15);
+      --code-bg: rgba(30, 41, 59, 0.5);
     }
 
     * {
@@ -41,39 +46,51 @@
       position: relative;
     }
 
-    /* Ambient Background Gradients */
+    /* Ambient Glow Blobs */
     body::before, body::after {
       content: '';
       position: absolute;
-      width: 400px;
-      height: 400px;
+      width: 500px;
+      height: 500px;
       border-radius: 50%;
-      filter: blur(150px);
+      filter: blur(160px);
       z-index: -1;
-      opacity: 0.15;
+      opacity: 0.12;
+      pointer-events: none;
     }
 
     body::before {
       background: var(--primary);
-      top: -100px;
-      right: -50px;
+      top: -150px;
+      right: -100px;
     }
 
     body::after {
-      background: #3b82f6;
-      bottom: -100px;
-      left: -50px;
+      background: var(--accent-blue);
+      bottom: 20%;
+      left: -150px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
     }
 
     /* Header styling */
     header {
       width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px 20px;
+      padding: 24px 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(7, 9, 19, 0.8);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .logo-container {
@@ -84,69 +101,111 @@
       color: var(--text-main);
     }
 
-    /* Custom SVG Education Icon in Header */
+    /* Custom SVG Education Icon (The actual app icon) */
     .edu-logo {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--primary), #3b82f6);
-      border-radius: 12px;
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-blue));
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px var(--primary-glow);
+      box-shadow: 0 6px 20px var(--primary-glow);
+      transition: transform 0.3s ease;
+    }
+
+    .logo-container:hover .edu-logo {
+      transform: rotate(-5deg) scale(1.05);
     }
 
     .edu-logo svg {
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       fill: #ffffff;
     }
 
     .logo-text {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.8px;
       background: linear-gradient(to right, #ffffff, #e2e8f0);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    /* Main Container */
-    main {
-      flex: 1;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 40px;
+    nav {
+      display: flex;
       align-items: center;
+      gap: 24px;
     }
 
-    @media (max-width: 968px) {
-      main {
-        grid-template-columns: 1fr;
-        padding-top: 20px;
-        gap: 30px;
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    nav a:hover {
+      color: var(--text-main);
+    }
+
+    .github-link {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .github-link:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    @media (max-width: 640px) {
+      nav {
+        display: none; /* Hide nav links on small mobile for simplicity */
       }
     }
 
-    /* Left Hero Content */
-    .hero-content h1 {
-      font-size: 48px;
+    /* Main Grid Content */
+    main {
+      padding: 60px 0 100px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    @media (max-width: 968px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+    }
+
+    /* Hero Left Content */
+    .hero-text h1 {
+      font-size: 52px;
       font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -1.5px;
-      margin-bottom: 16px;
-      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #ffffff, #e2e8f0);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .hero-content h1 span {
+    .hero-text h1 span {
       background: linear-gradient(135deg, #a78bfa, var(--primary));
       -webkit-background-clip: text;
       background-clip: text;
@@ -154,70 +213,63 @@
       display: block;
     }
 
-    .hero-content p {
-      font-size: 18px;
+    .hero-text p.tagline {
+      font-size: 20px;
       color: var(--text-muted);
       line-height: 1.6;
-      margin-bottom: 32px;
-      max-width: 540px;
+      margin-bottom: 40px;
+      max-width: 580px;
     }
 
     /* Glassmorphism Card styling */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 32px;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border-radius: 28px;
+      padding: 36px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
       position: relative;
       overflow: hidden;
     }
 
-    /* Interactive Installation Card */
+    /* Install Card (Right Side) */
     .install-card {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 28px;
     }
 
-    .card-header-badge {
+    .badge {
       align-self: flex-start;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       background: var(--success-glow);
       border: 1px solid rgba(16, 185, 129, 0.3);
       color: var(--success);
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 100px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
-      animation: pulse 2s infinite;
     }
 
-    @keyframes pulse {
-      0% { opacity: 0.8; }
-      50% { opacity: 1; }
-      100% { opacity: 0.8; }
-    }
-
-    .app-meta {
+    .app-title-section {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
-    .app-title {
-      font-size: 28px;
+    .app-title-section h2 {
+      font-size: 32px;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.8px;
     }
 
-    .app-version {
+    .app-subtitle {
       font-size: 14px;
       color: var(--text-muted);
       display: flex;
@@ -225,42 +277,40 @@
       gap: 8px;
     }
 
-    .app-version span.dot {
-      width: 4px;
-      height: 4px;
+    .dot {
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
       background-color: var(--text-muted);
     }
 
-    /* Big CTA Button */
-    .download-btn {
-      width: 100%;
-      background: linear-gradient(135deg, var(--primary), #3b82f6);
-      border: none;
+    /* Download CTA */
+    .download-button {
+      background: linear-gradient(135deg, var(--primary), var(--accent-blue));
       color: #ffffff;
-      padding: 18px 24px;
-      border-radius: 16px;
+      padding: 20px;
+      border-radius: 18px;
       font-size: 16px;
       font-weight: 700;
-      cursor: pointer;
+      text-decoration: none;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 12px;
-      text-decoration: none;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 20px rgba(107, 78, 255, 0.3);
+      box-shadow: 0 8px 24px rgba(107, 78, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .download-btn:hover {
+    .download-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 28px rgba(107, 78, 255, 0.45);
-      background: linear-gradient(135deg, var(--primary-hover), #2563eb);
+      box-shadow: 0 16px 36px rgba(107, 78, 255, 0.5);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
-    .download-btn svg {
-      width: 20px;
-      height: 20px;
+    .download-button svg {
+      width: 22px;
+      height: 22px;
       fill: none;
       stroke: currentColor;
       stroke-width: 2.5;
@@ -268,20 +318,19 @@
       stroke-linejoin: round;
     }
 
-    /* Details List inside Card */
-    .details-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 20px;
-    }
-
-    .detail-item {
+    /* Details Panel */
+    .detail-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 12px 0;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
     }
 
     .detail-label {
@@ -292,101 +341,302 @@
       font-weight: 600;
     }
 
-    .commit-hash {
+    .mono-badge {
       font-family: 'JetBrains Mono', monospace;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 2px 6px;
-      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px 8px;
+      border-radius: 8px;
       font-size: 12px;
       color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     /* Changelog Card Section */
-    .changelog-section {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 20px;
+    .changelog-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 16px;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .changelog-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
+    .changelog-header {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
     }
 
-    .changelog-content {
-      font-size: 13px;
+    .changelog-body {
+      font-size: 13.5px;
       color: var(--text-muted);
-      line-height: 1.5;
-      background: rgba(255, 255, 255, 0.02);
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      line-height: 1.6;
       max-height: 120px;
       overflow-y: auto;
+      padding-right: 4px;
     }
 
-    /* Footer */
-    footer {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 20px;
+    /* Target User Role Section */
+    .section-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section-title span {
+      background: linear-gradient(135deg, var(--primary), var(--accent-blue));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .features-section {
+      padding: 80px 0;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      color: var(--text-muted);
     }
 
-    @media (max-width: 640px) {
-      footer {
-        flex-direction: column;
-        gap: 16px;
-        text-align: center;
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    @media (max-width: 968px) {
+      .roles-grid {
+        grid-template-columns: 1fr;
       }
     }
 
-    .install-instructions {
+    .role-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 24px;
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+
+    .role-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(107, 78, 255, 0.2);
+      background: rgba(107, 78, 255, 0.02);
+    }
+
+    .role-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(107, 78, 255, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+
+    .role-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .role-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .role-card p {
+      color: var(--text-muted);
+      font-size: 14.5px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .role-features {
+      list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 10px;
     }
 
-    .instruction-step {
+    .role-features li {
+      font-size: 14px;
       display: flex;
-      gap: 16px;
-      align-items: flex-start;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-main);
     }
 
-    .step-number {
-      width: 28px;
-      height: 28px;
-      background: rgba(255, 255, 255, 0.05);
+    .role-features li svg {
+      width: 16px;
+      height: 16px;
+      color: var(--success);
+      flex-shrink: 0;
+    }
+
+    /* Developer / Tech Stack Section */
+    .dev-section {
+      padding: 80px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dev-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    @media (max-width: 968px) {
+      .dev-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+    }
+
+    .tech-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .tech-badge {
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--card-border);
+      padding: 10px 18px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tech-badge span.indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--primary);
+    }
+
+    /* Architecture Block Visual Representation */
+    .architecture-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .arch-layer {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 16px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .arch-layer-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .arch-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .arch-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .arch-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: var(--primary-glow);
+      color: #c0b3ff;
+      border: 1px solid rgba(107, 78, 255, 0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    /* Installation steps */
+    .instructions-section {
+      padding: 80px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .step-box {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 24px;
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      padding: 24px;
+      border-radius: 20px;
+    }
+
+    .step-num {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-blue));
+      color: #ffffff;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--primary);
+      font-weight: 800;
+      font-size: 16px;
       flex-shrink: 0;
+      box-shadow: 0 4px 10px var(--primary-glow);
     }
 
-    .step-text {
-      font-size: 15px;
+    .step-info h4 {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .step-info p {
       color: var(--text-muted);
-      line-height: 1.5;
+      font-size: 14.5px;
+      line-height: 1.6;
     }
 
-    .step-text strong {
-      color: var(--text-main);
+    /* Footer styling */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 48px 0;
+      background: rgba(7, 9, 19, 0.9);
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 640px) {
+      .footer-grid {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
     }
   </style>
 </head>
@@ -394,115 +644,287 @@
 
   <!-- Header -->
   <header>
-    <a href="#" class="logo-container">
-      <div class="edu-logo">
-        <svg viewBox="0 0 24 24">
-          <!-- Graduation Cap Icon -->
-          <path d="M12 3L1 9L12 15L21 10.09V17H23V9L12 3Z"/>
-          <path d="M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
-        </svg>
-      </div>
-      <span class="logo-text">Eduzio</span>
-    </a>
-    <div>
-      <a href="https://github.com/arpit0381/Eduzio" target="_blank" style="color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-        <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482C19.138 20.193 22 16.44 22 12.017 22 6.484 17.522 2C12 2z"/>
-        </svg>
-        GitHub
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+      <a href="#" class="logo-container">
+        <div class="edu-logo">
+          <svg viewBox="0 0 24 24">
+            <!-- Custom SVG Graduation Cap -->
+            <path d="M12 2L1 8l11 6 9-4.91V17h2V8L12 2z"/>
+            <path d="M5 12.18V16l7 3.82L19 16v-3.82L12 16 5 12.18z"/>
+          </svg>
+        </div>
+        <span class="logo-text">Eduzio</span>
       </a>
+      
+      <nav>
+        <a href="#users">Users</a>
+        <a href="#developers">Developers</a>
+        <a href="#installation">Installation Guide</a>
+        <a href="https://github.com/arpit0381/Eduzio" target="_blank" class="github-link">
+          <svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482C19.138 20.193 22 16.44 22 12.017 22 6.484 17.522 2C12 2z"/>
+          </svg>
+          GitHub
+        </a>
+      </nav>
     </div>
   </header>
 
-  <!-- Main Grid Content -->
-  <main>
+  <!-- Main Container -->
+  <main class="container">
     
-    <!-- Hero Block -->
-    <div class="hero-content">
-      <h1>Eduzio Learning App <span>Download & Install</span></h1>
-      <p>Manage batches, track attendance, complete homework, check exam schedules, and view fees from the comfort of your phone. Get the latest release directly below.</p>
+    <!-- Hero & Install Section -->
+    <div class="hero-grid">
       
-      <!-- Installation Guide -->
-      <div class="install-instructions">
-        <h2 style="font-size: 18px; margin-bottom: 20px; font-weight: 700;">How to Install:</h2>
+      <!-- Left Hero Column -->
+      <div class="hero-text" style="padding-top: 20px;">
+        <h1>Manage Education, <span>Elevate Learning.</span></h1>
+        <p class="tagline">Eduzio connects students, teachers, and coaching administrators in one premium dashboard. Mark attendance, track batches, check exam cards, and pay fees effortlessly.</p>
         
-        <div class="instruction-step">
-          <div class="step-number">1</div>
-          <div class="step-text">Click the <strong>Download APK</strong> button on the card.</div>
+        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 24px;">
+          <div style="display: flex; -webkit-user-select: none; user-select: none;">
+            <!-- Simple overlapping design system circles representing stakeholders -->
+            <span style="width: 32px; height: 32px; border-radius: 50%; background: #6b4eff; border: 2px solid var(--bg-dark); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">AD</span>
+            <span style="width: 32px; height: 32px; border-radius: 50%; background: #3b82f6; border: 2px solid var(--bg-dark); margin-left: -12px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">TR</span>
+            <span style="width: 32px; height: 32px; border-radius: 50%; background: #10b981; border: 2px solid var(--bg-dark); margin-left: -12px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">ST</span>
+          </div>
+          <span style="font-size: 14.5px; color: var(--text-muted); font-weight: 500;">Tailored for Administrators, Teachers & Students</span>
+        </div>
+      </div>
+
+      <!-- Right Installation Card -->
+      <div class="card install-card">
+        <div class="badge" id="update-badge">
+          Active Build
         </div>
         
-        <div class="instruction-step">
-          <div class="step-number">2</div>
-          <div class="step-text">Open the downloaded <code>app-release.apk</code> file on your Android device.</div>
+        <div class="app-title-section">
+          <h2>Eduzio App</h2>
+          <div class="app-subtitle" id="version-text">
+            Build: latest <span class="dot"></span> Platform: Android 5.0+
+          </div>
         </div>
+
+        <a href="https://github.com/arpit0381/Eduzio/releases/download/latest/app-release.apk" class="download-button" id="download-link">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download Latest APK
+        </a>
+
+        <!-- Metadata Details -->
+        <div>
+          <div class="detail-row">
+            <span class="detail-label">Last Updated</span>
+            <span class="detail-value" id="update-date">Syncing...</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">APK Package Size</span>
+            <span class="detail-value" id="file-size">~83 MB</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Latest Commit</span>
+            <span class="detail-value" id="commit-details"><span class="mono-badge">main</span></span>
+          </div>
+        </div>
+
+        <!-- Changelog Section -->
+        <div class="changelog-box" id="changelog-box" style="display: none;">
+          <div class="changelog-header">What's New in this Version</div>
+          <div class="changelog-body" id="changelog-body">
+            Latest bug fixes and stability updates.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- User Roles Content Section -->
+    <div class="features-section" id="users">
+      <h2 class="section-title">One App. <span>Three Audiences.</span></h2>
+      
+      <div class="roles-grid">
         
-        <div class="instruction-step">
-          <div class="step-number">3</div>
-          <div class="step-text">If prompted, enable <strong>"Install from Unknown Sources"</strong> in your browser or file manager settings.</div>
+        <!-- Admin Card -->
+        <div class="role-card">
+          <div class="role-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3>Institute Admins</h3>
+          <p>Supervise operations, create student accounts, manage classrooms, and monitor overall performance from a unified organizational console.</p>
+          <ul class="role-features">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Coaching onboarding & config
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Student & Teacher registration
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Customize printable ID templates
+            </li>
+          </ul>
         </div>
-        
-        <div class="instruction-step">
-          <div class="step-number">4</div>
-          <div class="step-text">Follow the on-screen prompts to complete installation and sign in!</div>
+
+        <!-- Teacher Card -->
+        <div class="role-card">
+          <div class="role-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+          <h3>Teachers</h3>
+          <p>Ditch the paperwork. Manage your daily class schedules, assign homework tasks, and capture student attendance in seconds.</p>
+          <ul class="role-features">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Assign Homework sheets
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Take attendance in a tap
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Distribute announcements
+            </li>
+          </ul>
         </div>
+
+        <!-- Student Card -->
+        <div class="role-card">
+          <div class="role-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3>Students</h3>
+          <p>Access your classes, check homework deadlines, scan class QR codes to mark attendance, and track exam cards directly.</p>
+          <ul class="role-features">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              QR scanner attendance
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Homework submissions
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Fee invoice logs
+            </li>
+          </ul>
+        </div>
+
       </div>
     </div>
 
-    <!-- Right Side Install Card -->
-    <div class="card install-card">
-      <div class="card-header-badge" id="update-badge">
-        <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--success); margin-right:4px;"></span>
-        Active Release
-      </div>
+    <!-- Developers Section -->
+    <div class="dev-section" id="developers">
+      <h2 class="section-title">Developer & <span>Architecture Info</span></h2>
       
-      <div class="app-meta">
-        <h2 class="app-title">Eduzio APK</h2>
-        <div class="app-version" id="version-text">
-          Version: latest <span class="dot"></span> Android 5.0+
+      <div class="dev-grid">
+        
+        <!-- Tech Stack Details -->
+        <div>
+          <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 16px;">Modern Mobile Tech Stack</h3>
+          <p style="color: var(--text-muted); line-height: 1.6; font-size: 15px; margin-bottom: 16px;">Eduzio is structured as a clean, modular Flutter application following Domain-Driven Design (DDD) guidelines. Its layers ensure maximum performance, stability, and scale.</p>
+          
+          <div class="tech-badges">
+            <div class="tech-badge"><span class="indicator"></span>Flutter SDK</div>
+            <div class="tech-badge"><span class="indicator"></span>Riverpod (State)</div>
+            <div class="tech-badge"><span class="indicator"></span>Supabase (Backend/RLS)</div>
+            <div class="tech-badge"><span class="indicator"></span>Isar (Local Cache DB)</div>
+            <div class="tech-badge"><span class="indicator"></span>FCM (Push Notifications)</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Action Link -->
-      <a href="https://github.com/arpit0381/Eduzio/releases/download/latest/app-release.apk" class="download-btn" id="download-link">
-        <svg viewBox="0 0 24 24">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        Download APK
-      </a>
+        <!-- Architecture Flow Representation -->
+        <div class="architecture-box">
+          
+          <div class="arch-layer">
+            <div class="arch-layer-info">
+              <span class="arch-title">Presentation Layer</span>
+              <span class="arch-desc">Flutter Widgets & State Controller</span>
+            </div>
+            <span class="arch-tag">Riverpod</span>
+          </div>
 
-      <!-- Details List -->
-      <div class="details-list">
-        <div class="detail-item">
-          <span class="detail-label">Updated</span>
-          <span class="detail-value" id="update-date">Retrieving...</span>
+          <div class="arch-layer">
+            <div class="arch-layer-info">
+              <span class="arch-title">Domain (Logic) Layer</span>
+              <span class="arch-desc">Entities & Repository Interfaces</span>
+            </div>
+            <span class="arch-tag">Clean Architecture</span>
+          </div>
+
+          <div class="arch-layer">
+            <div class="arch-layer-info">
+              <span class="arch-title">Data / Storage Layer</span>
+              <span class="arch-desc">Local caching & remote synchronizer</span>
+            </div>
+            <span class="arch-tag">Isar DB & Supabase</span>
+          </div>
+
         </div>
-        <div class="detail-item">
-          <span class="detail-label">File Size</span>
-          <span class="detail-value" id="file-size">~83 MB</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Commit</span>
-          <span class="detail-value" id="commit-details"><span class="commit-hash">latest</span></span>
-        </div>
-      </div>
-      
-      <!-- Changelog Section -->
-      <div class="changelog-section" id="changelog-section" style="display: none;">
-        <h3 class="changelog-title">What's New:</h3>
-        <div class="changelog-content" id="changelog-content">
-          - Stability fixes
-          - Performance optimizations
-        </div>
+
       </div>
     </div>
+
+    <!-- Installation Steps Section -->
+    <div class="instructions-section" id="installation">
+      <h2 class="section-title">Installation <span>Instructions</span></h2>
+      
+      <div style="max-width: 800px; margin: 0 auto;">
+        
+        <div class="step-box">
+          <div class="step-num">1</div>
+          <div class="step-info">
+            <h4>Download APK Package</h4>
+            <p>Click the <strong>Download Latest APK</strong> button at the top of the page. The file <code>app-release.apk</code> will be saved to your device's Downloads folder.</p>
+          </div>
+        </div>
+
+        <div class="step-box">
+          <div class="step-num">2</div>
+          <div class="step-info">
+            <h4>Enable Install Permissions</h4>
+            <p>If installing an APK for the first time, your browser or file explorer will ask for install permission. Tap on <strong>Settings</strong> in the prompt and switch on <strong>"Allow from this source"</strong>.</p>
+          </div>
+        </div>
+
+        <div class="step-box">
+          <div class="step-num">3</div>
+          <div class="step-info">
+            <h4>Finalize Installation</h4>
+            <p>Return to the installation prompt and tap <strong>Install</strong>. Once completed, tap <strong>Open</strong> to start using Eduzio immediately!</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </main>
 
   <!-- Footer -->
   <footer>
-    <div>&copy; 2026 Eduzio. All rights reserved.</div>
-    <div>Designed for premium, lightning-fast performance.</div>
+    <div class="container footer-grid">
+      <div>&copy; 2026 Eduzio. All rights reserved.</div>
+      <div style="font-weight: 500; font-size: 13px;">Created with vibrant, modern aesthetics for pairing education with technology.</div>
+    </div>
   </footer>
 
   <!-- GitHub API Integration script -->
@@ -516,11 +938,11 @@
         
         // Update version and update badge
         if (data.tag_name) {
-          document.getElementById('version-text').innerHTML = `Build: ${data.tag_name} <span class="dot"></span> Android 5.0+`;
-          document.getElementById('update-badge').innerHTML = `
-            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--success); margin-right:4px;"></span>
-            Updated
-          `;
+          document.getElementById('version-text').innerHTML = `Build: ${data.tag_name} <span class="dot"></span> Platform: Android 5.0+`;
+          document.getElementById('update-badge').innerHTML = `Updated Build`;
+          document.getElementById('update-badge').style.background = 'var(--success-glow)';
+          document.getElementById('update-badge').style.borderColor = 'rgba(16, 185, 129, 0.3)';
+          document.getElementById('update-badge').style.color = 'var(--success)';
         }
 
         // Format publication date
@@ -546,12 +968,12 @@
         if (data.body) {
           const cleanBody = data.body.replace(/Commit:\s*([a-f0-9]{40})/i, (match, hash) => {
             const shortHash = hash.substring(0, 7);
-            document.getElementById('commit-details').innerHTML = `<span class="commit-hash">${shortHash}</span>`;
+            document.getElementById('commit-details').innerHTML = `<span class="mono-badge">${shortHash}</span>`;
             return ''; // Remove commit hash string from main changelog body
           });
           
-          document.getElementById('changelog-content').innerText = cleanBody.trim() || 'Latest pre-release updates and fixes.';
-          document.getElementById('changelog-section').style.display = 'flex';
+          document.getElementById('changelog-body').innerText = cleanBody.trim() || 'Pre-release stability updates and fixes.';
+          document.getElementById('changelog-box').style.display = 'flex';
         }
 
       } catch (error) {
@@ -559,7 +981,7 @@
         
         // Graceful fallback to static details
         document.getElementById('update-date').innerText = 'Recent Build';
-        document.getElementById('commit-details').innerHTML = `<span class="commit-hash">main</span>`;
+        document.getElementById('commit-details').innerHTML = `<span class="mono-badge">main</span>`;
       }
     }
 
