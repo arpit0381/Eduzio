@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +25,11 @@ class NotificationService {
   Future<void> initialize(BuildContext context) async {
     if (_isInitialized) return;
     _isInitialized = true;
+
+    if (Firebase.apps.isEmpty) {
+      debugPrint('FCM Initialization skipped: Firebase is not initialized.');
+      return;
+    }
 
     try {
       // 1. Request notification permissions
