@@ -49,11 +49,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Step 6: Install Flutter project dependencies
+      # Step 6: Install Linux Build Dependencies (to satisfy flutter doctor check)
+      - name: Install Linux Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev mesa-utils
+
+      # Step 7: Install Flutter project dependencies
       - name: Install Dependencies
         run: flutter pub get
 
-      # Step 7: Verify Flutter installation environment
+      # Step 8: Accept Android SDK Licenses
+      - name: Accept Android Licenses
+        run: yes | flutter doctor --android-licenses || true
+
+      # Step 9: Verify Flutter installation environment
       - name: Verify Flutter Installation
         run: flutter doctor -v
 
