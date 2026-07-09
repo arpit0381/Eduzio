@@ -66,6 +66,9 @@ class FakeAuthRepository implements AuthRepository {
   }) async {}
 
   @override
+  Future<void> updateAvatarUrl(String avatarUrl) async {}
+
+  @override
   Future<void> signOut() async {
     _controller.add(null);
   }

@@ -55,9 +55,9 @@ class CloudinaryService {
     }, bytes);
   }
 
-  /// Upload file to Cloudinary with progress monitoring and cancel support
-  Future<String> uploadFile({
-    required String filePath,
+  /// Upload file using bytes (fully web compatible)
+  Future<String> uploadFileBytes({
+    required Uint8List bytes,
     required String fileName,
     required String folder,
     required void Function(double progress) onProgress,
@@ -65,16 +65,11 @@ class CloudinaryService {
   }) async {
     final httpClient = client ?? http.Client();
     try {
-      final file = File(filePath);
-      if (!await file.exists()) {
-        throw Exception('File not found at path: $filePath');
-      }
-
-      final extension = path_helper.extension(filePath).toLowerCase();
+      final extension = path_helper.extension(fileName).toLowerCase();
       final isImage = ['.jpg', '.jpeg', '.png', '.webp'].contains(extension);
       final resourceType = isImage ? 'image' : 'raw';
 
-      Uint8List fileBytes = await file.readAsBytes();
+      Uint8List fileBytes = bytes;
       if (isImage) {
         // Compress images before upload
         fileBytes = await _compressImage(fileBytes);
@@ -116,6 +111,28 @@ class CloudinaryService {
         httpClient.close();
       }
     }
+  }
+
+  /// Upload file to Cloudinary with progress monitoring (reads bytes natively)
+  Future<String> uploadFile({
+    required String filePath,
+    required String fileName,
+    required String folder,
+    required void Function(double progress) onProgress,
+    http.Client? client,
+  }) async {
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw Exception('File not found at path: $filePath');
+    }
+    final bytes = await file.readAsBytes();
+    return uploadFileBytes(
+      bytes: bytes,
+      fileName: fileName,
+      folder: folder,
+      onProgress: onProgress,
+      client: client,
+    );
   }
 
   /// Signed deletion of files from Cloudinary

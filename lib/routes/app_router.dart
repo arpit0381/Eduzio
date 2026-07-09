@@ -28,6 +28,7 @@ import '../features/attendance/presentation/screens/qr_scanner_screen.dart';
 import '../features/homework/presentation/screens/homework_screen.dart';
 import '../features/exam/presentation/screens/exam_screen.dart';
 import '../features/fees/presentation/screens/fees_screen.dart';
+import '../features/fees/presentation/screens/add_fee_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 import '../features/notification/presentation/screens/notification_center_screen.dart';
 import '../features/notification/presentation/screens/notification_preferences_screen.dart';
@@ -152,6 +153,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/fees',
             name: 'fees',
             builder: (context, state) => const FeesScreen(),
+            routes: [
+              GoRoute(
+                path: 'add',
+                name: 'fees-add',
+                builder: (context, state) => const AddFeeScreen(),
+              ),
+            ],
           ),
           GoRoute(
             path: '/institutes',

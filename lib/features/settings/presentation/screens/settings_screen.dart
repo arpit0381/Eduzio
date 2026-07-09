@@ -7,14 +7,98 @@ import '../../../../core/constants/sizes.dart';
 import '../../../../core/theme/theme_controller.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
+import 'package:file_picker/file_picker.dart';
+import '../../../upload/presentation/controllers/cloudinary_service.dart';
 import '../../../../shared/widgets/logout_confirmation_dialog.dart';
 import '../../../../core/services/update_checker.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  bool _isUploading = false;
+
+  Future<void> _changeAvatar(UserProfile profile) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+      );
+
+      if (result == null || result.files.isEmpty) return;
+      final file = result.files.first;
+
+      // Limit to 1MB (1,048,576 bytes)
+      if (file.size > 1024 * 1024) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Image size must be less than 1MB'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      setState(() {
+        _isUploading = true;
+      });
+
+      final cloudinary = CloudinaryService();
+      final String cloudinaryUrl;
+
+      if (file.bytes != null) {
+        cloudinaryUrl = await cloudinary.uploadFileBytes(
+          bytes: file.bytes!,
+          fileName: file.name,
+          folder: 'avatars',
+          onProgress: (_) {},
+        );
+      } else if (file.path != null) {
+        cloudinaryUrl = await cloudinary.uploadFile(
+          filePath: file.path!,
+          fileName: file.name,
+          folder: 'avatars',
+          onProgress: (_) {},
+        );
+      } else {
+        throw Exception('Could not read image file bytes or path');
+      }
+
+      await ref.read(authRepositoryProvider).updateAvatarUrl(cloudinaryUrl);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile picture updated successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update picture: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
@@ -54,24 +138,53 @@ class SettingsScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(20),
                     child: Row(
                       children: [
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundColor: colors.primary.withValues(alpha: 0.1),
-                          backgroundImage: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
-                              ? NetworkImage(profile.avatarUrl!)
-                              : null,
-                          child: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
-                              ? null
-                              : Text(
-                                  profile.name.isNotEmpty
-                                      ? profile.name.substring(0, 1).toUpperCase()
-                                      : 'U',
-                                  style: TextStyle(
-                                    color: colors.primary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 22,
+                        GestureDetector(
+                          onTap: _isUploading ? null : () => _changeAvatar(profile),
+                          child: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 36,
+                                backgroundColor: colors.primary.withValues(alpha: 0.1),
+                                backgroundImage: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
+                                    ? NetworkImage(profile.avatarUrl!)
+                                    : null,
+                                child: _isUploading
+                                    ? const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: CircularProgressIndicator(strokeWidth: 3),
+                                      )
+                                    : (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
+                                        ? null
+                                        : Text(
+                                            profile.name.isNotEmpty
+                                                ? profile.name.substring(0, 1).toUpperCase()
+                                                : 'U',
+                                            style: TextStyle(
+                                              color: colors.primary,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 28,
+                                            ),
+                                          )),
+                              ),
+                              if (!_isUploading)
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: colors.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      LucideIcons.camera,
+                                      size: 14,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
+                            ],
+                          ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(

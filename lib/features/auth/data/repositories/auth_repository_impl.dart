@@ -253,6 +253,21 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> updateAvatarUrl(String avatarUrl) async {
+    final user = _client.auth.currentUser;
+    if (user == null) return;
+
+    await _client.from('profiles').update({
+      'avatar_url': avatarUrl,
+    }).eq('id', user.id);
+
+    final profile = await getCurrentUserProfile();
+    if (profile != null) {
+      _authController.add(profile);
+    }
+  }
+
+  @override
   Future<void> signOut() async {
     await _client.auth.signOut();
   }

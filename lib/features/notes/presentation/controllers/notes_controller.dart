@@ -64,17 +64,29 @@ class NotesController extends AsyncNotifier<List<Note>> {
     state = const AsyncValue.loading();
 
     try {
-      final filePath = file.path;
-      if (filePath == null) throw Exception('File path is missing');
-
       // 1. Upload file to Cloudinary
       final cloudinary = CloudinaryService();
-      final cloudinaryUrl = await cloudinary.uploadFile(
-        filePath: filePath,
-        fileName: file.name,
-        folder: 'notes',
-        onProgress: (_) {},
-      );
+      final String cloudinaryUrl;
+
+      if (file.bytes != null) {
+        // Web / memory bytes
+        cloudinaryUrl = await cloudinary.uploadFileBytes(
+          bytes: file.bytes!,
+          fileName: file.name,
+          folder: 'notes',
+          onProgress: (_) {},
+        );
+      } else if (file.path != null) {
+        // Native path
+        cloudinaryUrl = await cloudinary.uploadFile(
+          filePath: file.path!,
+          fileName: file.name,
+          folder: 'notes',
+          onProgress: (_) {},
+        );
+      } else {
+        throw Exception('Selected file has no valid path or bytes');
+      }
 
       // 2. Create note entity
       final note = Note(

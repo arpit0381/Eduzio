@@ -35,6 +35,9 @@ abstract class AuthRepository {
     required String ownerPassword,
   });
 
+  /// Update the user's avatar URL in database and emit updated profile
+  Future<void> updateAvatarUrl(String avatarUrl);
+
   /// Sign out current user
   Future<void> signOut();
 }
