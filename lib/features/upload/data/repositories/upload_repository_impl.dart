@@ -8,7 +8,7 @@ import '../models/isar_upload_task.dart';
 
 class UploadRepositoryImpl implements UploadRepository {
   final CloudinaryService _cloudinary;
-  final Isar _isar;
+  final Isar? _isar;
   final SupabaseClient _supabase;
   final Connectivity _connectivity;
 
@@ -36,6 +36,7 @@ class UploadRepositoryImpl implements UploadRepository {
 
   @override
   Future<void> queueOfflineUpload({required IsarUploadTask task}) async {
+    if (_isar == null) return;
     await _isar.writeTxn(() async {
       await _isar.collection<IsarUploadTask>().put(task);
     });
@@ -43,6 +44,7 @@ class UploadRepositoryImpl implements UploadRepository {
 
   @override
   Future<List<IsarUploadTask>> getQueue() async {
+    if (_isar == null) return [];
     final list = await _isar.collection<IsarUploadTask>().where().findAll();
     list.sort((a, b) => a.queuedAt.compareTo(b.queuedAt));
     return list;
@@ -50,6 +52,7 @@ class UploadRepositoryImpl implements UploadRepository {
 
   @override
   Future<void> deleteQueueTask(int id) async {
+    if (_isar == null) return;
     await _isar.writeTxn(() async {
       await _isar.collection<IsarUploadTask>().delete(id);
     });
@@ -57,6 +60,7 @@ class UploadRepositoryImpl implements UploadRepository {
 
   @override
   Future<void> syncOfflineQueue() async {
+    if (_isar == null) return;
     final result = await _connectivity.checkConnectivity();
     if (result.contains(ConnectivityResult.none)) return;
 

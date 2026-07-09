@@ -65,6 +65,8 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
     );
   }
 
+  bool get _hasIsar => __isar != null;
+
   @override
   Future<List<AttendanceRecord>> getAttendanceForBatchAndDate({
     required String batchId,
@@ -72,14 +74,29 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   }) async {
     final queryDate = DateTime(date.year, date.month, date.day);
 
-    // 1. Load from local database first
+    // 1. If Isar is not available (e.g. on Web), query directly from Supabase
+    if (!_hasIsar) {
+      try {
+        final formattedDate = queryDate.toIso8601String().substring(0, 10);
+        final response = await _client
+            .from('attendance')
+            .select()
+            .eq('batch_id', batchId)
+            .eq('date', formattedDate);
+        return (response as List).map((json) => _mapJsonToEntity(json as Map<String, dynamic>)).toList();
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // 2. Load from local database first
     final localRecords = await _isar.isarAttendanceRecords
         .filter()
         .batchIdEqualTo(batchId)
         .dateEqualTo(queryDate)
         .findAll();
 
-    // 2. Try fetching from Supabase to sync/fetch new records
+    // 3. Try fetching from Supabase to sync/fetch new records
     try {
       final formattedDate = queryDate.toIso8601String().substring(0, 10);
       final response = await _client
@@ -122,7 +139,28 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
     final orgId = _getOrgId();
     final currentUserId = _client.auth.currentUser?.id;
 
-    // 1. Save all entries locally in Isar first with isSynced: false
+    // 1. If Isar is not available, save directly to Supabase
+    if (!_hasIsar) {
+      try {
+        final payload = records.map((record) {
+          final Map<String, dynamic> data = {
+            'organization_id': orgId,
+            'batch_id': record.batchId,
+            'student_id': record.studentId,
+            'date': record.date.toIso8601String().substring(0, 10),
+            'status': record.status.key,
+            'remarks': record.remarks,
+            'marked_by': currentUserId,
+          };
+          return data;
+        }).toList();
+
+        await _client.from('attendance').upsert(payload);
+      } catch (_) {}
+      return;
+    }
+
+    // 2. Save all entries locally in Isar first with isSynced: false
     await _isar.writeTxn(() async {
       for (final record in records) {
         final queryDate = DateTime(record.date.year, record.date.month, record.date.day);
@@ -148,7 +186,7 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
       }
     });
 
-    // 2. Attempt syncing to Supabase immediately
+    // 3. Attempt syncing to Supabase immediately
     try {
       final payload = records.map((record) {
         final Map<String, dynamic> data = {
@@ -167,7 +205,7 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
       final response = await _client.from('attendance').upsert(payload).select();
       final returnedRecords = (response as List).map((json) => _mapJsonToEntity(json as Map<String, dynamic>)).toList();
 
-      // 3. Mark successful rows as synced in Isar
+      // 4. Mark successful rows as synced in Isar
       await _isar.writeTxn(() async {
         for (final remote in returnedRecords) {
           final queryDate = DateTime(remote.date.year, remote.date.month, remote.date.day);
@@ -193,6 +231,8 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
 
   @override
   Future<int> syncUnsyncedRecords() async {
+    if (!_hasIsar) return 0;
+
     // Query Isar for all unsynced records
     final unsynced = await _isar.isarAttendanceRecords
         .filter()
