@@ -42,6 +42,7 @@ class ShellScreen extends ConsumerWidget {
         const _NavItem(label: 'Dashboard', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
         const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
         const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
+        const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
         const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
         const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
       ];
@@ -55,6 +56,7 @@ class ShellScreen extends ConsumerWidget {
         const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
         const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
         const _NavItem(label: 'Exams', icon: LucideIcons.fileText, path: '/exams'),
+        const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
         const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
         const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
       ];
@@ -68,11 +70,12 @@ class ShellScreen extends ConsumerWidget {
     } else if (role == UserProfileRole.student) {
       return [];
     } else {
-      // Admin/Teacher: Attendance, Homework, Exams, Fees go to top action bar
+      // Admin/Teacher: Attendance, Homework, Exams, Notes, Fees go to top action bar
       return [
         const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
         const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
         const _NavItem(label: 'Exams', icon: LucideIcons.fileText, path: '/exams'),
+        const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
         const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
       ];
     }
@@ -92,17 +95,17 @@ class ShellScreen extends ConsumerWidget {
         const _NavItem(label: 'Home', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
         const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
         const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
+        const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
         const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
-        const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
       ];
     } else {
-      // Admin/Teacher: Bottom = Dashboard, Batches, Students, Teachers, Settings
+      // Admin/Teacher: Bottom = Dashboard, Batches, Students, Teachers, Notes
       return [
         const _NavItem(label: 'Home', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
         const _NavItem(label: 'Batches', icon: LucideIcons.grid, path: '/batches'),
         const _NavItem(label: 'Students', icon: LucideIcons.users, path: '/students'),
         const _NavItem(label: 'Teachers', icon: LucideIcons.graduationCap, path: '/teachers'),
-        const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
+        const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
       ];
     }
   }
@@ -251,21 +254,27 @@ class ShellScreen extends ConsumerWidget {
                       const Spacer(),
                       // Profile avatar
                       userProfileAsync.when(
-                        data: (profile) => GestureDetector(
-                          onTap: () => context.go('/settings'),
-                          child: CircleAvatar(
-                            radius: 16,
-                            backgroundColor: colors.primary.withValues(alpha: 0.1),
-                            child: Text(
-                              (profile?.name ?? 'U').substring(0, 1).toUpperCase(),
-                              style: TextStyle(
-                                color: colors.primary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
+                        data: (profile) {
+                          final hasAvatar = profile?.avatarUrl != null && profile!.avatarUrl!.isNotEmpty;
+                          return GestureDetector(
+                            onTap: () => context.go('/settings'),
+                            child: CircleAvatar(
+                              radius: 16,
+                              backgroundColor: colors.primary.withValues(alpha: 0.1),
+                              backgroundImage: hasAvatar ? NetworkImage(profile.avatarUrl!) : null,
+                              child: hasAvatar
+                                  ? null
+                                  : Text(
+                                      (profile?.name ?? 'U').substring(0, 1).toUpperCase(),
+                                      style: TextStyle(
+                                        color: colors.primary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                         loading: () => const SizedBox(width: 32, height: 32),
                         error: (e, s) => const SizedBox(width: 32, height: 32),
                       ),
@@ -628,7 +637,12 @@ class ShellScreen extends ConsumerWidget {
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: colors.primary.withValues(alpha: 0.1),
-                  child: Icon(LucideIcons.user, color: colors.primary, size: 18),
+                  backgroundImage: userProfileAsync.value?.avatarUrl != null && userProfileAsync.value!.avatarUrl!.isNotEmpty
+                      ? NetworkImage(userProfileAsync.value!.avatarUrl!)
+                      : null,
+                  child: userProfileAsync.value?.avatarUrl != null && userProfileAsync.value!.avatarUrl!.isNotEmpty
+                      ? null
+                      : Icon(LucideIcons.user, color: colors.primary, size: 18),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

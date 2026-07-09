@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import '../../../upload/presentation/controllers/cloudinary_service.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../domain/repositories/auth_repository.dart';
 
@@ -37,7 +41,52 @@ class AuthRepositoryImpl implements AuthRepository {
       email: json['email'] as String,
       phone: json['phone'] as String?,
       role: UserProfileRole.fromKey(json['role'] as String),
+      avatarUrl: json['avatar_url'] as String?,
     );
+  }
+
+  Future<void> _checkAndGenerateAvatar(UserProfile profile) async {
+    if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) return;
+
+    unawaited(Future(() async {
+      try {
+        final dicebearUrl = 'https://api.dicebear.com/7.x/shapes/png?seed=${profile.id}';
+        
+        // 1. Download image bytes
+        final response = await http.get(Uri.parse(dicebearUrl));
+        if (response.statusCode != 200) return;
+
+        // 2. Save to a temporary file
+        final tempDir = await getTemporaryDirectory();
+        final tempFile = File('${tempDir.path}/avatar_${profile.id}.png');
+        await tempFile.writeAsBytes(response.bodyBytes);
+
+        // 3. Upload to Cloudinary using CloudinaryService
+        final cloudinary = CloudinaryService();
+        final cloudinaryUrl = await cloudinary.uploadFile(
+          filePath: tempFile.path,
+          fileName: 'avatar_${profile.id}.png',
+          folder: 'avatars',
+          onProgress: (_) {},
+        );
+
+        // 4. Update in Supabase profiles
+        await _client.from('profiles').update({
+          'avatar_url': cloudinaryUrl,
+        }).eq('id', profile.id);
+
+        // Clean up temp file
+        if (await tempFile.exists()) {
+          await tempFile.delete();
+        }
+
+        // Trigger auth state change to update UI
+        final updatedProfile = profile.copyWith(avatarUrl: cloudinaryUrl);
+        _authController.add(updatedProfile);
+      } catch (e) {
+        // fail silently in background
+      }
+    }));
   }
 
   @override
@@ -51,18 +100,23 @@ class AuthRepositoryImpl implements AuthRepository {
           .select()
           .eq('id', user.id)
           .single();
-      return _mapToEntity(data);
+      final profile = _mapToEntity(data);
+      _checkAndGenerateAvatar(profile);
+      return profile;
     } catch (e) {
       // If profile row doesn't exist, we fall back to reading from user metadata
       final meta = user.userMetadata;
       if (meta != null) {
-        return UserProfile(
+        final profile = UserProfile(
           id: user.id,
           organizationId: meta['organization_id'] as String?,
           name: (meta['name'] ?? user.email?.split('@').first) as String,
           email: user.email ?? '',
           role: UserProfileRole.fromKey((meta['role'] ?? 'student') as String),
+          avatarUrl: meta['avatar_url'] as String?,
         );
+        _checkAndGenerateAvatar(profile);
+        return profile;
       }
       return null;
     }

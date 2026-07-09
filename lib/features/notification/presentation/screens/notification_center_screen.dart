@@ -6,6 +6,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../controllers/notification_controller.dart';
 import '../../data/models/isar_notification.dart';
+import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../../../auth/domain/entities/user_profile.dart';
 
 class NotificationCenterScreen extends ConsumerStatefulWidget {
   const NotificationCenterScreen({super.key});
@@ -31,6 +33,7 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
   @override
   Widget build(BuildContext context) {
     final historyAsync = ref.watch(notificationHistoryProvider);
+    final user = ref.watch(authStateProvider).value;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
@@ -141,6 +144,13 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
           ),
         ],
       ),
+      floatingActionButton: (user != null && (user.role == UserProfileRole.admin || user.role == UserProfileRole.teacher))
+          ? FloatingActionButton.extended(
+              onPressed: () => context.go('/notifications/send'),
+              icon: const Icon(LucideIcons.send),
+              label: const Text('Send Alert'),
+            )
+          : null,
     );
   }
 

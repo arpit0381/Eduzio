@@ -55,6 +55,7 @@ class UserProfile {
   final String email;
   final String? phone;
   final UserProfileRole role;
+  final String? avatarUrl;
 
   const UserProfile({
     required this.id,
@@ -63,6 +64,7 @@ class UserProfile {
     required this.email,
     this.phone,
     required this.role,
+    this.avatarUrl,
   });
 
   UserProfile copyWith({
@@ -72,6 +74,7 @@ class UserProfile {
     String? email,
     String? phone,
     UserProfileRole? role,
+    String? avatarUrl,
   }) {
     return UserProfile(
       id: id ?? this.id,
@@ -80,6 +83,7 @@ class UserProfile {
       email: email ?? this.email,
       phone: phone ?? this.phone,
       role: role ?? this.role,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
     );
   }
 }

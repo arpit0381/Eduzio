@@ -57,16 +57,21 @@ class SettingsScreen extends ConsumerWidget {
                         CircleAvatar(
                           radius: 28,
                           backgroundColor: colors.primary.withValues(alpha: 0.1),
-                          child: Text(
-                            profile.name.isNotEmpty
-                                ? profile.name.substring(0, 1).toUpperCase()
-                                : 'U',
-                            style: TextStyle(
-                              color: colors.primary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22,
-                            ),
-                          ),
+                          backgroundImage: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
+                              ? NetworkImage(profile.avatarUrl!)
+                              : null,
+                          child: profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty
+                              ? null
+                              : Text(
+                                  profile.name.isNotEmpty
+                                      ? profile.name.substring(0, 1).toUpperCase()
+                                      : 'U',
+                                  style: TextStyle(
+                                    color: colors.primary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22,
+                                  ),
+                                ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
