@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "345617608214",
+    "project_id": "eduzio-44564",
+    "storage_bucket": "eduzio-44564.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:345617608214:android:fb0cc5055f2773e5ce8f37",
+        "android_client_info": {
+          "package_name": "com.eduzio.eduzio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBshWxUK6QPoiGOC53KAKzFEYda4zw-feM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
