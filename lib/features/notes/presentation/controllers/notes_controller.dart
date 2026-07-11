@@ -7,6 +7,7 @@ import '../../domain/entities/note.dart';
 import '../../domain/repositories/notes_repository.dart';
 import '../../data/repositories/notes_repository_impl.dart';
 import '../../../../core/network/supabase_client.dart';
+import 'package:flutter/foundation.dart';
 
 final notesRepositoryProvider = Provider<NotesRepository>((ref) {
   final client = ref.watch(supabaseClientProvider);
@@ -104,7 +105,38 @@ class NotesController extends AsyncNotifier<List<Note>> {
       // 3. Save note to Supabase
       await _repository.uploadNote(note);
 
-      // 4. Reload notes list
+      // 4. Send notification and insert announcement
+      try {
+        final client = ref.read(supabaseClientProvider);
+        
+        // Insert in-app announcement
+        await client.from('announcements').insert({
+          'organization_id': user.organizationId,
+          'title': 'New Study Note: $title',
+          'content': 'A new note has been uploaded: $title',
+          'target_roles': ['student'],
+          'batch_id': batchId,
+          'created_by': user.id,
+        });
+
+        // Send Push Notification
+        await client.functions.invoke(
+          'send-fcm',
+          body: {
+            'title': 'New Study Note Uploaded',
+            'body': 'A new note "$title" is available.',
+            'target': batchId != null ? 'batch' : 'organization',
+            'targetRole': 'student',
+            'batchId': batchId,
+            'organizationId': user.organizationId,
+            'isGlobal': false,
+          },
+        );
+      } catch (e) {
+        debugPrint('Failed to send notification for note upload: $e');
+      }
+
+      // 5. Reload notes list
       state = await AsyncValue.guard(() => _fetchNotes());
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +21,9 @@ void main() async {
   try {
     // Initialize Firebase Core
     try {
-      await Firebase.initializeApp();
+      if (!kIsWeb) {
+        await Firebase.initializeApp();
+      }
     } catch (e, stack) {
       debugPrint('Firebase initialization failed: $e\n$stack');
     }

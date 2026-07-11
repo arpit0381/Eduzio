@@ -1,8 +1,13 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
@@ -26,14 +31,49 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
     super.dispose();
   }
 
-  Future<void> _openPDF(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
+  Future<void> _openPDF(Note note) async {
+    final url = note.fileUrl;
+    if (kIsWeb) {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not open PDF file.')),
+          );
+        }
+      }
+      return;
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Downloading file to open...')),
+      );
+    }
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final dir = await getTemporaryDirectory();
+        final extension = note.fileName.toLowerCase().endsWith('.pdf') ? '' : '.pdf';
+        final file = File('${dir.path}/${note.fileName}$extension');
+        await file.writeAsBytes(response.bodyBytes);
+        
+        final result = await OpenFilex.open(file.path);
+        if (result.type != ResultType.done && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not open file: ${result.message}')),
+          );
+        }
+      } else {
+        throw Exception('Failed to download: ${response.statusCode}');
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open PDF file.')),
+          SnackBar(content: Text('Error opening file: $e')),
         );
       }
     }
@@ -154,7 +194,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: InkWell(
-                          onTap: () => _openPDF(note.fileUrl),
+                          onTap: () => _openPDF(note),
                           borderRadius: BorderRadius.circular(16),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -228,7 +268,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                                   children: [
                                     IconButton(
                                       icon: const Icon(LucideIcons.externalLink, size: 20),
-                                      onPressed: () => _openPDF(note.fileUrl),
+                                      onPressed: () => _openPDF(note),
                                     ),
                                     if (canManage)
                                       IconButton(

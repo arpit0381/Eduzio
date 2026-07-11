@@ -25,6 +25,12 @@
   <script src="https://github.com/corbado/flutter-passkeys/releases/download/2.4.0/bundle.js"></script>
 </head>
 <body>
+  <!-- Force HTML renderer to bypass gstatic CanvasKit blocking -->
+  <script>
+    window.flutterConfiguration = {
+      renderer: "html"
+    };
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
