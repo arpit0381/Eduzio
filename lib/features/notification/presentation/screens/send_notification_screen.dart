@@ -6,6 +6,22 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
 
+import '../../../auth/domain/entities/user_profile.dart';
+
+class NotificationTemplate {
+  final String title;
+  final String body;
+  const NotificationTemplate(this.title, this.body);
+}
+
+const _templates = [
+  NotificationTemplate('System Maintenance', 'The system will undergo scheduled maintenance tonight from 12 AM to 2 AM. Expect brief interruptions.'),
+  NotificationTemplate('Holiday Alert', 'Tomorrow will be a holiday. All scheduled classes are cancelled. Enjoy your day off!'),
+  NotificationTemplate('Welcome Alert', 'Welcome to the platform. We are excited to have you on board.'),
+  NotificationTemplate('Fee Reminder', 'This is a gentle reminder that fee payments for the current month are due.'),
+  NotificationTemplate('Urgent Update', 'Please check the latest updates on the announcement board.'),
+];
+
 class SendNotificationScreen extends ConsumerStatefulWidget {
   const SendNotificationScreen({super.key});
 
@@ -50,21 +66,38 @@ class _SendNotificationScreenState extends ConsumerState<SendNotificationScreen>
     try {
       final client = Supabase.instance.client;
 
-      // 1. Insert announcement in DB
-      final targetRoles = _targetType == 'role'
-          ? [_selectedRole]
-          : ['student', 'teacher', 'admin', 'parent'];
+      if (_targetType == 'global') {
+        final orgsResponse = await client.from('organizations').select('id');
+        final orgIds = (orgsResponse as List).map((o) => o['id']).toList();
+        final List<Map<String, dynamic>> payload = [];
+        for (final orgId in orgIds) {
+          payload.add({
+            'organization_id': orgId,
+            'title': _titleCtrl.text.trim(),
+            'content': _bodyCtrl.text.trim(),
+            'target_roles': ['student', 'teacher', 'admin', 'parent'],
+            'created_by': user.id,
+          });
+        }
+        if (payload.isNotEmpty) {
+          await client.from('announcements').insert(payload);
+        }
+      } else {
+        final targetRoles = _targetType == 'role'
+            ? [_selectedRole]
+            : ['student', 'teacher', 'admin', 'parent'];
 
-      final announcementPayload = {
-        'organization_id': user.organizationId!,
-        'title': _titleCtrl.text.trim(),
-        'content': _bodyCtrl.text.trim(),
-        'target_roles': targetRoles,
-        'batch_id': _targetType == 'batch' ? _selectedBatchId : null,
-        'created_by': user.id,
-      };
+        final announcementPayload = {
+          'organization_id': user.organizationId!,
+          'title': _titleCtrl.text.trim(),
+          'content': _bodyCtrl.text.trim(),
+          'target_roles': targetRoles,
+          'batch_id': _targetType == 'batch' ? _selectedBatchId : null,
+          'created_by': user.id,
+        };
 
-      await client.from('announcements').insert(announcementPayload);
+        await client.from('announcements').insert(announcementPayload);
+      }
 
       // 2. Invoke FCM Edge Function to deliver real-time push notification
       try {
@@ -76,7 +109,8 @@ class _SendNotificationScreenState extends ConsumerState<SendNotificationScreen>
             'target': _targetType,
             'targetRole': _targetType == 'role' ? _selectedRole : null,
             'batchId': _targetType == 'batch' ? _selectedBatchId : null,
-            'organizationId': user.organizationId!,
+            'organizationId': user.organizationId,
+            'isGlobal': _targetType == 'global',
           },
         );
       } catch (fcmError) {
@@ -140,6 +174,30 @@ class _SendNotificationScreenState extends ConsumerState<SendNotificationScreen>
               ),
               const SizedBox(height: 24),
 
+              // Templates
+              Text(
+                'Notification Templates',
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _templates.map((tpl) {
+                  return ActionChip(
+                    label: Text(tpl.title),
+                    avatar: const Icon(LucideIcons.fileText, size: 16),
+                    onPressed: () {
+                      setState(() {
+                        _titleCtrl.text = tpl.title;
+                        _bodyCtrl.text = tpl.body;
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+
               // Title input
               TextFormField(
                 controller: _titleCtrl,
@@ -180,10 +238,12 @@ class _SendNotificationScreenState extends ConsumerState<SendNotificationScreen>
               ),
               const SizedBox(height: 8),
               SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'all', label: Text('All Users'), icon: Icon(LucideIcons.globe)),
-                  ButtonSegment(value: 'role', label: Text('By Role'), icon: Icon(LucideIcons.shieldCheck)),
-                  ButtonSegment(value: 'batch', label: Text('By Batch'), icon: Icon(LucideIcons.graduationCap)),
+                segments: [
+                  if (ref.read(authStateProvider).value?.role == UserProfileRole.superAdmin)
+                    const ButtonSegment(value: 'global', label: Text('Global'), icon: Icon(LucideIcons.globe2)),
+                  const ButtonSegment(value: 'all', label: Text('All Users'), icon: Icon(LucideIcons.globe)),
+                  const ButtonSegment(value: 'role', label: Text('By Role'), icon: Icon(LucideIcons.shieldCheck)),
+                  const ButtonSegment(value: 'batch', label: Text('By Batch'), icon: Icon(LucideIcons.graduationCap)),
                 ],
                 selected: {_targetType},
                 onSelectionChanged: (val) {

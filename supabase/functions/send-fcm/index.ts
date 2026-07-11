@@ -22,17 +22,23 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { title, body, target, targetRole, batchId, organizationId } = await req.json();
+    const { title, body, target, targetRole, batchId, organizationId, isGlobal } = await req.json();
 
-    if (!title || !body || !organizationId) {
-      throw new Error("Missing required fields: title, body, organizationId");
+    if (!title || !body) {
+      throw new Error("Missing required fields: title, body");
     }
 
     // 1. Fetch target FCM tokens from notification_tokens
     let query = supabaseClient
       .from("notification_tokens")
-      .select("fcm_token")
-      .eq("institute_id", organizationId);
+      .select("fcm_token");
+
+    if (isGlobal !== true) {
+      if (!organizationId) {
+        throw new Error("Missing required field: organizationId for non-global target");
+      }
+      query = query.eq("institute_id", organizationId);
+    }
 
     if (target === "role" && targetRole) {
       query = query.eq("role", targetRole);
@@ -123,8 +129,8 @@ async function getAccessToken(serviceAccount: any): Promise<string> {
     iat: now,
   };
 
-  const encodedHeader = btoa(JSON.stringify(header));
-  const encodedClaim = btoa(JSON.stringify(claim));
+  const encodedHeader = btoa(JSON.stringify(header)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const encodedClaim = btoa(JSON.stringify(claim)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   const signatureInput = `${encodedHeader}.${encodedClaim}`;
 
   // Sign JWT using private key

@@ -36,7 +36,6 @@ class ProgressMultipartRequest extends http.MultipartRequest {
 
 class CloudinaryService {
   static const String _cloudName = String.fromEnvironment('CLOUDINARY_CLOUD_NAME', defaultValue: 'dsbchkcbb');
-  static const String _uploadPreset = String.fromEnvironment('CLOUDINARY_UPLOAD_PRESET', defaultValue: 'eduzio_preset');
   static const String _apiKey = String.fromEnvironment('CLOUDINARY_API_KEY', defaultValue: '699218753457135');
   static const String _apiSecret = String.fromEnvironment('CLOUDINARY_API_SECRET', defaultValue: 'Q-0kt7dtflzOKzyrgeeSyFXY4m8');
 
@@ -85,7 +84,13 @@ class CloudinaryService {
         },
       );
 
-      request.fields['upload_preset'] = _uploadPreset;
+      final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      final signaturePayload = 'folder=$folder&timestamp=$timestamp$_apiSecret';
+      final signature = sha1.convert(utf8.encode(signaturePayload)).toString();
+
+      request.fields['api_key'] = _apiKey;
+      request.fields['timestamp'] = timestamp.toString();
+      request.fields['signature'] = signature;
       request.fields['folder'] = folder;
 
       final multipartFile = http.MultipartFile.fromBytes(
