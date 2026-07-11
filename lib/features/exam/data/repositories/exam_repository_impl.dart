@@ -7,121 +7,174 @@ class ExamRepositoryImpl implements ExamRepository {
 
   ExamRepositoryImpl(this._client);
 
-  String _getOrgId() {
-    final user = _client.auth.currentUser;
-    if (user == null) throw Exception('User not authenticated');
-    final orgId = user.userMetadata?['organization_id'] as String?;
-    if (orgId == null) throw Exception('User not associated with any organization');
-    return orgId;
-  }
-
-  Exam _mapExamJson(Map<String, dynamic> json) {
-    return Exam(
-      id: json['id'] as String,
-      organizationId: json['organization_id'] as String,
-      batchId: json['batch_id'] as String,
-      subjectId: json['subject_id'] as String?,
-      title: json['title'] as String,
-      description: json['description'] as String?,
-      examDate: DateTime.parse(json['exam_date'] as String),
-      maxMarks: json['max_marks'] as int,
-      passingMarks: json['passing_marks'] as int?,
-      createdBy: json['created_by'] as String,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
-    );
-  }
-
-  ExamResult _mapResultJson(Map<String, dynamic> json) {
-    return ExamResult(
-      id: json['id'] as String,
-      examId: json['exam_id'] as String,
-      studentId: json['student_id'] as String,
-      marksObtained: json['marks_obtained'] as int,
-      remarks: json['remarks'] as String?,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-    );
-  }
-
   @override
-  Future<List<Exam>> getExams() async {
-    final orgId = _getOrgId();
-    final response = await _client
-        .from('exams')
-        .select()
-        .eq('organization_id', orgId)
-        .order('exam_date', ascending: false);
-    return (response as List).map((json) => _mapExamJson(json as Map<String, dynamic>)).toList();
-  }
-
-  @override
-  Future<Exam> createExam(Exam exam) async {
-    final orgId = _getOrgId();
-    final userId = _client.auth.currentUser!.id;
-
-    final payload = {
-      'organization_id': orgId,
-      'batch_id': exam.batchId,
-      'subject_id': exam.subjectId,
-      'title': exam.title,
-      'description': exam.description,
-      'exam_date': exam.examDate.toIso8601String().substring(0, 10),
-      'max_marks': exam.maxMarks,
-      'passing_marks': exam.passingMarks,
-      'created_by': userId,
-    };
-
-    final response = await _client.from('exams').insert(payload).select().single();
-    return _mapExamJson(response);
-  }
-
-  @override
-  Future<Exam> updateExam(Exam exam) async {
-    final payload = {
-      'batch_id': exam.batchId,
-      'subject_id': exam.subjectId,
-      'title': exam.title,
-      'description': exam.description,
-      'exam_date': exam.examDate.toIso8601String().substring(0, 10),
-      'max_marks': exam.maxMarks,
-      'passing_marks': exam.passingMarks,
-    };
-
-    final response = await _client
-        .from('exams')
-        .update(payload)
-        .eq('id', exam.id)
-        .select()
-        .single();
-    return _mapExamJson(response);
-  }
-
-  @override
-  Future<void> deleteExam(String examId) async {
-    await _client.from('exams').delete().eq('id', examId);
-  }
-
-  @override
-  Future<List<ExamResult>> getResultsForExam(String examId) async {
-    final response = await _client
-        .from('exam_results')
-        .select()
-        .eq('exam_id', examId)
-        .order('marks_obtained', ascending: false);
-    return (response as List).map((json) => _mapResultJson(json as Map<String, dynamic>)).toList();
-  }
-
-  @override
-  Future<void> saveResults(String examId, List<ExamResult> results) async {
-    final payload = results.map((r) => {
-      'exam_id': examId,
-      'student_id': r.studentId,
-      'marks_obtained': r.marksObtained,
-      'remarks': r.remarks,
+  Future<List<Quiz>> getQuizzes(String organizationId, {String? batchId}) async {
+    var query = _client
+        .from('quizzes')
+        .select('*, batches:batch_id(name)');
+    
+    query = query.eq('organization_id', organizationId);
+    
+    if (batchId != null) {
+      query = query.eq('batch_id', batchId);
+    }
+    
+    final response = await query.order('created_at', ascending: false);
+    
+    return (response as List).map((json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final batchData = jsonMap['batches'] as Map<String, dynamic>?;
+      final batchName = batchData != null ? (batchData['name'] as String? ?? '') : '';
+      
+      final questionsList = (jsonMap['questions'] as List? ?? [])
+          .map((q) => QuizQuestion.fromJson(q as Map<String, dynamic>))
+          .toList();
+          
+      return Quiz(
+        id: jsonMap['id'] as String,
+        organizationId: jsonMap['organization_id'] as String,
+        batchId: jsonMap['batch_id'] as String,
+        batchName: batchName,
+        title: jsonMap['title'] as String,
+        description: jsonMap['description'] as String?,
+        durationMinutes: jsonMap['duration_minutes'] as int? ?? 10,
+        questions: questionsList,
+        createdBy: jsonMap['created_by'] as String,
+        createdAt: jsonMap['created_at'] != null ? DateTime.parse(jsonMap['created_at'] as String) : null,
+        updatedAt: jsonMap['updated_at'] != null ? DateTime.parse(jsonMap['updated_at'] as String) : null,
+      );
     }).toList();
+  }
 
-    await _client
-        .from('exam_results')
-        .upsert(payload, onConflict: 'exam_id,student_id');
+  @override
+  Future<Quiz> createQuiz(Quiz quiz) async {
+    final payload = {
+      'organization_id': quiz.organizationId,
+      'batch_id': quiz.batchId,
+      'title': quiz.title,
+      'description': quiz.description,
+      'duration_minutes': quiz.durationMinutes,
+      'questions': quiz.questions.map((q) => q.toJson()).toList(),
+      'created_by': quiz.createdBy,
+    };
+    
+    final response = await _client.from('quizzes').insert(payload).select('*, batches:batch_id(name)').single();
+    
+    final jsonMap = response;
+    final batchData = jsonMap['batches'] as Map<String, dynamic>?;
+    final batchName = batchData != null ? (batchData['name'] as String? ?? '') : '';
+    
+    final questionsList = (jsonMap['questions'] as List? ?? [])
+        .map((q) => QuizQuestion.fromJson(q as Map<String, dynamic>))
+        .toList();
+        
+    return Quiz(
+      id: jsonMap['id'] as String,
+      organizationId: jsonMap['organization_id'] as String,
+      batchId: jsonMap['batch_id'] as String,
+      batchName: batchName,
+      title: jsonMap['title'] as String,
+      description: jsonMap['description'] as String?,
+      durationMinutes: jsonMap['duration_minutes'] as int? ?? 10,
+      questions: questionsList,
+      createdBy: jsonMap['created_by'] as String,
+      createdAt: jsonMap['created_at'] != null ? DateTime.parse(jsonMap['created_at'] as String) : null,
+      updatedAt: jsonMap['updated_at'] != null ? DateTime.parse(jsonMap['updated_at'] as String) : null,
+    );
+  }
+
+  @override
+  Future<Quiz> updateQuiz(Quiz quiz) async {
+    final payload = {
+      'batch_id': quiz.batchId,
+      'title': quiz.title,
+      'description': quiz.description,
+      'duration_minutes': quiz.durationMinutes,
+      'questions': quiz.questions.map((q) => q.toJson()).toList(),
+    };
+    
+    final response = await _client.from('quizzes').update(payload).eq('id', quiz.id).select('*, batches:batch_id(name)').single();
+    
+    final jsonMap = response;
+    final batchData = jsonMap['batches'] as Map<String, dynamic>?;
+    final batchName = batchData != null ? (batchData['name'] as String? ?? '') : '';
+    
+    final questionsList = (jsonMap['questions'] as List? ?? [])
+        .map((q) => QuizQuestion.fromJson(q as Map<String, dynamic>))
+        .toList();
+        
+    return Quiz(
+      id: jsonMap['id'] as String,
+      organizationId: jsonMap['organization_id'] as String,
+      batchId: jsonMap['batch_id'] as String,
+      batchName: batchName,
+      title: jsonMap['title'] as String,
+      description: jsonMap['description'] as String?,
+      durationMinutes: jsonMap['duration_minutes'] as int? ?? 10,
+      questions: questionsList,
+      createdBy: jsonMap['created_by'] as String,
+      createdAt: jsonMap['created_at'] != null ? DateTime.parse(jsonMap['created_at'] as String) : null,
+      updatedAt: jsonMap['updated_at'] != null ? DateTime.parse(jsonMap['updated_at'] as String) : null,
+    );
+  }
+
+  @override
+  Future<void> deleteQuiz(String quizId) async {
+    await _client.from('quizzes').delete().eq('id', quizId);
+  }
+
+  @override
+  Future<List<QuizAttempt>> getAttemptsForQuiz(String quizId) async {
+    final response = await _client
+        .from('quiz_attempts')
+        .select('*, profiles:student_id(name)')
+        .eq('quiz_id', quizId)
+        .order('score', ascending: false);
+        
+    return (response as List).map((json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final profileData = jsonMap['profiles'] as Map<String, dynamic>?;
+      final studentName = profileData != null ? (profileData['name'] as String? ?? '') : '';
+      
+      return QuizAttempt(
+        id: jsonMap['id'] as String,
+        quizId: jsonMap['quiz_id'] as String,
+        studentId: jsonMap['student_id'] as String,
+        studentName: studentName,
+        score: jsonMap['score'] as int? ?? 0,
+        totalQuestions: jsonMap['total_questions'] as int? ?? 0,
+        completedAt: DateTime.parse(jsonMap['completed_at'] as String),
+      );
+    }).toList();
+  }
+
+  @override
+  Future<QuizAttempt> submitAttempt(String quizId, String studentId, int score, int totalQuestions) async {
+    final payload = {
+      'quiz_id': quizId,
+      'student_id': studentId,
+      'score': score,
+      'total_questions': totalQuestions,
+    };
+    
+    final response = await _client
+        .from('quiz_attempts')
+        .upsert(payload, onConflict: 'quiz_id,student_id')
+        .select('*, profiles:student_id(name)')
+        .single();
+        
+    final jsonMap = response;
+    final profileData = jsonMap['profiles'] as Map<String, dynamic>?;
+    final studentName = profileData != null ? (profileData['name'] as String? ?? '') : '';
+    
+    return QuizAttempt(
+      id: jsonMap['id'] as String,
+      quizId: jsonMap['quiz_id'] as String,
+      studentId: jsonMap['student_id'] as String,
+      studentName: studentName,
+      score: jsonMap['score'] as int? ?? 0,
+      totalQuestions: jsonMap['total_questions'] as int? ?? 0,
+      completedAt: DateTime.parse(jsonMap['completed_at'] as String),
+    );
   }
 }

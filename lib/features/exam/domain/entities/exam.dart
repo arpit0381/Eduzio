@@ -1,56 +1,80 @@
-class Exam {
+class QuizQuestion {
+  final String questionText;
+  final List<String> options;
+  final int correctOptionIndex;
+
+  const QuizQuestion({
+    required this.questionText,
+    required this.options,
+    required this.correctOptionIndex,
+  });
+
+  factory QuizQuestion.fromJson(Map<String, dynamic> json) {
+    return QuizQuestion(
+      questionText: json['question_text'] as String,
+      options: List<String>.from(json['options'] ?? []),
+      correctOptionIndex: json['correct_option_index'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'question_text': questionText,
+      'options': options,
+      'correct_option_index': correctOptionIndex,
+    };
+  }
+}
+
+class Quiz {
   final String id;
   final String organizationId;
   final String batchId;
-  final String? subjectId;
+  final String? batchName;
   final String title;
   final String? description;
-  final DateTime examDate;
-  final int maxMarks;
-  final int? passingMarks;
+  final int durationMinutes;
+  final List<QuizQuestion> questions;
   final String createdBy;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  const Exam({
+  const Quiz({
     required this.id,
     required this.organizationId,
     required this.batchId,
-    this.subjectId,
+    this.batchName,
     required this.title,
     this.description,
-    required this.examDate,
-    required this.maxMarks,
-    this.passingMarks,
+    required this.durationMinutes,
+    required this.questions,
     required this.createdBy,
     this.createdAt,
     this.updatedAt,
   });
 
-  Exam copyWith({
+  Quiz copyWith({
     String? id,
     String? organizationId,
     String? batchId,
-    String? subjectId,
+    String? batchName,
     String? title,
     String? description,
-    DateTime? examDate,
-    int? maxMarks,
-    int? passingMarks,
+    int? durationMinutes,
+    List<QuizQuestion>? questions,
     String? createdBy,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Exam(
+    return Quiz(
       id: id ?? this.id,
       organizationId: organizationId ?? this.organizationId,
       batchId: batchId ?? this.batchId,
-      subjectId: subjectId ?? this.subjectId,
+      batchName: batchName ?? this.batchName,
       title: title ?? this.title,
       description: description ?? this.description,
-      examDate: examDate ?? this.examDate,
-      maxMarks: maxMarks ?? this.maxMarks,
-      passingMarks: passingMarks ?? this.passingMarks,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      questions: questions ?? this.questions,
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -58,20 +82,22 @@ class Exam {
   }
 }
 
-class ExamResult {
+class QuizAttempt {
   final String id;
-  final String examId;
+  final String quizId;
   final String studentId;
-  final int marksObtained;
-  final String? remarks;
-  final DateTime? createdAt;
+  final String? studentName;
+  final int score;
+  final int totalQuestions;
+  final DateTime completedAt;
 
-  const ExamResult({
+  const QuizAttempt({
     required this.id,
-    required this.examId,
+    required this.quizId,
     required this.studentId,
-    required this.marksObtained,
-    this.remarks,
-    this.createdAt,
+    this.studentName,
+    required this.score,
+    required this.totalQuestions,
+    required this.completedAt,
   });
 }

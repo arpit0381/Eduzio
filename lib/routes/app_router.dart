@@ -253,7 +253,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Students cannot access admin/teacher-only routes
       if (user.role == UserProfileRole.student) {
-        const studentBlockedRoutes = ['/batches', '/students', '/teachers', '/exams', '/institutes', '/users'];
+        const studentBlockedRoutes = ['/batches', '/students', '/teachers', '/institutes', '/users'];
         for (final route in studentBlockedRoutes) {
           if (currentLoc.startsWith(route)) return '/dashboard';
         }

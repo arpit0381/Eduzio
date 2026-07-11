@@ -41,6 +41,7 @@ class ShellScreen extends ConsumerWidget {
       return [
         const _NavItem(label: 'Dashboard', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
         const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
+        const _NavItem(label: 'Quizzes', icon: LucideIcons.helpCircle, path: '/exams'),
         const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
         const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
         const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
@@ -55,7 +56,7 @@ class ShellScreen extends ConsumerWidget {
         const _NavItem(label: 'Teachers', icon: LucideIcons.graduationCap, path: '/teachers'),
         const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
         const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
-        const _NavItem(label: 'Exams', icon: LucideIcons.fileText, path: '/exams'),
+        const _NavItem(label: 'Quizzes', icon: LucideIcons.helpCircle, path: '/exams'),
         const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
         const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
         const _NavItem(label: 'Settings', icon: LucideIcons.settings, path: '/settings'),
@@ -70,11 +71,11 @@ class ShellScreen extends ConsumerWidget {
     } else if (role == UserProfileRole.student) {
       return [];
     } else {
-      // Admin/Teacher: Attendance, Homework, Exams, Notes, Fees go to top action bar
+      // Admin/Teacher: Attendance, Homework, Quizzes, Notes, Fees go to top action bar
       return [
         const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
         const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
-        const _NavItem(label: 'Exams', icon: LucideIcons.fileText, path: '/exams'),
+        const _NavItem(label: 'Quizzes', icon: LucideIcons.helpCircle, path: '/exams'),
         const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
         const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
       ];
@@ -94,7 +95,7 @@ class ShellScreen extends ConsumerWidget {
       return [
         const _NavItem(label: 'Home', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
         const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
-        const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
+        const _NavItem(label: 'Quizzes', icon: LucideIcons.helpCircle, path: '/exams'),
         const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
         const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
       ];
