@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Eduzio (Web - HTML Renderer)",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "Eduzio (Mobile/Desktop)",
+      "request": "launch",
+      "type": "dart"
+    }
+  ]
+}

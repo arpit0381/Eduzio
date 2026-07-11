@@ -15,7 +15,7 @@ final notesRepositoryProvider = Provider<NotesRepository>((ref) {
 });
 
 class NotesController extends AsyncNotifier<List<Note>> {
-  late final NotesRepository _repository;
+  late NotesRepository _repository;
 
   @override
   Future<List<Note>> build() async {

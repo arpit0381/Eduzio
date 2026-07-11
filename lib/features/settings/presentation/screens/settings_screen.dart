@@ -11,6 +11,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../../upload/presentation/controllers/cloudinary_service.dart';
 import '../../../../shared/widgets/logout_confirmation_dialog.dart';
 import '../../../../core/services/update_checker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -416,6 +417,63 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     onTap: () {
                       UpdateChecker.checkForUpdates(context, showNoUpdateToast: true);
                     },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 28),
+
+            // Developer Footer Section
+            Center(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Image.network(
+                          'https://github.com/arpit0381.png',
+                          width: 28,
+                          height: 28,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: 28,
+                            height: 28,
+                            color: colors.primary.withValues(alpha: 0.1),
+                            child: Icon(LucideIcons.user, size: 16, color: colors.primary),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Developed by Arpit Bajpai',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        constraints: const BoxConstraints(),
+                        padding: EdgeInsets.zero,
+                        icon: Icon(LucideIcons.externalLink, size: 16, color: colors.primary),
+                        onPressed: () async {
+                          final uri = Uri.parse('https://arpitbajpai.in');
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'arpitbajpai.in',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.primary.withValues(alpha: 0.6),
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),

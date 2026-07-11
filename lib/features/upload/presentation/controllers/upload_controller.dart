@@ -61,8 +61,8 @@ class UploadState {
 
 // Notifier for active uploads
 class UploadController extends Notifier<UploadState> {
-  late final UploadRepository _repository;
-  late final Connectivity _connectivity;
+  late UploadRepository _repository;
+  late Connectivity _connectivity;
 
   @override
   UploadState build() {

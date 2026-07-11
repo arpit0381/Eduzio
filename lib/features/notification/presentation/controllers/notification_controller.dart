@@ -22,7 +22,7 @@ final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
 
 // Notifier for NotificationPreferences
 class NotificationPreferencesController extends Notifier<NotificationPreferences> {
-  late final NotificationRepository _repository;
+  late NotificationRepository _repository;
 
   @override
   NotificationPreferences build() {
@@ -74,7 +74,7 @@ final notificationPreferencesProvider = NotifierProvider<NotificationPreferences
 
 // AsyncNotifier for NotificationHistory
 class NotificationHistoryController extends AsyncNotifier<List<CachedNotification1816>> {
-  late final NotificationRepository _repository;
+  late NotificationRepository _repository;
 
   @override
   Future<List<CachedNotification1816>> build() async {

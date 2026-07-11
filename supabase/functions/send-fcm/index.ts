@@ -22,7 +22,7 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { title, body, target, targetRole, batchId, organizationId, isGlobal } = await req.json();
+    const { title, body, target, targetRole, batchId, organizationId, isGlobal, userId } = await req.json();
 
     if (!title || !body) {
       throw new Error("Missing required fields: title, body");
@@ -53,6 +53,8 @@ serve(async (req: Request) => {
       const studentIds = (studentTokens ?? []).map((s: any) => s.student_id);
       
       query = query.in("user_id", studentIds);
+    } else if (target === "user" && userId) {
+      query = query.eq("user_id", userId);
     }
 
     const { data: tokensData, error: tokenErr } = await query;

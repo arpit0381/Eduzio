@@ -58,7 +58,8 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
       if (response.statusCode == 200) {
         final dir = await getTemporaryDirectory();
         final extension = note.fileName.toLowerCase().endsWith('.pdf') ? '' : '.pdf';
-        final file = File('${dir.path}/${note.fileName}$extension');
+        final sanitizedName = '${note.fileName}$extension'.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+        final file = File('${dir.path}/$sanitizedName');
         await file.writeAsBytes(response.bodyBytes);
         
         final result = await OpenFilex.open(file.path);
