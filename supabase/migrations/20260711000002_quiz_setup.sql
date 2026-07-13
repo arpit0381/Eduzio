@@ -47,4 +47,3 @@ CREATE POLICY "Tenant isolation for quiz_attempts" ON public.quiz_attempts
 
 -- 7. Force Supabase to reload Postgrest schema cache
 NOTIFY pgrst, 'reload schema';
---heheh--
