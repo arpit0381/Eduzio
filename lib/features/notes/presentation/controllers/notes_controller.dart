@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
 import '../../../upload/presentation/controllers/cloudinary_service.dart';
@@ -55,7 +57,9 @@ class NotesController extends AsyncNotifier<List<Note>> {
     required String title,
     String? description,
     String? batchId,
-    required PlatformFile file,
+    PlatformFile? file,
+    String? linkUrl,
+    String? fileName,
   }) async {
     final user = ref.read(authStateProvider).value;
     if (user == null || user.organizationId == null) {
@@ -65,44 +69,73 @@ class NotesController extends AsyncNotifier<List<Note>> {
     state = const AsyncValue.loading();
 
     try {
-      // 1. Upload file to Cloudinary
-      final cloudinary = CloudinaryService();
-      final String cloudinaryUrl;
+      final client = ref.read(supabaseClientProvider);
+      String uploadedUrl = '';
+      String resolvedFileName = fileName ?? file?.name ?? 'Document';
 
-      if (file.bytes != null) {
-        // Web / memory bytes
-        cloudinaryUrl = await cloudinary.uploadFileBytes(
-          bytes: file.bytes!,
-          fileName: file.name,
-          folder: 'notes',
-          onProgress: (_) {},
-        );
-      } else if (file.path != null) {
-        // Native path
-        cloudinaryUrl = await cloudinary.uploadFile(
-          filePath: file.path!,
-          fileName: file.name,
-          folder: 'notes',
-          onProgress: (_) {},
-        );
+      if (linkUrl != null && linkUrl.trim().isNotEmpty) {
+        uploadedUrl = linkUrl.trim();
+        // Google Drive link auto-formatting
+        if (uploadedUrl.contains('drive.google.com')) {
+          final reg = RegExp(r'/d/([a-zA-Z0-9_-]+)');
+          final match = reg.firstMatch(uploadedUrl);
+          if (match != null) {
+            final driveId = match.group(1);
+            uploadedUrl = 'https://drive.google.com/uc?export=download&id=$driveId';
+          }
+        }
+      } else if (file != null) {
+        final Uint8List fileBytes = file.bytes ?? 
+            (file.path != null && file.path!.isNotEmpty ? await File(file.path!).readAsBytes() : Uint8List(0));
+
+        if (fileBytes.isEmpty) {
+          throw Exception('Selected file is empty or has no content');
+        }
+
+        // Try uploading to Supabase Storage (Bucket: 'notes')
+        try {
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+          final sanitizedName = file.name.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+          final storagePath = '${user.organizationId}/$timestamp-$sanitizedName';
+
+          await client.storage.from('notes').uploadBinary(
+            storagePath,
+            fileBytes,
+            fileOptions: const FileOptions(
+              contentType: 'application/pdf',
+              upsert: true,
+            ),
+          );
+
+          uploadedUrl = client.storage.from('notes').getPublicUrl(storagePath);
+        } catch (e) {
+          debugPrint('Supabase storage upload error ($e). Falling back to Cloudinary...');
+          final cloudinary = CloudinaryService();
+          uploadedUrl = await cloudinary.uploadFileBytes(
+            bytes: fileBytes,
+            fileName: file.name,
+            folder: 'notes',
+            onProgress: (_) {},
+          );
+        }
       } else {
-        throw Exception('Selected file has no valid path or bytes');
+        throw Exception('Please provide either a PDF file or a document link.');
       }
 
-      // 2. Create note entity
+      // Create note entity
       final note = Note(
         id: '',
         organizationId: user.organizationId!,
         batchId: batchId,
         title: title,
         description: description,
-        fileUrl: cloudinaryUrl,
-        fileName: file.name,
+        fileUrl: uploadedUrl,
+        fileName: resolvedFileName,
         uploadedBy: user.id,
         createdAt: DateTime.now(),
       );
 
-      // 3. Save note to Supabase
+      // Save note to Supabase
       await _repository.uploadNote(note);
 
       // 4. Send notification and insert announcement

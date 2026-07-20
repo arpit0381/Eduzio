@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:crypto/crypto.dart';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path_helper;
 
 class ProgressMultipartRequest extends http.MultipartRequest {
-  final void Function(int bytesUploaded, int totalBytes) onProgress;
+  final void Function(int bytes, int totalBytes) onProgress;
 
   ProgressMultipartRequest(
     super.method,
@@ -19,13 +19,13 @@ class ProgressMultipartRequest extends http.MultipartRequest {
   @override
   http.ByteStream finalize() {
     final byteStream = super.finalize();
-    final total = contentLength;
-    int bytesUploaded = 0;
+    final int total = contentLength;
+    int bytes = 0;
 
     final transformer = StreamTransformer<List<int>, List<int>>.fromHandlers(
       handleData: (data, sink) {
-        bytesUploaded += data.length;
-        onProgress(bytesUploaded, total);
+        bytes += data.length;
+        onProgress(bytes, total);
         sink.add(data);
       },
     );
@@ -39,13 +39,10 @@ class CloudinaryService {
   static const String _apiKey = String.fromEnvironment('CLOUDINARY_API_KEY', defaultValue: '699218753457135');
   static const String _apiSecret = String.fromEnvironment('CLOUDINARY_API_SECRET', defaultValue: 'Q-0kt7dtflzOKzyrgeeSyFXY4m8');
 
-  /// Compress image bytes using the pure-Dart image package
   Future<Uint8List> _compressImage(Uint8List bytes) async {
-    return compute((Uint8List data) {
+    return compute((data) {
       final decoded = img.decodeImage(data);
       if (decoded == null) return data;
-      
-      // Limit size to max width 1200px
       img.Image resized = decoded;
       if (decoded.width > 1200) {
         resized = img.copyResize(decoded, width: 1200);
@@ -70,7 +67,6 @@ class CloudinaryService {
 
       Uint8List fileBytes = bytes;
       if (isImage) {
-        // Compress images before upload
         fileBytes = await _compressImage(fileBytes);
       }
 
@@ -85,13 +81,16 @@ class CloudinaryService {
       );
 
       final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      final signaturePayload = 'folder=$folder&timestamp=$timestamp$_apiSecret';
+      // Include use_filename and unique_filename in signature payload so Cloudinary preserves file extension (.pdf)
+      final signaturePayload = 'folder=$folder&timestamp=$timestamp&unique_filename=true&use_filename=true$_apiSecret';
       final signature = sha1.convert(utf8.encode(signaturePayload)).toString();
 
       request.fields['api_key'] = _apiKey;
       request.fields['timestamp'] = timestamp.toString();
       request.fields['signature'] = signature;
       request.fields['folder'] = folder;
+      request.fields['use_filename'] = 'true';
+      request.fields['unique_filename'] = 'true';
 
       final multipartFile = http.MultipartFile.fromBytes(
         'file',
@@ -140,39 +139,33 @@ class CloudinaryService {
     );
   }
 
-  /// Signed deletion of files from Cloudinary
   Future<void> deleteFile(String fileUrl) async {
-    if (_apiKey.isEmpty || _apiSecret.isEmpty) {
-      debugPrint('Cloudinary credentials missing, skipping Cloudinary deletion.');
-      return;
-    }
-
     try {
       final publicId = _extractPublicId(fileUrl);
       if (publicId == null) return;
 
       final isRaw = fileUrl.contains('/raw/');
       final resourceType = isRaw ? 'raw' : 'image';
-      
-      final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      final signature = _generateSignature(publicId, timestamp);
 
-      final url = Uri.parse('https://api.cloudinary.com/v1_1/$_cloudName/$resourceType/destroy');
-      final response = await http.post(url, body: {
-        'public_id': publicId,
-        'api_key': _apiKey,
-        'timestamp': timestamp.toString(),
-        'signature': signature,
-      });
+      final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      final signaturePayload = 'public_id=$publicId&timestamp=$timestamp$_apiSecret';
+      final signature = sha1.convert(utf8.encode(signaturePayload)).toString();
+
+      final response = await http.post(
+        Uri.parse('https://api.cloudinary.com/v1_1/$_cloudName/$resourceType/destroy'),
+        body: {
+          'public_id': publicId,
+          'api_key': _apiKey,
+          'timestamp': timestamp.toString(),
+          'signature': signature,
+        },
+      );
 
       if (response.statusCode != 200) {
-        final decoded = json.decode(response.body) as Map<String, dynamic>;
-        final errorMsg = decoded['error']?['message'] as String? ?? 'Cloudinary delete failed';
-        throw Exception(errorMsg);
+        debugPrint('Cloudinary delete failed: ${response.body}');
       }
     } catch (e) {
-      debugPrint('Cloudinary deletion failed: $e');
-      rethrow;
+      debugPrint('Cloudinary delete exception: $e');
     }
   }
 
@@ -181,23 +174,21 @@ class CloudinaryService {
       final uri = Uri.parse(url);
       final segments = uri.pathSegments;
       final uploadIndex = segments.indexOf('upload');
-      if (uploadIndex == -1 || uploadIndex + 2 >= segments.length) return null;
-      
-      // Public ID includes folder path and filename without extension
-      final idSegments = segments.sublist(uploadIndex + 2);
-      final lastSegment = idSegments.last;
-      final dotIndex = lastSegment.lastIndexOf('.');
-      if (dotIndex != -1) {
-        idSegments[idSegments.length - 1] = lastSegment.substring(0, dotIndex);
+      if (uploadIndex == -1 || uploadIndex + 1 >= segments.length) return null;
+
+      List<String> targetSegments = segments.sublist(uploadIndex + 1);
+      if (targetSegments.first.startsWith('v') && int.tryParse(targetSegments.first.substring(1)) != null) {
+        targetSegments = targetSegments.sublist(1);
       }
-      return idSegments.join('/');
-    } catch (_) {
+
+      final fullPath = targetSegments.join('/');
+      final extension = path_helper.extension(fullPath);
+      if (extension.isNotEmpty) {
+        return fullPath.substring(0, fullPath.length - extension.length);
+      }
+      return fullPath;
+    } catch (e) {
       return null;
     }
-  }
-
-  String _generateSignature(String publicId, int timestamp) {
-    final payload = 'public_id=$publicId&timestamp=$timestamp$_apiSecret';
-    return sha1.convert(utf8.encode(payload)).toString();
   }
 }

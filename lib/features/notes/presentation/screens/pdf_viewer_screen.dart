@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -6,6 +8,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../domain/entities/note.dart';
 
@@ -32,6 +35,167 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     _loadPdfBytes();
   }
 
+  List<String> _generateCloudinarySignedUrls(String fileUrl) {
+    const apiSecret = 'Q-0kt7dtflzOKzyrgeeSyFXY4m8';
+    final List<String> signedUrls = [];
+
+    try {
+      final uri = Uri.parse(fileUrl);
+      final segments = uri.pathSegments;
+      final uploadIdx = segments.indexOf('upload');
+      if (uploadIdx != -1 && uploadIdx + 1 < segments.length) {
+        List<String> pathSegs = segments.sublist(uploadIdx + 1);
+        if (pathSegs.first.startsWith('s--')) {
+          pathSegs = pathSegs.sublist(1);
+        }
+        String versionPath = '';
+        if (pathSegs.first.startsWith('v') && int.tryParse(pathSegs.first.substring(1)) != null) {
+          versionPath = '${pathSegs.first}/';
+          pathSegs = pathSegs.sublist(1);
+        }
+        final publicId = pathSegs.join('/');
+
+        if (publicId.toLowerCase().endsWith('.pdf')) {
+          final publicIdNoExt = publicId.substring(0, publicId.length - 4);
+          final stringToSignNoExt = '$publicIdNoExt$apiSecret';
+          final bytesNoExt = sha1.convert(utf8.encode(stringToSignNoExt)).bytes;
+          final sigNoExt = base64Url.encode(bytesNoExt).replaceAll('=', '').replaceAll('+', '-').replaceAll('/', '_').substring(0, 8);
+
+          signedUrls.add('https://res.cloudinary.com/dsbchkcbb/raw/upload/s--$sigNoExt--/$versionPath$publicIdNoExt');
+          signedUrls.add('https://res.cloudinary.com/dsbchkcbb/image/upload/s--$sigNoExt--/$versionPath$publicIdNoExt');
+        }
+
+        final stringToSign = '$publicId$apiSecret';
+        final bytes = sha1.convert(utf8.encode(stringToSign)).bytes;
+        final signature = base64Url.encode(bytes).replaceAll('=', '').replaceAll('+', '-').replaceAll('/', '_').substring(0, 8);
+
+        signedUrls.add('https://res.cloudinary.com/dsbchkcbb/raw/upload/s--$signature--/$versionPath$publicId');
+        signedUrls.add('https://res.cloudinary.com/dsbchkcbb/image/upload/s--$signature--/$versionPath$publicId');
+      }
+    } catch (e) {
+      debugPrint('Cloudinary signature generation error: $e');
+    }
+
+    return signedUrls;
+  }
+
+  Future<Uint8List> _fetchPdfBytes(String fileUrl) async {
+    final client = Supabase.instance.client;
+    
+    final Map<String, String> headers = {
+      if (!kIsWeb)
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/pdf,application/octet-stream,*/*',
+    };
+
+    final session = client.auth.currentSession;
+    if (session != null) {
+      headers['Authorization'] = 'Bearer ${session.accessToken}';
+    }
+    const anonKey = String.fromEnvironment(
+      'SUPABASE_ANON_KEY',
+      defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50cnBpemxsYXFwbGJ5a3NqcWdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1MTA2ODAsImV4cCI6MjA5ODA4NjY4MH0.47NmxltJqxz9C4G6p-PRyUr2sQTYAuknehuWzw5yNXE',
+    );
+    headers['apikey'] = anonKey;
+
+    final List<String> candidateUrls = [];
+
+    // Supabase Signed URL candidate
+    try {
+      final uri = Uri.parse(fileUrl);
+      if (uri.host.contains('supabase') && uri.pathSegments.contains('storage')) {
+        final pathSegments = uri.pathSegments;
+        final objectIdx = pathSegments.indexOf('object');
+        if (objectIdx != -1 && objectIdx + 2 < pathSegments.length) {
+          final bucketIdx = objectIdx + 2;
+          final bucket = pathSegments[bucketIdx];
+          final path = pathSegments.sublist(bucketIdx + 1).join('/');
+          final signed = await client.storage.from(bucket).createSignedUrl(path, 3600);
+          candidateUrls.add(signed);
+        }
+      }
+    } catch (e) {
+      debugPrint('Signed URL generation attempt failed: $e');
+    }
+
+    // Cloudinary Signed & Formatted Candidate URLs
+    if (fileUrl.contains('cloudinary.com')) {
+      final signedCloud = _generateCloudinarySignedUrls(fileUrl);
+      candidateUrls.addAll(signedCloud);
+
+      final raw = fileUrl.replaceAll('/image/upload/', '/raw/upload/');
+      final img = fileUrl.replaceAll('/raw/upload/', '/image/upload/');
+
+      if (fileUrl.toLowerCase().endsWith('.pdf')) {
+        final noPdfBase = fileUrl.substring(0, fileUrl.length - 4);
+        final noPdfRaw = raw.endsWith('.pdf') ? raw.substring(0, raw.length - 4) : raw;
+        final noPdfImg = img.endsWith('.pdf') ? img.substring(0, img.length - 4) : img;
+        
+        candidateUrls.add(noPdfRaw);
+        candidateUrls.add(noPdfBase);
+        candidateUrls.add(noPdfImg);
+      }
+      candidateUrls.add(raw);
+      candidateUrls.add(img);
+    }
+
+    candidateUrls.add(fileUrl);
+
+    final List<String> debugLog = [];
+
+    // Attempt candidates with auth headers & safe headers
+    for (final url in candidateUrls) {
+      try {
+        final response = await http.get(Uri.parse(url), headers: headers);
+        if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
+          return response.bodyBytes;
+        }
+        debugLog.add('$url [HTTP ${response.statusCode}]');
+      } catch (e) {
+        debugLog.add('$url [Error: $e]');
+      }
+
+      // Try without Supabase headers (only safe headers) for public CDNs
+      try {
+        final Map<String, String> safeHeaders = {
+          if (!kIsWeb)
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        };
+        final response = await http.get(
+          Uri.parse(url),
+          headers: safeHeaders.isEmpty ? null : safeHeaders,
+        );
+        if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
+          return response.bodyBytes;
+        }
+      } catch (e) {
+        // Logged above
+      }
+    }
+
+    // Direct Supabase SDK Storage Download fallback
+    try {
+      final uri = Uri.parse(fileUrl);
+      if (uri.pathSegments.contains('storage')) {
+        final pathSegments = uri.pathSegments;
+        final objectIdx = pathSegments.indexOf('object');
+        if (objectIdx != -1 && objectIdx + 2 < pathSegments.length) {
+          final bucketIdx = objectIdx + 2;
+          final bucket = pathSegments[bucketIdx];
+          final path = pathSegments.sublist(bucketIdx + 1).join('/');
+          final bytes = await client.storage.from(bucket).download(path);
+          if (bytes.isNotEmpty) {
+            return bytes;
+          }
+        }
+      }
+    } catch (e) {
+      debugLog.add('Supabase SDK Download: $e');
+    }
+
+    throw Exception('Failed to load file from server. (Checked candidates: ${debugLog.take(3).join(', ')})');
+  }
+
   Future<void> _loadPdfBytes() async {
     setState(() {
       _isLoading = true;
@@ -39,23 +203,17 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     });
 
     try {
-      final uri = Uri.parse(widget.note.fileUrl);
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
-        if (mounted) {
-          setState(() {
-            _pdfBytes = response.bodyBytes;
-            _isLoading = false;
-          });
-        }
-      } else {
-        throw Exception('Server returned status code ${response.statusCode}');
+      final bytes = await _fetchPdfBytes(widget.note.fileUrl);
+      if (mounted) {
+        setState(() {
+          _pdfBytes = bytes;
+          _isLoading = false;
+        });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = e.toString();
+          _errorMessage = e.toString().replaceAll('Exception: ', '');
           _isLoading = false;
         });
       }
@@ -64,10 +222,38 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 
   Future<void> _launchInBrowser() async {
     try {
-      final uri = Uri.parse(widget.note.fileUrl);
-      bool launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      String targetUrl = widget.note.fileUrl;
+
+      if (targetUrl.contains('cloudinary.com')) {
+        final signed = _generateCloudinarySignedUrls(targetUrl);
+        if (signed.isNotEmpty) {
+          targetUrl = signed.first;
+        } else {
+          final raw = targetUrl.replaceAll('/image/upload/', '/raw/upload/');
+          targetUrl = raw.endsWith('.pdf') ? raw.substring(0, raw.length - 4) : raw;
+        }
+      }
+
+      final uri = Uri.parse(targetUrl);
+      if (uri.host.contains('supabase') && uri.pathSegments.contains('storage')) {
+        try {
+          final pathSegments = uri.pathSegments;
+          final objectIdx = pathSegments.indexOf('object');
+          if (objectIdx != -1 && objectIdx + 2 < pathSegments.length) {
+            final bucketIdx = objectIdx + 2;
+            final bucket = pathSegments[bucketIdx];
+            final path = pathSegments.sublist(bucketIdx + 1).join('/');
+            targetUrl = await Supabase.instance.client.storage.from(bucket).createSignedUrl(path, 3600);
+          }
+        } catch (e) {
+          debugPrint('Error creating signed url for browser: $e');
+        }
+      }
+
+      final launchUri = Uri.parse(targetUrl);
+      bool launched = await launchUrl(launchUri, mode: LaunchMode.externalApplication);
       if (!launched) {
-        launched = await launchUrl(uri, mode: LaunchMode.platformDefault);
+        launched = await launchUrl(launchUri, mode: LaunchMode.platformDefault);
       }
       if (!launched && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -92,7 +278,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     try {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Opening file...')),
+          const SnackBar(content: Text('Preparing file for external viewer...')),
         );
       }
 
@@ -101,24 +287,20 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       final sanitizedName = '${widget.note.fileName}$extension'.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
       final file = File('${dir.path}/$sanitizedName');
 
+      Uint8List bytesToSave;
       if (_pdfBytes != null) {
-        await file.writeAsBytes(_pdfBytes!);
+        bytesToSave = _pdfBytes!;
       } else {
-        final response = await http.get(Uri.parse(widget.note.fileUrl));
-        if (response.statusCode == 200) {
-          await file.writeAsBytes(response.bodyBytes);
-        } else {
-          throw Exception('Failed to download file: ${response.statusCode}');
-        }
+        bytesToSave = await _fetchPdfBytes(widget.note.fileUrl);
       }
+
+      await file.writeAsBytes(bytesToSave);
 
       final result = await OpenFilex.open(file.path);
       if (result.type != ResultType.done) {
-        // Fallback to browser if no external PDF viewer app found
         await _launchInBrowser();
       }
     } catch (e) {
-      // Fallback to launching URL in external browser
       await _launchInBrowser();
     }
   }
@@ -175,7 +357,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
             Text(
-              'Loading note document...',
+              'Downloading note document...',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
