@@ -69,7 +69,10 @@ class ShellScreen extends ConsumerWidget {
     if (role == UserProfileRole.superAdmin) {
       return [];
     } else if (role == UserProfileRole.student) {
-      return [];
+      return [
+        const _NavItem(label: 'Quizzes', icon: LucideIcons.helpCircle, path: '/exams'),
+        const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
+      ];
     } else {
       // Admin/Teacher: Attendance, Homework, Quizzes, Notes, Fees go to top action bar
       return [
@@ -94,10 +97,9 @@ class ShellScreen extends ConsumerWidget {
     } else if (role == UserProfileRole.student) {
       return [
         const _NavItem(label: 'Home', icon: LucideIcons.layoutDashboard, path: '/dashboard'),
+        const _NavItem(label: 'Attendance', icon: LucideIcons.clipboardCheck, path: '/attendance'),
         const _NavItem(label: 'Homework', icon: LucideIcons.bookOpen, path: '/homework'),
-        const _NavItem(label: 'Quizzes', icon: LucideIcons.helpCircle, path: '/exams'),
         const _NavItem(label: 'Notes', icon: LucideIcons.fileText, path: '/notes'),
-        const _NavItem(label: 'Fees', icon: LucideIcons.creditCard, path: '/fees'),
       ];
     } else {
       // Admin/Teacher: Bottom = Dashboard, Batches, Students, Teachers, Notes

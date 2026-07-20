@@ -1,13 +1,7 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
@@ -31,53 +25,8 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
     super.dispose();
   }
 
-  Future<void> _openPDF(Note note) async {
-    final url = note.fileUrl;
-    if (kIsWeb) {
-      final uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not open PDF file.')),
-          );
-        }
-      }
-      return;
-    }
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Downloading file to open...')),
-      );
-    }
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final dir = await getTemporaryDirectory();
-        final extension = note.fileName.toLowerCase().endsWith('.pdf') ? '' : '.pdf';
-        final sanitizedName = '${note.fileName}$extension'.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
-        final file = File('${dir.path}/$sanitizedName');
-        await file.writeAsBytes(response.bodyBytes);
-        
-        final result = await OpenFilex.open(file.path);
-        if (result.type != ResultType.done && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not open file: ${result.message}')),
-          );
-        }
-      } else {
-        throw Exception('Failed to download: ${response.statusCode}');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error opening file: $e')),
-        );
-      }
-    }
+  void _openPDF(Note note) {
+    context.push('/notes/view', extra: note);
   }
 
   void _confirmDelete(Note note) {

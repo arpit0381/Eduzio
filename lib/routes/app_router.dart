@@ -35,6 +35,8 @@ import '../features/notification/presentation/screens/notification_preferences_s
 import '../features/splash/presentation/screens/splash_screen.dart';
 import '../features/notes/presentation/screens/notes_screen.dart';
 import '../features/notes/presentation/screens/upload_notes_screen.dart';
+import '../features/notes/presentation/screens/pdf_viewer_screen.dart';
+import '../features/notes/domain/entities/note.dart';
 import '../features/notification/presentation/screens/send_notification_screen.dart';
 
 /// Helper class to convert a Stream into a Listenable for GoRouter refresh notifier
@@ -211,6 +213,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'upload',
                 name: 'notes-upload',
                 builder: (context, state) => const UploadNotesScreen(),
+              ),
+              GoRoute(
+                path: 'view',
+                name: 'notes-view',
+                builder: (context, state) {
+                  final note = state.extra as Note;
+                  return PdfViewerScreen(note: note);
+                },
               ),
             ],
           ),

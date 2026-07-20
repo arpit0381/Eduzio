@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../domain/entities/dashboard_stats.dart';
@@ -276,75 +277,95 @@ class StudentDashboardScreen extends ConsumerWidget {
     final colors = theme.colorScheme;
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(28.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Attendance',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+      child: InkWell(
+        onTap: () => context.go('/attendance'),
+        borderRadius: BorderRadius.circular(24),
+        child: Padding(
+          padding: const EdgeInsets.all(28.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Attendance',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                    ),
                   ),
-                ),
-                Icon(LucideIcons.activity, color: colors.primary, size: 20),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${percentage.toStringAsFixed(0)}%',
-                        style: GoogleFonts.inter(
-                          textStyle: theme.textTheme.displayMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -1.5,
-                            color: colors.onSurface,
+                  Icon(LucideIcons.activity, color: colors.primary, size: 20),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${percentage.toStringAsFixed(0)}%',
+                          style: GoogleFonts.inter(
+                            textStyle: theme.textTheme.displayMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: -1.5,
+                              color: colors.onSurface,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'You have attended almost all classes this month.',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                        const SizedBox(height: 8),
+                        Text(
+                          'You have attended almost all classes this month.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                          ),
                         ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 90,
+                        height: 90,
+                        child: CircularProgressIndicator(
+                          value: percentage / 100,
+                          strokeWidth: 10,
+                          backgroundColor: colors.primary.withValues(alpha: 0.1),
+                          valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                          strokeCap: StrokeCap.round,
+                        ),
+                      ),
+                      Text(
+                        'Class',
+                        style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 16),
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      width: 90,
-                      height: 90,
-                      child: CircularProgressIndicator(
-                        value: percentage / 100,
-                        strokeWidth: 10,
-                        backgroundColor: colors.primary.withValues(alpha: 0.1),
-                        valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-                        strokeCap: StrokeCap.round,
-                      ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'View Attendance Calendar',
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
                     ),
-                    Text(
-                      'Class',
-                      style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(LucideIcons.arrowRight, size: 14, color: colors.primary),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

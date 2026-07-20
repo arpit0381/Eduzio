@@ -321,8 +321,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             style: TextStyle(color: colors.onSurfaceVariant),
                           ),
                           TextButton(
-                            onPressed: () {
-                              ref.read(authControllerProvider.notifier).signOut();
+                            onPressed: () async {
+                              await ref.read(authControllerProvider.notifier).signOut();
+                              if (context.mounted) {
+                                context.go('/login');
+                              }
                             },
                             child: const Text('Sign In'),
                           ),

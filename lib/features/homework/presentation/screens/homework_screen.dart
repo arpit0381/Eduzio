@@ -8,6 +8,8 @@ import '../controllers/homework_controller.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
+import '../../../notes/domain/entities/note.dart';
+import '../../../notes/presentation/screens/pdf_viewer_screen.dart';
 
 
 class HomeworkScreen extends ConsumerWidget {
@@ -223,26 +225,46 @@ class _HomeworkCard extends StatelessWidget {
             Row(
               children: [
                 if (homework.fileUrl != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(LucideIcons.paperclip, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                        const SizedBox(width: 6),
-                        Text(
-                          'File attached',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
-                          ),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () {
+                      final note = Note(
+                        id: homework.id,
+                        organizationId: homework.organizationId,
+                        title: homework.title,
+                        description: homework.description,
+                        fileUrl: homework.fileUrl!,
+                        fileName: 'Attachment.pdf',
+                        uploadedBy: homework.createdBy,
+                        createdAt: homework.dueDate,
+                      );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PdfViewerScreen(note: note),
                         ),
-                      ],
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(LucideIcons.paperclip, size: 14, color: theme.colorScheme.primary),
+                          const SizedBox(width: 6),
+                          Text(
+                            'View Attachment',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 const Spacer(),
