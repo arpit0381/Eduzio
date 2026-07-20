@@ -8,7 +8,9 @@ import '../../../../core/theme/theme_controller.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
 import 'package:file_picker/file_picker.dart';
-import '../../../upload/presentation/controllers/cloudinary_service.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../shared/widgets/logout_confirmation_dialog.dart';
 import '../../../../core/services/update_checker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -49,28 +51,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _isUploading = true;
       });
 
-      final cloudinary = CloudinaryService();
-      final String cloudinaryUrl;
+      final client = Supabase.instance.client;
+      final user = ref.read(authStateProvider).value;
+      if (user == null) return;
 
-      if (file.bytes != null) {
-        cloudinaryUrl = await cloudinary.uploadFileBytes(
-          bytes: file.bytes!,
-          fileName: file.name,
-          folder: 'avatars',
-          onProgress: (_) {},
-        );
-      } else if (file.path != null) {
-        cloudinaryUrl = await cloudinary.uploadFile(
-          filePath: file.path!,
-          fileName: file.name,
-          folder: 'avatars',
-          onProgress: (_) {},
-        );
-      } else {
-        throw Exception('Could not read image file bytes or path');
+      final Uint8List fileBytes = file.bytes ?? 
+          (file.path != null && file.path!.isNotEmpty ? await File(file.path!).readAsBytes() : Uint8List(0));
+
+      if (fileBytes.isEmpty) {
+        throw Exception('Could not read image file bytes');
       }
 
-      await ref.read(authRepositoryProvider).updateAvatarUrl(cloudinaryUrl);
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final sanitizedName = file.name.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+      final storagePath = '${user.id}/$timestamp-$sanitizedName';
+
+      await client.storage.from('avatars').uploadBinary(
+        storagePath,
+        fileBytes,
+        fileOptions: const FileOptions(
+          contentType: 'image/png',
+          upsert: true,
+        ),
+      );
+
+      final avatarUrl = client.storage.from('avatars').getPublicUrl(storagePath);
+      await ref.read(authRepositoryProvider).updateAvatarUrl(avatarUrl);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

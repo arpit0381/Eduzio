@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
-import '../../../upload/presentation/controllers/cloudinary_service.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../domain/repositories/auth_repository.dart';
 
@@ -45,7 +45,7 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
-  Future<void> _checkAndGenerateAvatar(UserProfile profile) async {
+  void _checkAndGenerateAvatar(UserProfile profile) {
     if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) return;
 
     unawaited(Future(() async {
@@ -61,30 +61,32 @@ class AuthRepositoryImpl implements AuthRepository {
         final tempFile = File('${tempDir.path}/avatar_${profile.id}.png');
         await tempFile.writeAsBytes(response.bodyBytes);
 
-        // 3. Upload to Cloudinary using CloudinaryService
-        final cloudinary = CloudinaryService();
-        final cloudinaryUrl = await cloudinary.uploadFile(
-          filePath: tempFile.path,
-          fileName: 'avatar_${profile.id}.png',
-          folder: 'avatars',
-          onProgress: (_) {},
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final storagePath = '${profile.id}/avatar_$timestamp.png';
+
+        await _client.storage.from('avatars').uploadBinary(
+          storagePath,
+          response.bodyBytes,
+          fileOptions: const sb.FileOptions(
+            contentType: 'image/png',
+            upsert: true,
+          ),
         );
 
-        // 4. Update in Supabase profiles
+        final publicAvatarUrl = _client.storage.from('avatars').getPublicUrl(storagePath);
+
         await _client.from('profiles').update({
-          'avatar_url': cloudinaryUrl,
+          'avatar_url': publicAvatarUrl,
         }).eq('id', profile.id);
 
-        // Clean up temp file
         if (await tempFile.exists()) {
           await tempFile.delete();
         }
 
-        // Trigger auth state change to update UI
-        final updatedProfile = profile.copyWith(avatarUrl: cloudinaryUrl);
+        final updatedProfile = profile.copyWith(avatarUrl: publicAvatarUrl);
         _authController.add(updatedProfile);
       } catch (e) {
-        // fail silently in background
+        debugPrint('Avatar setup background error: $e');
       }
     }));
   }

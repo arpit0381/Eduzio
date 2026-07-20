@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
-import '../../../upload/presentation/controllers/cloudinary_service.dart';
 import '../../domain/entities/note.dart';
 import '../../domain/repositories/notes_repository.dart';
 import '../../data/repositories/notes_repository_impl.dart';
@@ -92,32 +91,20 @@ class NotesController extends AsyncNotifier<List<Note>> {
           throw Exception('Selected file is empty or has no content');
         }
 
-        // Try uploading to Supabase Storage (Bucket: 'notes')
-        try {
-          final timestamp = DateTime.now().millisecondsSinceEpoch;
-          final sanitizedName = file.name.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
-          final storagePath = '${user.organizationId}/$timestamp-$sanitizedName';
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final sanitizedName = file.name.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+        final storagePath = '${user.organizationId}/$timestamp-$sanitizedName';
 
-          await client.storage.from('notes').uploadBinary(
-            storagePath,
-            fileBytes,
-            fileOptions: const FileOptions(
-              contentType: 'application/pdf',
-              upsert: true,
-            ),
-          );
+        await client.storage.from('notes').uploadBinary(
+          storagePath,
+          fileBytes,
+          fileOptions: const FileOptions(
+            contentType: 'application/pdf',
+            upsert: true,
+          ),
+        );
 
-          uploadedUrl = client.storage.from('notes').getPublicUrl(storagePath);
-        } catch (e) {
-          debugPrint('Supabase storage upload error ($e). Falling back to Cloudinary...');
-          final cloudinary = CloudinaryService();
-          uploadedUrl = await cloudinary.uploadFileBytes(
-            bytes: fileBytes,
-            fileName: file.name,
-            folder: 'notes',
-            onProgress: (_) {},
-          );
-        }
+        uploadedUrl = client.storage.from('notes').getPublicUrl(storagePath);
       } else {
         throw Exception('Please provide either a PDF file or a document link.');
       }

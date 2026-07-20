@@ -9,6 +9,8 @@ import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/domain/entities/user_profile.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
+  static bool hasShownSplash = false;
+
   const SplashScreen({super.key});
 
   @override
@@ -50,6 +52,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void _navigateToNextScreen(UserProfile? user) {
     if (_hasNavigated || !mounted) return;
     _hasNavigated = true;
+    SplashScreen.hasShownSplash = true;
 
     if (user == null) {
       context.go('/login');

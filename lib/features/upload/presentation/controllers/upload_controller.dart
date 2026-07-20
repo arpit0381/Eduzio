@@ -4,7 +4,6 @@ import '../../../../core/network/supabase_client.dart';
 import '../../../../core/storage/isar_database.dart';
 import '../../data/repositories/upload_repository_impl.dart';
 import '../../domain/repositories/upload_repository.dart';
-import 'cloudinary_service.dart';
 import '../../data/models/isar_upload_task.dart';
 
 // Provider for Connectivity
@@ -12,18 +11,12 @@ final connectivityProvider = Provider<Connectivity>((ref) {
   return Connectivity();
 });
 
-// Provider for CloudinaryService
-final cloudinaryServiceProvider = Provider<CloudinaryService>((ref) {
-  return CloudinaryService();
-});
-
 // Provider for UploadRepository
 final uploadRepositoryProvider = Provider<UploadRepository>((ref) {
-  final cloudinary = ref.watch(cloudinaryServiceProvider);
   final isar = ref.watch(isarProvider);
   final supabase = ref.watch(supabaseClientProvider);
   final connectivity = ref.watch(connectivityProvider);
-  return UploadRepositoryImpl(cloudinary, isar, supabase, connectivity);
+  return UploadRepositoryImpl(isar, supabase, connectivity);
 });
 
 // Upload state definition

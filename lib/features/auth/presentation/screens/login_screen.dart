@@ -4,6 +4,7 @@ import '../../../../core/constants/sizes.dart';
 import '../controllers/auth_controller.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../../shared/presentation/widgets/skeletal_loader.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -51,6 +52,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const SkeletalLoaderScreen();
+    }
+
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final size = MediaQuery.sizeOf(context);

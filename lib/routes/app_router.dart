@@ -69,7 +69,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/splash',
         name: 'splash',
-        builder: (context, state) => const SplashScreen(),
+        builder: (context, state) {
+          if (SplashScreen.hasShownSplash) {
+            final user = authState.value;
+            if (user == null) {
+              return const LoginScreen();
+            }
+            final role = user.role;
+            if (role == UserProfileRole.student) return const ShellScreen(child: StudentDashboardScreen());
+            if (role == UserProfileRole.superAdmin) return const ShellScreen(child: SuperAdminDashboardScreen());
+            return const ShellScreen(child: AdminDashboardScreen());
+          }
+          return const SplashScreen();
+        },
       ),
       // Auth Routes
       GoRoute(
@@ -236,8 +248,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           currentLoc == '/register' ||
           currentLoc == '/onboard';
 
-      // 0. If we are on splash screen, let it handle its own navigation
-      if (currentLoc == '/splash') return null;
+      // 0. If we are on splash screen, let it handle its own navigation ONLY on initial app launch
+      if (currentLoc == '/splash') {
+        if (SplashScreen.hasShownSplash) {
+          return user == null ? '/login' : '/dashboard';
+        }
+        return null;
+      }
 
       // 1. If user is NOT logged in, redirect them to login
       if (user == null) {

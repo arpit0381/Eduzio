@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -35,52 +33,21 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     _loadPdfBytes();
   }
 
-  List<String> _generateCloudinarySignedUrls(String fileUrl) {
-    const apiSecret = 'Q-0kt7dtflzOKzyrgeeSyFXY4m8';
-    final List<String> signedUrls = [];
-
-    try {
-      final uri = Uri.parse(fileUrl);
-      final segments = uri.pathSegments;
-      final uploadIdx = segments.indexOf('upload');
-      if (uploadIdx != -1 && uploadIdx + 1 < segments.length) {
-        List<String> pathSegs = segments.sublist(uploadIdx + 1);
-        if (pathSegs.first.startsWith('s--')) {
-          pathSegs = pathSegs.sublist(1);
-        }
-        String versionPath = '';
-        if (pathSegs.first.startsWith('v') && int.tryParse(pathSegs.first.substring(1)) != null) {
-          versionPath = '${pathSegs.first}/';
-          pathSegs = pathSegs.sublist(1);
-        }
-        final publicId = pathSegs.join('/');
-
-        if (publicId.toLowerCase().endsWith('.pdf')) {
-          final publicIdNoExt = publicId.substring(0, publicId.length - 4);
-          final stringToSignNoExt = '$publicIdNoExt$apiSecret';
-          final bytesNoExt = sha1.convert(utf8.encode(stringToSignNoExt)).bytes;
-          final sigNoExt = base64Url.encode(bytesNoExt).replaceAll('=', '').replaceAll('+', '-').replaceAll('/', '_').substring(0, 8);
-
-          signedUrls.add('https://res.cloudinary.com/dsbchkcbb/raw/upload/s--$sigNoExt--/$versionPath$publicIdNoExt');
-          signedUrls.add('https://res.cloudinary.com/dsbchkcbb/image/upload/s--$sigNoExt--/$versionPath$publicIdNoExt');
-        }
-
-        final stringToSign = '$publicId$apiSecret';
-        final bytes = sha1.convert(utf8.encode(stringToSign)).bytes;
-        final signature = base64Url.encode(bytes).replaceAll('=', '').replaceAll('+', '-').replaceAll('/', '_').substring(0, 8);
-
-        signedUrls.add('https://res.cloudinary.com/dsbchkcbb/raw/upload/s--$signature--/$versionPath$publicId');
-        signedUrls.add('https://res.cloudinary.com/dsbchkcbb/image/upload/s--$signature--/$versionPath$publicId');
+  String _formatGoogleDriveUrl(String url) {
+    if (url.contains('drive.google.com')) {
+      final reg = RegExp(r'/d/([a-zA-Z0-9_-]+)');
+      final match = reg.firstMatch(url);
+      if (match != null) {
+        final driveId = match.group(1);
+        return 'https://drive.google.com/uc?export=download&id=$driveId';
       }
-    } catch (e) {
-      debugPrint('Cloudinary signature generation error: $e');
     }
-
-    return signedUrls;
+    return url;
   }
 
   Future<Uint8List> _fetchPdfBytes(String fileUrl) async {
     final client = Supabase.instance.client;
+    final formattedUrl = _formatGoogleDriveUrl(fileUrl);
     
     final Map<String, String> headers = {
       if (!kIsWeb)
@@ -98,7 +65,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     );
     headers['apikey'] = anonKey;
 
-    final List<String> candidateUrls = [];
+    final List<String> candidateUrls = [formattedUrl, fileUrl];
 
     // Supabase Signed URL candidate
     try {
@@ -111,35 +78,12 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
           final bucket = pathSegments[bucketIdx];
           final path = pathSegments.sublist(bucketIdx + 1).join('/');
           final signed = await client.storage.from(bucket).createSignedUrl(path, 3600);
-          candidateUrls.add(signed);
+          candidateUrls.insert(0, signed);
         }
       }
     } catch (e) {
-      debugPrint('Signed URL generation attempt failed: $e');
+      debugPrint('Supabase Signed URL generation error: $e');
     }
-
-    // Cloudinary Signed & Formatted Candidate URLs
-    if (fileUrl.contains('cloudinary.com')) {
-      final signedCloud = _generateCloudinarySignedUrls(fileUrl);
-      candidateUrls.addAll(signedCloud);
-
-      final raw = fileUrl.replaceAll('/image/upload/', '/raw/upload/');
-      final img = fileUrl.replaceAll('/raw/upload/', '/image/upload/');
-
-      if (fileUrl.toLowerCase().endsWith('.pdf')) {
-        final noPdfBase = fileUrl.substring(0, fileUrl.length - 4);
-        final noPdfRaw = raw.endsWith('.pdf') ? raw.substring(0, raw.length - 4) : raw;
-        final noPdfImg = img.endsWith('.pdf') ? img.substring(0, img.length - 4) : img;
-        
-        candidateUrls.add(noPdfRaw);
-        candidateUrls.add(noPdfBase);
-        candidateUrls.add(noPdfImg);
-      }
-      candidateUrls.add(raw);
-      candidateUrls.add(img);
-    }
-
-    candidateUrls.add(fileUrl);
 
     final List<String> debugLog = [];
 
@@ -155,7 +99,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         debugLog.add('$url [Error: $e]');
       }
 
-      // Try without Supabase headers (only safe headers) for public CDNs
+      // Try without Supabase headers for public URLs
       try {
         final Map<String, String> safeHeaders = {
           if (!kIsWeb)
@@ -168,9 +112,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
           return response.bodyBytes;
         }
-      } catch (e) {
-        // Logged above
-      }
+      } catch (_) {}
     }
 
     // Direct Supabase SDK Storage Download fallback
@@ -193,7 +135,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       debugLog.add('Supabase SDK Download: $e');
     }
 
-    throw Exception('Failed to load file from server. (Checked candidates: ${debugLog.take(3).join(', ')})');
+    throw Exception('Failed to load file preview. Tap "Open in Google Docs" or "Open Link" below.');
   }
 
   Future<void> _loadPdfBytes() async {
@@ -220,20 +162,23 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
     }
   }
 
-  Future<void> _launchInBrowser() async {
+  Future<void> _launchInBrowser({bool forceGoogleDocs = false}) async {
     try {
       String targetUrl = widget.note.fileUrl;
 
-      if (targetUrl.contains('cloudinary.com')) {
-        final signed = _generateCloudinarySignedUrls(targetUrl);
-        if (signed.isNotEmpty) {
-          targetUrl = signed.first;
+      if (forceGoogleDocs || !targetUrl.contains('drive.google.com')) {
+        if (targetUrl.contains('drive.google.com')) {
+          final reg = RegExp(r'/d/([a-zA-Z0-9_-]+)');
+          final match = reg.firstMatch(targetUrl);
+          if (match != null) {
+            targetUrl = 'https://drive.google.com/file/d/${match.group(1)}/view';
+          }
         } else {
-          final raw = targetUrl.replaceAll('/image/upload/', '/raw/upload/');
-          targetUrl = raw.endsWith('.pdf') ? raw.substring(0, raw.length - 4) : raw;
+          targetUrl = 'https://docs.google.com/gview?embedded=true&url=${Uri.encodeComponent(targetUrl)}';
         }
       }
 
+      // If Supabase storage, generate signed URL
       final uri = Uri.parse(targetUrl);
       if (uri.host.contains('supabase') && uri.pathSegments.contains('storage')) {
         try {
@@ -257,7 +202,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       }
       if (!launched && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not launch browser for PDF.')),
+          const SnackBar(content: Text('Could not launch browser for document.')),
         );
       }
     } catch (e) {
@@ -333,9 +278,14 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(LucideIcons.fileText),
+            tooltip: 'Open in Google Docs / Drive',
+            onPressed: () => _launchInBrowser(forceGoogleDocs: true),
+          ),
+          IconButton(
             icon: const Icon(LucideIcons.externalLink),
-            tooltip: 'Open in Browser',
-            onPressed: _launchInBrowser,
+            tooltip: 'Open Direct Link',
+            onPressed: () => _launchInBrowser(),
           ),
           IconButton(
             icon: const Icon(LucideIcons.share2),
@@ -357,7 +307,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
             Text(
-              'Downloading note document...',
+              'Loading note document...',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -375,20 +325,20 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                LucideIcons.fileWarning,
+                LucideIcons.fileText,
                 size: 64,
-                color: theme.colorScheme.error,
+                color: theme.colorScheme.primary,
               ),
               const SizedBox(height: 16),
               Text(
-                'Could not load document preview',
+                'Document Link Available',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                _errorMessage ?? 'Unknown error occurred while opening file.',
+                _errorMessage ?? 'Tap below to view this document in Google Docs or your browser.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
@@ -400,20 +350,20 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                 runSpacing: 12,
                 alignment: WrapAlignment.center,
                 children: [
+                  FilledButton.icon(
+                    onPressed: () => _launchInBrowser(forceGoogleDocs: true),
+                    icon: const Icon(LucideIcons.fileText, size: 18),
+                    label: const Text('Open in Google Docs'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => _launchInBrowser(),
+                    icon: const Icon(LucideIcons.externalLink, size: 18),
+                    label: const Text('Open Direct Link'),
+                  ),
                   ElevatedButton.icon(
                     onPressed: _loadPdfBytes,
                     icon: const Icon(LucideIcons.refreshCw, size: 18),
-                    label: const Text('Retry'),
-                  ),
-                  FilledButton.icon(
-                    onPressed: _launchInBrowser,
-                    icon: const Icon(LucideIcons.externalLink, size: 18),
-                    label: const Text('Open in Browser'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: _openWithExternalApp,
-                    icon: const Icon(LucideIcons.download, size: 18),
-                    label: const Text('Download / External App'),
+                    label: const Text('Retry Preview'),
                   ),
                 ],
               ),
@@ -431,6 +381,10 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       canDebug: false,
       actions: [
         PdfPreviewAction(
+          icon: const Icon(LucideIcons.fileText),
+          onPressed: (context, build, pageFormat) => _launchInBrowser(forceGoogleDocs: true),
+        ),
+        PdfPreviewAction(
           icon: const Icon(LucideIcons.externalLink),
           onPressed: (context, build, pageFormat) => _launchInBrowser(),
         ),
@@ -442,17 +396,17 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(LucideIcons.alertCircle, size: 48, color: theme.colorScheme.error),
+                Icon(LucideIcons.fileText, size: 48, color: theme.colorScheme.primary),
                 const SizedBox(height: 16),
                 const Text(
-                  'Format supported via external viewer',
+                  'View Note in Google Docs',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
-                  onPressed: _launchInBrowser,
-                  icon: const Icon(LucideIcons.externalLink),
-                  label: const Text('Open Note in Browser'),
+                  onPressed: () => _launchInBrowser(forceGoogleDocs: true),
+                  icon: const Icon(LucideIcons.fileText),
+                  label: const Text('Open Note in Google Docs'),
                 ),
               ],
             ),

@@ -3,17 +3,14 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:isar/isar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/repositories/upload_repository.dart';
-import '../../presentation/controllers/cloudinary_service.dart';
 import '../models/isar_upload_task.dart';
 
 class UploadRepositoryImpl implements UploadRepository {
-  final CloudinaryService _cloudinary;
   final Isar? _isar;
   final SupabaseClient _supabase;
   final Connectivity _connectivity;
 
   UploadRepositoryImpl(
-    this._cloudinary,
     this._isar,
     this._supabase,
     this._connectivity,
@@ -26,12 +23,23 @@ class UploadRepositoryImpl implements UploadRepository {
     required String folder,
     required void Function(double progress) onProgress,
   }) async {
-    return _cloudinary.uploadFile(
-      filePath: filePath,
-      fileName: fileName,
-      folder: folder,
-      onProgress: onProgress,
+    final file = File(filePath);
+    if (!await file.exists()) {
+      throw Exception('File not found at path: $filePath');
+    }
+    final bytes = await file.readAsBytes();
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final sanitizedName = fileName.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+    final storagePath = '$folder/$timestamp-$sanitizedName';
+
+    await _supabase.storage.from('uploads').uploadBinary(
+      storagePath,
+      bytes,
+      fileOptions: const FileOptions(upsert: true),
     );
+
+    onProgress(1.0);
+    return _supabase.storage.from('uploads').getPublicUrl(storagePath);
   }
 
   @override
@@ -71,29 +79,24 @@ class UploadRepositoryImpl implements UploadRepository {
       try {
         final file = File(task.filePath);
         if (!await file.exists()) {
-          // File deleted or lost, remove task from queue
           await deleteQueueTask(task.id);
           continue;
         }
 
-        // Upload to Cloudinary
-        final secureUrl = await _cloudinary.uploadFile(
+        final secureUrl = await uploadFileDirectly(
           filePath: task.filePath,
           fileName: task.fileName,
           folder: task.folder,
           onProgress: (_) {},
         );
 
-        // Update Supabase with secure URL
         await _supabase
             .from(task.supabaseTable)
             .update({task.supabaseColumn: secureUrl})
             .eq('id', task.entityId);
 
-        // Remove from Isar queue
         await deleteQueueTask(task.id);
       } catch (e) {
-        // Log and retry on next sync interval
         continue;
       }
     }
@@ -106,10 +109,6 @@ class UploadRepositoryImpl implements UploadRepository {
     required String supabaseColumn,
     required String entityId,
   }) async {
-    // 1. Delete from Cloudinary
-    await _cloudinary.deleteFile(fileUrl);
-
-    // 2. Set field to null in Supabase
     await _supabase
         .from(supabaseTable)
         .update({supabaseColumn: null})

@@ -6,6 +6,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../batch/presentation/controllers/batch_controller.dart';
 import '../controllers/notes_controller.dart';
 
+enum UploadMode { file, link }
+
 class UploadNotesScreen extends ConsumerStatefulWidget {
   const UploadNotesScreen({super.key});
 
@@ -17,7 +19,9 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
-  
+  final _linkCtrl = TextEditingController();
+
+  UploadMode _mode = UploadMode.file;
   String? _selectedBatchId;
   PlatformFile? _selectedFile;
   bool _isUploading = false;
@@ -27,6 +31,7 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
   void dispose() {
     _titleCtrl.dispose();
     _descCtrl.dispose();
+    _linkCtrl.dispose();
     super.dispose();
   }
 
@@ -34,7 +39,7 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf'],
+        allowedExtensions: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'],
       );
 
       if (result != null && result.files.isNotEmpty) {
@@ -58,9 +63,17 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
 
   Future<void> _handleUpload() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedFile == null) {
+
+    if (_mode == UploadMode.file && _selectedFile == null) {
       setState(() {
-        _uploadError = 'Please select a PDF file to upload.';
+        _uploadError = 'Please select a document file to upload.';
+      });
+      return;
+    }
+
+    if (_mode == UploadMode.link && _linkCtrl.text.trim().isEmpty) {
+      setState(() {
+        _uploadError = 'Please enter a valid Google Drive or Document URL.';
       });
       return;
     }
@@ -75,18 +88,21 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
             title: _titleCtrl.text.trim(),
             description: _descCtrl.text.trim(),
             batchId: _selectedBatchId,
-            file: _selectedFile!,
+            file: _mode == UploadMode.file ? _selectedFile : null,
+            linkUrl: _mode == UploadMode.link ? _linkCtrl.text.trim() : null,
+            fileName: _mode == UploadMode.file ? _selectedFile?.name : 'Google Drive Note',
           );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Note uploaded successfully!')),
+          const SnackBar(content: Text('Note published successfully!')),
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _uploadError = e.toString();
+          _uploadError = e.toString().replaceAll('Exception: ', '');
           _isUploading = false;
         });
       }
@@ -101,7 +117,7 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload Note'),
+        title: const Text('Publish Note'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -121,7 +137,7 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: Text(
-                          'Upload student notes in PDF format. You can target specific batches or share notes globally with all students.',
+                          'Publish notes by uploading local files to Supabase Storage OR pasting Google Drive / Web links for instant student viewing.',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colors.onSurfaceVariant.withValues(alpha: 0.8),
                           ),
@@ -130,6 +146,30 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 24),
+
+              // Segmented Toggle for File Upload vs Google Drive Link
+              SegmentedButton<UploadMode>(
+                segments: const [
+                  ButtonSegment<UploadMode>(
+                    value: UploadMode.file,
+                    label: Text('File Upload'),
+                    icon: Icon(LucideIcons.uploadCloud),
+                  ),
+                  ButtonSegment<UploadMode>(
+                    value: UploadMode.link,
+                    label: Text('Google Drive / Link'),
+                    icon: Icon(LucideIcons.link),
+                  ),
+                ],
+                selected: {_mode},
+                onSelectionChanged: (Set<UploadMode> newSelection) {
+                  setState(() {
+                    _mode = newSelection.first;
+                    _uploadError = null;
+                  });
+                },
               ),
               const SizedBox(height: 24),
 
@@ -193,72 +233,94 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
               ),
               const SizedBox(height: 24),
 
-              // File Picker Container
-              GestureDetector(
-                onTap: _isUploading ? null : _pickFile,
-                child: Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: colors.surfaceContainerHighest.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: _selectedFile != null ? colors.primary : colors.outline.withValues(alpha: 0.2),
-                      width: 1.5,
-                      style: BorderStyle.solid,
+              // Mode 1: File Picker Container
+              if (_mode == UploadMode.file) ...[
+                GestureDetector(
+                  onTap: _isUploading ? null : _pickFile,
+                  child: Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHighest.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: _selectedFile != null ? colors.primary : colors.outline.withValues(alpha: 0.2),
+                        width: 1.5,
+                        style: BorderStyle.solid,
+                      ),
                     ),
-                  ),
-                  child: _selectedFile == null
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(LucideIcons.fileType2, color: colors.onSurfaceVariant.withValues(alpha: 0.6), size: 32),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Tap to select a PDF file',
-                              style: TextStyle(
-                                color: colors.onSurfaceVariant.withValues(alpha: 0.8),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Row(
+                    child: _selectedFile == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(LucideIcons.fileCheck, color: colors.primary, size: 32),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      _selectedFile!.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '${(_selectedFile!.size / 1024).toStringAsFixed(1)} KB',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                                      ),
-                                    ),
-                                  ],
+                              Icon(LucideIcons.fileType2, color: colors.onSurfaceVariant.withValues(alpha: 0.6), size: 32),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tap to select PDF, DOC, or image file',
+                                style: TextStyle(
+                                  color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              IconButton(
-                                icon: const Icon(LucideIcons.x, color: Colors.red),
-                                onPressed: _clearFile,
-                              ),
                             ],
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              children: [
+                                Icon(LucideIcons.fileCheck, color: colors.primary, size: 32),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _selectedFile!.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${(_selectedFile!.size / 1024).toStringAsFixed(1)} KB',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(LucideIcons.x, color: Colors.red),
+                                  onPressed: _clearFile,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                  ),
                 ),
-              ),
+              ],
+
+              // Mode 2: Google Drive / Link Input Field
+              if (_mode == UploadMode.link) ...[
+                TextFormField(
+                  controller: _linkCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Google Drive or Web Document URL',
+                    hintText: 'https://drive.google.com/file/d/.../view',
+                    prefixIcon: Icon(LucideIcons.externalLink),
+                    helperText: 'Paste Google Drive view link or any public PDF URL',
+                  ),
+                  validator: (val) {
+                    if (_mode == UploadMode.link && (val == null || val.trim().isEmpty)) {
+                      return 'Document link is required';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+
               const SizedBox(height: 24),
 
               if (_uploadError != null) ...[
@@ -276,7 +338,7 @@ class _UploadNotesScreenState extends ConsumerState<UploadNotesScreen> {
                   : ElevatedButton.icon(
                       onPressed: _handleUpload,
                       icon: const Icon(LucideIcons.upload),
-                      label: const Text('Publish Note'),
+                      label: Text(_mode == UploadMode.file ? 'Publish File Note' : 'Publish Link Note'),
                     ),
             ],
           ),
