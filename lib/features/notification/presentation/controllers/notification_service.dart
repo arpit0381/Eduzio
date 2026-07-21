@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
@@ -9,16 +11,23 @@ import '../../../auth/domain/entities/user_profile.dart';
 import '../../data/models/isar_notification.dart';
 import 'notification_controller.dart';
 
-// Background handler must be a top-level function
+// Background handler must be a top-level function annotated with @pragma('vm:entry-point')
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // FCM automatically caches notifications on system tray for background/terminated states
-  // History is cached locally upon in-app foreground reception or center launch
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp();
+    }
+  } catch (e) {
+    debugPrint('Error initializing Firebase in background handler: $e');
+  }
+  debugPrint("Handling a background message: ${message.messageId}");
 }
 
 class NotificationService {
   final Ref _ref;
   bool _isInitialized = false;
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   NotificationService(this._ref);
 
@@ -32,7 +41,58 @@ class NotificationService {
     }
 
     try {
-      // 1. Request notification permissions
+      // 1. Create High Importance Notification Channel on Android
+      const AndroidNotificationChannel channel = AndroidNotificationChannel(
+        'high_importance_channel',
+        'High Importance Notifications',
+        description: 'This channel is used for important notifications.',
+        importance: Importance.max,
+        playSound: true,
+        enableVibration: true,
+      );
+
+      final androidPlugin = _localNotifications
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+
+      if (androidPlugin != null) {
+        await androidPlugin.createNotificationChannel(channel);
+        await androidPlugin.requestNotificationsPermission();
+      }
+
+      // 2. Initialize Flutter Local Notifications Plugin
+      const initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/launcher_icon');
+      const initializationSettingsDarwin = DarwinInitializationSettings();
+      const initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsDarwin,
+      );
+
+      await _localNotifications.initialize(
+        initializationSettings,
+        onDidReceiveNotificationResponse: (NotificationResponse details) {
+          if (details.payload != null && details.payload!.isNotEmpty && context.mounted) {
+            try {
+              final data = json.decode(details.payload!) as Map<String, dynamic>;
+              final screen = data['screen'] as String?;
+              final payload = data['payload'] as String?;
+              if (screen != null) {
+                _handleDeepLink(context, screen, payload);
+              }
+            } catch (e) {
+              debugPrint('Error parsing notification payload click: $e');
+            }
+          }
+        },
+      );
+
+      // 3. Set foreground notification options for FCM
+      await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      // 4. Request notification permissions from FCM
       final messaging = FirebaseMessaging.instance;
       final settings = await messaging.requestPermission(
         alert: true,
@@ -41,18 +101,20 @@ class NotificationService {
         provisional: false,
       );
 
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        // 2. Set up background message handler
-        FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+          settings.authorizationStatus == AuthorizationStatus.provisional) {
+        
+        // 5. Set up background message handler
+        FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-        // 3. Set up foreground message handler
+        // 6. Set up foreground message handler
         FirebaseMessaging.onMessage.listen((message) {
           if (context.mounted) {
             _handleForegroundMessage(context, message);
           }
         });
 
-        // 4. Set up message click handlers
+        // 7. Set up message click handlers
         FirebaseMessaging.onMessageOpenedApp.listen((message) {
           if (context.mounted) {
             _handleMessageClick(context, message);
@@ -65,7 +127,7 @@ class NotificationService {
           _handleMessageClick(context, initialMessage);
         }
 
-        // 5. Setup Token Management
+        // 8. Setup Token Management
         _setupTokenSync();
       }
     } catch (e) {
@@ -178,18 +240,45 @@ class NotificationService {
 
   Future<void> _handleForegroundMessage(BuildContext context, RemoteMessage message) async {
     final notification = message.notification;
-    if (notification == null) return;
-
     final data = message.data;
+
+    final title = notification?.title ?? data['title'] ?? 'Notification';
+    final body = notification?.body ?? data['body'] ?? '';
     final type = data['type'] as String?;
     final screen = data['screen'] as String?;
     final payload = data['payload'] as String?;
 
+    // Show heads-up alert banner with sound in foreground
+    if (!kIsWeb) {
+      const androidDetails = AndroidNotificationDetails(
+        'high_importance_channel',
+        'High Importance Notifications',
+        channelDescription: 'This channel is used for important notifications.',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        icon: '@mipmap/launcher_icon',
+      );
+      const notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: DarwinNotificationDetails(presentAlert: true, presentSound: true, presentBadge: true),
+      );
+
+      await _localNotifications.show(
+        message.hashCode,
+        title,
+        body,
+        notificationDetails,
+        payload: json.encode(data),
+      );
+    }
+
     // Create local Isar record
     final localNotif = CachedNotification1816()
       ..remoteId = message.messageId
-      ..title = notification.title ?? 'No Title'
-      ..body = notification.body ?? 'No Body'
+      ..title = title
+      ..body = body
       ..receivedAt = DateTime.now()
       ..isRead = false
       ..type = type
@@ -211,11 +300,11 @@ class NotificationService {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                notification.title ?? 'Notification',
+                title,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
-              Text(notification.body ?? ''),
+              Text(body),
             ],
           ),
           action: screen != null

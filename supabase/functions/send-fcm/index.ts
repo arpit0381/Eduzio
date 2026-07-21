@@ -98,6 +98,30 @@ serve(async (req: Request) => {
                 body,
                 click_action: "FLUTTER_NOTIFICATION_CLICK",
               },
+              android: {
+                priority: "HIGH",
+                notification: {
+                  channel_id: "high_importance_channel",
+                  sound: "default",
+                  default_sound: true,
+                  default_vibrate_timings: true,
+                  notification_priority: "PRIORITY_MAX",
+                  visibility: "PUBLIC",
+                },
+              },
+              apns: {
+                payload: {
+                  aps: {
+                    alert: { title, body },
+                    sound: "default",
+                    badge: 1,
+                    "content-available": 1,
+                  },
+                },
+                headers: {
+                  "apns-priority": "10",
+                },
+              },
             },
           }),
         }
