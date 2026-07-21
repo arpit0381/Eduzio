@@ -21,11 +21,166 @@ class FeesScreen extends ConsumerStatefulWidget {
 class _FeesScreenState extends ConsumerState<FeesScreen> {
   final _searchCtrl = TextEditingController();
   String _searchQuery = '';
+  String _filterTab = 'all'; // 'all', 'pending', 'paid'
 
   @override
   void dispose() {
     _searchCtrl.dispose();
     super.dispose();
+  }
+
+  void _showReceiptSheet(BuildContext context, StudentFee fee) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        final colors = Theme.of(ctx).colorScheme;
+        final theme = Theme.of(ctx);
+        final isPaid = fee.status == 'paid';
+        final outstanding = fee.amount - fee.paidAmount;
+
+        return Container(
+          margin: const EdgeInsets.all(16),
+          padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 24,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: colors.onSurfaceVariant.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Header Badge & Title
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: (isPaid ? Colors.green : colors.primary).withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isPaid ? LucideIcons.receiptCheck : LucideIcons.receipt,
+                          color: isPaid ? Colors.green : colors.primary,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Fee Statement & Receipt',
+                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Invoice #${fee.id.substring(0, fee.id.length > 8 ? 8 : fee.id.length).toUpperCase()}',
+                            style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant.withValues(alpha: 0.6)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: (isPaid ? Colors.green : (fee.paidAmount > 0 ? Colors.amber : colors.error)).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      fee.status.toUpperCase(),
+                      style: TextStyle(
+                        color: isPaid ? Colors.green : (fee.paidAmount > 0 ? Colors.amber.shade800 : colors.error),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 12),
+
+              // Details grid
+              _buildReceiptRow(context, 'Student Name', fee.studentName),
+              if (fee.batchName != null && fee.batchName!.isNotEmpty)
+                _buildReceiptRow(context, 'Batch / Course', fee.batchName!),
+              _buildReceiptRow(context, 'Due Date', DateFormat('dd MMMM yyyy').format(fee.dueDate)),
+              _buildReceiptRow(context, 'Total Fee Amount', '₹${fee.amount.toStringAsFixed(2)}'),
+              _buildReceiptRow(context, 'Amount Paid', '₹${fee.paidAmount.toStringAsFixed(2)}', isHighlight: isPaid),
+              _buildReceiptRow(context, 'Remaining Balance', '₹${outstanding.toStringAsFixed(2)}', isWarning: outstanding > 0),
+              if (fee.paidDate != null)
+                _buildReceiptRow(context, 'Last Payment Date', DateFormat('dd MMMM yyyy, hh:mm a').format(fee.paidDate!)),
+              if (fee.remarks != null && fee.remarks!.isNotEmpty)
+                _buildReceiptRow(context, 'Notes / Remarks', fee.remarks!),
+
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pop(ctx),
+                icon: const Icon(LucideIcons.check),
+                label: const Text('Close Statement'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildReceiptRow(BuildContext context, String label, String value, {bool isHighlight = false, bool isWarning = false}) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant.withValues(alpha: 0.7),
+            ),
+          ),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: isHighlight
+                    ? Colors.green
+                    : (isWarning ? colors.error : colors.onSurface),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showPaymentSheet(BuildContext context, StudentFee fee) {
@@ -172,7 +327,8 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    final isAdmin = user != null && (user.role == UserProfileRole.admin || user.role == UserProfileRole.teacher);
+    final isAdmin = user != null && (user.role == UserProfileRole.admin || user.role == UserProfileRole.superAdmin || user.role == UserProfileRole.teacher);
+    final isStudent = !isAdmin;
 
     final horizontalPadding = getValueForScreenType<double>(
       context: context,
@@ -183,7 +339,7 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fee Management'),
+        title: Text(isStudent ? 'My Fees Dashboard' : 'Fee Management'),
       ),
       floatingActionButton: isAdmin
           ? FloatingActionButton.extended(
@@ -205,7 +361,7 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome Header
+              // Header Banner
               Builder(
                 builder: (context) {
                   final isMobile = getValueForScreenType<bool>(
@@ -231,7 +387,7 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Fee Summary 💰',
+                                  isStudent ? 'My Fee Dashboard 💳' : 'Fee Summary 💰',
                                   style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: colors.onSurface,
@@ -240,9 +396,9 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  isAdmin
-                                      ? 'Track collections, record student fee structures, record payments, and manage pending balances.'
-                                      : 'View your pending fee dues, paid receipts, and billing statements.',
+                                  isStudent
+                                      ? 'Track your total paid fees, pending balance dues, and view payment statements.'
+                                      : 'Track collections, record student fee structures, record payments, and manage pending balances.',
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     color: colors.onSurfaceVariant.withValues(alpha: 0.7),
                                     height: 1.4,
@@ -270,14 +426,14 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Summary stats
+              // Summary Stat Cards
               feesAsync.when(
                 data: (fees) {
-                  double totalCollected = 0;
+                  double totalPaid = 0;
                   double totalOutstanding = 0;
 
                   for (final fee in fees) {
-                    totalCollected += fee.paidAmount;
+                    totalPaid += fee.paidAmount;
                     if (fee.status != 'paid') {
                       totalOutstanding += (fee.amount - fee.paidAmount);
                     }
@@ -296,14 +452,14 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
                         crossAxisAlignment: isMobile ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
                         children: [
                           isMobile 
-                            ? _buildFeeCard('Total Collected', '₹${totalCollected.toStringAsFixed(0)}', true, theme, colors)
-                            : Expanded(child: _buildFeeCard('Total Collected', '₹${totalCollected.toStringAsFixed(0)}', true, theme, colors)),
+                            ? _buildFeeCard(isStudent ? 'Total Paid' : 'Total Collected', '₹${totalPaid.toStringAsFixed(0)}', true, theme, colors)
+                            : Expanded(child: _buildFeeCard(isStudent ? 'Total Paid' : 'Total Collected', '₹${totalPaid.toStringAsFixed(0)}', true, theme, colors)),
                           
                           if (!isMobile) const SizedBox(width: 16) else const SizedBox(height: 16),
                           
                           isMobile 
-                            ? _buildFeeCard('Outstanding Dues', '₹${totalOutstanding.toStringAsFixed(0)}', false, theme, colors)
-                            : Expanded(child: _buildFeeCard('Outstanding Dues', '₹${totalOutstanding.toStringAsFixed(0)}', false, theme, colors)),
+                            ? _buildFeeCard(isStudent ? 'Pending Balance' : 'Outstanding Dues', '₹${totalOutstanding.toStringAsFixed(0)}', false, theme, colors)
+                            : Expanded(child: _buildFeeCard(isStudent ? 'Pending Balance' : 'Outstanding Dues', '₹${totalOutstanding.toStringAsFixed(0)}', false, theme, colors)),
                         ],
                       );
                     }
@@ -332,6 +488,32 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
                 const SizedBox(height: 24),
               ],
 
+              // Filter Chips for Students
+              if (isStudent) ...[
+                Row(
+                  children: [
+                    ChoiceChip(
+                      label: const Text('All Invoices'),
+                      selected: _filterTab == 'all',
+                      onSelected: (val) => setState(() => _filterTab = 'all'),
+                    ),
+                    const SizedBox(width: 8),
+                    ChoiceChip(
+                      label: const Text('Pending Dues'),
+                      selected: _filterTab == 'pending',
+                      onSelected: (val) => setState(() => _filterTab = 'pending'),
+                    ),
+                    const SizedBox(width: 8),
+                    ChoiceChip(
+                      label: const Text('Paid'),
+                      selected: _filterTab == 'paid',
+                      onSelected: (val) => setState(() => _filterTab = 'paid'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+
               // Header for List
               Text(
                 isAdmin ? 'Dues & Collections' : 'Your Invoices',
@@ -346,8 +528,13 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
               feesAsync.when(
                 data: (fees) {
                   final filteredFees = fees.where((fee) {
-                    if (!isAdmin) return true; // Student only gets their own
-                    return fee.studentName.toLowerCase().contains(_searchQuery);
+                    if (isAdmin) {
+                      return fee.studentName.toLowerCase().contains(_searchQuery);
+                    } else {
+                      if (_filterTab == 'pending') return fee.status != 'paid';
+                      if (_filterTab == 'paid') return fee.status == 'paid';
+                      return true;
+                    }
                   }).toList();
 
                   if (filteredFees.isEmpty) {
@@ -359,7 +546,7 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
                             Icon(LucideIcons.fileX, size: 48, color: colors.onSurfaceVariant.withValues(alpha: 0.4)),
                             const SizedBox(height: 16),
                             Text(
-                              'No fee records found',
+                              isStudent ? 'No fee invoices found' : 'No fee records found',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 color: colors.onSurfaceVariant.withValues(alpha: 0.6),
                               ),
@@ -381,130 +568,133 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
 
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: (isPaid ? Colors.green : colors.error).withValues(alpha: 0.08),
-                                  borderRadius: BorderRadius.circular(16),
+                        child: InkWell(
+                          onTap: () => _showReceiptSheet(context, fee),
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: (isPaid ? Colors.green : colors.error).withValues(alpha: 0.08),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Icon(
+                                    isPaid ? LucideIcons.checkCircle2 : LucideIcons.alertTriangle,
+                                    color: isPaid ? Colors.green : colors.error,
+                                    size: 24,
+                                  ),
                                 ),
-                                child: Icon(
-                                  isPaid ? LucideIcons.checkCircle2 : LucideIcons.alertTriangle,
-                                  color: isPaid ? Colors.green : colors.error,
-                                  size: 24,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (isAdmin) ...[
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (isAdmin) ...[
+                                        Text(
+                                          fee.studentName,
+                                          style: theme.textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                      ],
                                       Text(
-                                        fee.studentName,
-                                        style: theme.textTheme.titleMedium?.copyWith(
+                                        fee.batchName != null && fee.batchName!.isNotEmpty
+                                            ? fee.batchName!
+                                            : 'Global Fee Structure',
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          fontWeight: isAdmin ? FontWeight.normal : FontWeight.bold,
+                                          color: colors.onSurfaceVariant.withValues(alpha: 0.8),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Due Date: ${DateFormat('dd MMM yyyy').format(fee.dueDate)}',
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: colors.onSurfaceVariant.withValues(alpha: 0.5),
+                                        ),
+                                      ),
+                                      if (fee.remarks != null && fee.remarks!.isNotEmpty) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Note: ${fee.remarks}',
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      '₹${fee.amount.toStringAsFixed(0)}',
+                                      style: GoogleFonts.inter(
+                                        textStyle: theme.textTheme.titleMedium?.copyWith(
+                                          color: isPaid ? Colors.green : colors.error,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
-                                    ],
-                                    Text(
-                                      fee.batchName != null && fee.batchName!.isNotEmpty
-                                          ? fee.batchName!
-                                          : 'Global Due',
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        fontWeight: isAdmin ? FontWeight.normal : FontWeight.bold,
-                                        color: colors.onSurfaceVariant.withValues(alpha: 0.8),
-                                      ),
                                     ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      'Due Date: ${DateFormat('dd MMM yyyy').format(fee.dueDate)}',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: colors.onSurfaceVariant.withValues(alpha: 0.5),
-                                      ),
-                                    ),
-                                    if (fee.remarks != null && fee.remarks!.isNotEmpty) ...[
+                                    if (!isPaid) ...[
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Note: ${fee.remarks}',
-                                        style: theme.textTheme.bodySmall?.copyWith(
+                                        'Due: ₹${outstanding.toStringAsFixed(0)}',
+                                        style: TextStyle(
+                                          fontSize: 12,
                                           color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                                          fontStyle: FontStyle.italic,
                                         ),
                                       ),
                                     ],
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    '₹${fee.amount.toStringAsFixed(0)}',
-                                    style: GoogleFonts.inter(
-                                      textStyle: theme.textTheme.titleMedium?.copyWith(
-                                        color: isPaid ? Colors.green : colors.error,
-                                        fontWeight: FontWeight.bold,
+                                    if (isAdmin && !isPaid) ...[
+                                      const SizedBox(height: 8),
+                                      InkWell(
+                                        onTap: () => _showPaymentSheet(context, fee),
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                          decoration: BoxDecoration(
+                                            color: colors.primary,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            'Collect',
+                                            style: theme.textTheme.labelMedium?.copyWith(
+                                              color: colors.onPrimary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  if (!isPaid) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Due: ₹${outstanding.toStringAsFixed(0)}',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                                      ),
-                                    ),
-                                  ],
-                                  if (isAdmin && !isPaid) ...[
-                                    const SizedBox(height: 8),
-                                    InkWell(
-                                      onTap: () => _showPaymentSheet(context, fee),
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    ] else if (isStudent) ...[
+                                      const SizedBox(height: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: colors.primary,
-                                          borderRadius: BorderRadius.circular(12),
+                                          color: (isPaid ? Colors.green : colors.error).withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: Text(
-                                          'Collect',
-                                          style: theme.textTheme.labelMedium?.copyWith(
-                                            color: colors.onPrimary,
+                                          isPaid ? 'PAID' : 'PENDING',
+                                          style: TextStyle(
+                                            color: isPaid ? Colors.green : colors.error,
+                                            fontSize: 11,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ],
-                                  if (isPaid) ...[
-                                    const SizedBox(height: 4),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: Colors.green.withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: const Text(
-                                        'PAID',
-                                        style: TextStyle(
-                                          color: Colors.green,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );

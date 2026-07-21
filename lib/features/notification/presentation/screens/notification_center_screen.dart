@@ -256,7 +256,7 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
                               ),
                             ),
                           ),
-                          if (!item.isRead)
+                          if (!item.isRead) ...[
                             Container(
                               width: 8,
                               height: 8,
@@ -265,6 +265,21 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
                                 shape: BoxShape.circle,
                               ),
                             ),
+                            const SizedBox(width: 8),
+                          ],
+                          IconButton(
+                            icon: Icon(LucideIcons.trash2, size: 16, color: colors.onSurfaceVariant.withValues(alpha: 0.5)),
+                            tooltip: 'Delete notification',
+                            onPressed: () {
+                              ref.read(notificationHistoryProvider.notifier).deleteNotification(item.id);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Notification deleted'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
                       const SizedBox(height: 6),

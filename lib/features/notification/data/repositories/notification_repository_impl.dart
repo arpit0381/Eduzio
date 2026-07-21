@@ -65,7 +65,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Future<List<CachedNotification1816>> getNotificationHistory() async {
+    final deletedIds = (_prefs.getStringList('deleted_notification_remote_ids') ?? []).toSet();
     List<CachedNotification1816> remoteNotifications = [];
+
     try {
       final currentUser = _supabase.auth.currentUser;
       if (currentUser != null) {
@@ -97,12 +99,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
                 .select()
                 .eq('organization_id', organizationId);
 
-            // Get local list of deleted remote announcement IDs to filter them out
-            final deletedIds = _prefs.getStringList('deleted_notification_remote_ids') ?? [];
-
             for (final row in announcementsData as List) {
               final remoteIdStr = row['id'] as String;
-              if (deletedIds.contains(remoteIdStr)) {
+              final hashIdStr = remoteIdStr.hashCode.abs().toString();
+
+              if (deletedIds.contains(remoteIdStr) || deletedIds.contains(hashIdStr)) {
                 continue;
               }
 
@@ -159,7 +160,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
     }
 
     if (_isar == null) {
-      // For web, sort and return the remote notifications directly
+      // For web, sort and return non-deleted remote notifications directly
       remoteNotifications.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
       return remoteNotifications;
     }
@@ -167,6 +168,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
     // On mobile, sync remote announcements to Isar
     await _isar.writeTxn(() async {
       for (final remote in remoteNotifications) {
+        if (deletedIds.contains(remote.id.toString()) || 
+            (remote.remoteId != null && deletedIds.contains(remote.remoteId!))) {
+          continue;
+        }
+
         final existing = await _isar.collection<CachedNotification1816>()
             .filter()
             .remoteIdEqualTo(remote.remoteId)
@@ -178,15 +184,27 @@ class NotificationRepositoryImpl implements NotificationRepository {
       }
     });
 
-    // Read back all notifications from Isar
+    // Read back all notifications from Isar and exclude deleted
     final list = await _isar.collection<CachedNotification1816>().where().findAll();
-    list.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
-    return list;
+    final filtered = list.where((n) {
+      if (deletedIds.contains(n.id.toString())) return false;
+      if (n.remoteId != null && deletedIds.contains(n.remoteId!)) return false;
+      return true;
+    }).toList();
+
+    filtered.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
+    return filtered;
   }
 
   @override
   Future<void> saveNotification(CachedNotification1816 notification) async {
     if (_isar == null) return;
+    final deletedIds = (_prefs.getStringList('deleted_notification_remote_ids') ?? []).toSet();
+    if (deletedIds.contains(notification.id.toString()) || 
+        (notification.remoteId != null && deletedIds.contains(notification.remoteId!))) {
+      return;
+    }
+
     await _isar.writeTxn(() async {
       await _isar.collection<CachedNotification1816>().put(notification);
     });
@@ -219,20 +237,19 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Future<void> deleteNotification(int id) async {
-    // 1. Record the deleted ID in SharedPreferences so it filters out on next fetch
-    final deletedIds = _prefs.getStringList('deleted_notification_remote_ids') ?? [];
+    final deletedIds = (_prefs.getStringList('deleted_notification_remote_ids') ?? []).toSet();
+    deletedIds.add(id.toString());
 
     if (_isar != null) {
       final notification = await _isar.collection<CachedNotification1816>().get(id);
-      if (notification != null && notification.remoteId != null) {
-        if (!deletedIds.contains(notification.remoteId!)) {
+      if (notification != null) {
+        if (notification.remoteId != null) {
           deletedIds.add(notification.remoteId!);
-          await _prefs.setStringList('deleted_notification_remote_ids', deletedIds);
         }
+        await _isar.writeTxn(() async {
+          await _isar.collection<CachedNotification1816>().delete(id);
+        });
       }
-      await _isar.writeTxn(() async {
-        await _isar.collection<CachedNotification1816>().delete(id);
-      });
     } else {
       // On Web, map hashCode id back to remoteId
       try {
@@ -246,10 +263,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
               for (final row in announcementsData as List) {
                 final remoteIdStr = row['id'] as String;
                 if (remoteIdStr.hashCode.abs() == id) {
-                  if (!deletedIds.contains(remoteIdStr)) {
-                    deletedIds.add(remoteIdStr);
-                    await _prefs.setStringList('deleted_notification_remote_ids', deletedIds);
-                  }
+                  deletedIds.add(remoteIdStr);
+                  deletedIds.add(remoteIdStr.hashCode.abs().toString());
                   break;
                 }
               }
@@ -260,11 +275,27 @@ class NotificationRepositoryImpl implements NotificationRepository {
         debugPrint('Failed to process web deletion: $e');
       }
     }
+
+    await _prefs.setStringList('deleted_notification_remote_ids', deletedIds.toList());
   }
 
   @override
   Future<void> clearAllNotifications() async {
-    // 1. Add all fetched remote IDs to deleted list
+    final deletedIds = (_prefs.getStringList('deleted_notification_remote_ids') ?? []).toSet();
+
+    if (_isar != null) {
+      final list = await _isar.collection<CachedNotification1816>().where().findAll();
+      for (final n in list) {
+        deletedIds.add(n.id.toString());
+        if (n.remoteId != null) {
+          deletedIds.add(n.remoteId!);
+        }
+      }
+      await _isar.writeTxn(() async {
+        await _isar.collection<CachedNotification1816>().clear();
+      });
+    }
+
     try {
       final currentUser = _supabase.auth.currentUser;
       if (currentUser != null) {
@@ -273,14 +304,11 @@ class NotificationRepositoryImpl implements NotificationRepository {
           final organizationId = profileRes['organization_id'] as String?;
           if (organizationId != null) {
             final announcementsData = await _supabase.from('announcements').select('id').eq('organization_id', organizationId);
-            final deletedIds = _prefs.getStringList('deleted_notification_remote_ids') ?? [];
             for (final row in announcementsData as List) {
               final remoteIdStr = row['id'] as String;
-              if (!deletedIds.contains(remoteIdStr)) {
-                deletedIds.add(remoteIdStr);
-              }
+              deletedIds.add(remoteIdStr);
+              deletedIds.add(remoteIdStr.hashCode.abs().toString());
             }
-            await _prefs.setStringList('deleted_notification_remote_ids', deletedIds);
           }
         }
       }
@@ -288,26 +316,31 @@ class NotificationRepositoryImpl implements NotificationRepository {
       debugPrint('Failed to clear remote notifications list: $e');
     }
 
-    // 2. Clear local database
-    if (_isar != null) {
-      await _isar.writeTxn(() async {
-        await _isar.collection<CachedNotification1816>().clear();
-      });
-    }
+    await _prefs.setStringList('deleted_notification_remote_ids', deletedIds.toList());
   }
 
   @override
   Future<List<CachedNotification1816>> searchNotifications(String query) async {
+    final deletedIds = (_prefs.getStringList('deleted_notification_remote_ids') ?? []).toSet();
     if (_isar == null) return [];
+
     final list = await _isar.collection<CachedNotification1816>().where().findAll();
+    final validList = list.where((n) {
+      if (deletedIds.contains(n.id.toString())) return false;
+      if (n.remoteId != null && deletedIds.contains(n.remoteId!)) return false;
+      return true;
+    }).toList();
+
     if (query.isEmpty) {
-      list.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
-      return list;
+      validList.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
+      return validList;
     }
+
     final lowerQuery = query.toLowerCase();
-    final filtered = list.where((n) =>
+    final filtered = validList.where((n) =>
         n.title.toLowerCase().contains(lowerQuery) ||
         n.body.toLowerCase().contains(lowerQuery)).toList();
+
     filtered.sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
     return filtered;
   }
