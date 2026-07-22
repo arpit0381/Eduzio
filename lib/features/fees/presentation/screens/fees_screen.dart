@@ -83,7 +83,7 @@ class _FeesScreenState extends ConsumerState<FeesScreen> {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          isPaid ? LucideIcons.receiptCheck : LucideIcons.receipt,
+                          LucideIcons.receipt,
                           color: isPaid ? Colors.green : colors.primary,
                           size: 24,
                         ),
